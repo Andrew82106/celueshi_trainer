@@ -5,7 +5,8 @@
         "pages/dot-training/dot-training",
         "pages/audio-training/audio-training",
         "pages/schulte-table/schulte-table",
-        "pages/profile/profile"
+        "pages/profile/profile",
+        "pages/translate/translate"
     ],
     "window": {
         "navigationBarTextStyle": "black",

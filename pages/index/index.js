@@ -26,5 +26,10 @@ Page({
     wx.navigateTo({
       url: '/pages/profile/profile'
     })
+  },
+  navigateTranslate() {
+    wx.navigateTo({
+        url: '/pages/translate/translate'
+      })
   }
 })

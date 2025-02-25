@@ -1,8 +1,13 @@
 <!--index.wxml-->
-<navigation-bar title="专注力训练器" back="{{false}}" color="black" background="#FFF"></navigation-bar>
+<navigation-bar title="Classic Trainer" back="{{false}}" color="black" background="#FFF"></navigation-bar>
 <scroll-view class="scrollarea" scroll-y>
   <view class="container">
     <view class="button-container">
+    <view 
+        class="training-button" 
+        bindtap="navigateTranslate"
+        hover-class="button-hover"
+      >中英互翻训练</view>
       <view 
         class="training-button" 
         bindtap="navigateToDotTraining"
