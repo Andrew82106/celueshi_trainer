@@ -1,0 +1,28 @@
+<!--index.wxml-->
+<navigation-bar title="专注力训练器" back="{{false}}" color="black" background="#FFF"></navigation-bar>
+<scroll-view class="scrollarea" scroll-y>
+  <view class="container">
+    <view class="button-container">
+      <view 
+        class="training-button" 
+        bindtap="navigateToDotTraining"
+        hover-class="button-hover"
+      >圆点闪视训练</view>
+      <view 
+        class="training-button" 
+        bindtap="navigateToSchulte"
+        hover-class="button-hover"
+      >舒尔特表训练</view>
+      <view 
+        class="training-button" 
+        bindtap="navigateToAudioTraining"
+        hover-class="button-hover"
+      >正听反说训练</view>
+      <view 
+        class="training-button" 
+        bindtap="navigateToProfile"
+        hover-class="button-hover"
+      >个人信息</view>
+    </view>
+  </view>
+</scroll-view>

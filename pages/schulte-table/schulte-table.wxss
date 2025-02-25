@@ -1,0 +1,84 @@
+/* 继承导航栏组件样式 */
+.container {
+  padding: 40rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.grid-preview {
+  width: 600rpx;
+  height: 600rpx;
+  border: 2rpx solid #4a90e2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 60rpx;
+  border-radius: 16rpx;
+  color: #666;
+}
+
+.size-selector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 100rpx;
+}
+
+.picker {
+  padding: 20rpx 40rpx;
+  border: 2rpx solid #4a90e2;
+  border-radius: 8rpx;
+  margin: 40rpx 0;
+}
+
+.start-btn {
+  background: #4a90e2;
+  color: white;
+  padding: 30rpx 80rpx;
+  border-radius: 40rpx;
+  margin-top: 60rpx;
+}
+
+.grid-container {
+  width: 90vw;
+  margin: 40rpx auto;
+}
+
+.grid {
+  display: grid;
+  gap: 10rpx;
+  width: 100%;
+}
+
+.grid-item {
+  aspect-ratio: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f5f5f5;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  font-weight: bold;
+}
+
+.grid-item.active {
+  background: #4a90e2;
+  color: white;
+}
+
+.grid-item.correct {
+  background: #4a90e2;
+  color: white;
+}
+
+.grid-item.wrong {
+  background: #e64340;
+  color: white;
+}
+
+.stats {
+  display: flex;
+  justify-content: space-around;
+  font-size: 32rpx;
+} 

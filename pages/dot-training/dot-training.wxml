@@ -1,0 +1,40 @@
+<navigation-bar title="圆点闪视训练" back="{{true}}"></navigation-bar>
+<view class="container">
+  <!-- 设置区域 -->
+  <view class="settings" wx:if="{{!isTraining}}">
+    <view class="input-group">
+      <text>圆点数量范围：</text>
+      <input type="number" data-field="minDots" value="{{minDots}}" bindinput="validateRange" placeholder="最小值(2-20)"/>
+      <text>-</text>
+      <input type="number" data-field="maxDots" value="{{maxDots}}" bindinput="validateRange" placeholder="最大值(2-20)"/>
+    </view>
+    <view class="input-group">
+      <text>闪视时间（秒）：</text>
+      <input type="number" value="{{displayTime}}" bindinput="validateTime" placeholder="0.1-3"/>
+    </view>
+  </view>
+
+  <!-- 训练显示区域 -->
+  <view class="training-area" wx:if="{{isTraining}}">
+    <text wx:if="{{countdown > 0}}" class="countdown">{{countdown}}</text>
+    <view wx:for="{{dots}}" wx:key="index" 
+          class="dot"
+          style="left: {{item.x}}px; top: {{item.y}}px; width: {{item.size}}px; height: {{item.size}}px">
+    </view>
+  </view>
+
+  <!-- 输入弹窗 -->
+  <view class="mask" wx:if="{{showInput}}">
+    <view class="input-box">
+      <text>请输入看到的圆点数量：</text>
+      <input type="number" value="{{userAnswer}}" bindinput="handleInput"/>
+      <button bindtap="submitAnswer">提交</button>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="button-group" wx:if="{{!isTraining && !showInput}}">
+    <button bindtap="startTraining" type="primary">{{trainingRecords.length ? '继续训练' : '开始训练'}}</button>
+    <button bindtap="endTraining">结束训练</button>
+  </view>
+</view> 

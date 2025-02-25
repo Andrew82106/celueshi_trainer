@@ -1,0 +1,18 @@
+{
+    "pages": [
+        "pages/main/main",
+        "pages/index/index",
+        "pages/dot-training/dot-training",
+        "pages/audio-training/audio-training",
+        "pages/schulte-table/schulte-table",
+        "pages/profile/profile"
+    ],
+    "window": {
+        "navigationBarTextStyle": "black",
+        "navigationStyle": "custom"
+    },
+    "style": "v2",
+    "componentFramework": "glass-easel",
+    "sitemapLocation": "sitemap.json",
+    "lazyCodeLoading": "requiredComponents"
+}

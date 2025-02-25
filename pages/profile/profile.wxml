@@ -1,0 +1,33 @@
+<!--pages/profile/profile.wxml-->
+<navigation-bar title="个人中心" back="{{true}}"></navigation-bar>
+<view class="container">
+  <block wx:if="{{userInfo}}">
+    <image class="avatar" src="{{userInfo.avatarUrl}}"></image>
+    <text class="nickname">{{userInfo.nickName}}</text>
+  </block>
+  
+  <block wx:else>
+    <view class="login-btn" bindtap="handleLogin">微信登录</view>
+    <text class="login-tip">点击上方按钮进行登录</text>
+  </block>
+  
+  <view class="training-records" wx:if="{{userInfo}}">
+    <text class="section-title" bindtap="toggleRecords">舒尔特表训练记录 {{isRecordsExpanded ? '▼' : '▶'}}</text>
+    <view class="records-container" style="max-height: {{isRecordsExpanded ? '1000px' : '0px'}}; overflow: hidden; transition: all 0.3s ease;">
+      <block wx:for="{{trainingRecords}}" wx:key="index">
+        <view class="record-item">
+          <text>尺寸</text>
+          <text>{{item.size}}x{{item.size}}</text>
+          <text>用时</text>
+          <text>{{item.time}}</text>
+          <text>错误</text>
+          <text>{{item.errors}}次</text>
+          <view class="time-section">
+            <text class="time-badge">{{item.date}}</text>
+            <text class="error-badge">错误 {{item.errors}}次</text>
+          </view>
+        </view>
+      </block>
+    </view>
+  </view>
+</view>

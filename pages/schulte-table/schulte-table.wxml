@@ -1,0 +1,32 @@
+<navigation-bar title="舒尔特表训练" back="{{true}}"></navigation-bar>
+<view class="container">
+  <block wx:if="{{!isTraining}}">
+    <view class="size-selector">
+      <text>选择表格尺寸：</text>
+      <picker value="{{selectedSize}}" range="{{sizeRange}}" bindchange="onSizeChange">
+        <view class="picker">{{selectedSize}}x{{selectedSize}}</view>
+      </picker>
+      <view class="start-btn" bindtap="startTraining">开始训练</view>
+    </view>
+  </block>
+
+  <block wx:else>
+    <view class="grid-container">
+      <view class="grid" style="grid-template-columns: repeat({{gridSize}}, 1fr);">
+        <view 
+          wx:for="{{numberMatrix}}"
+          wx:key="index"
+          class="grid-item {{item.status}}"
+          bindtap="handleNumberClick"
+          data-number="{{item.num}}"
+          data-index="{{index}}"
+        >
+          {{item.num}}
+        </view>
+      </view>
+      <view class="stats">
+        <text>错误：{{errorCount}}次</text>
+      </view>
+    </view>
+  </block>
+</view> 

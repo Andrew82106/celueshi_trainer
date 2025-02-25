@@ -1,0 +1,39 @@
+/**index.wxss**/
+page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.scrollarea {
+  flex: 1;
+  overflow-y: hidden;
+}
+
+.container {
+  padding: 40rpx;
+  min-height: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.button-container {
+  width: 100%;
+  max-width: 600rpx;
+}
+
+.training-button {
+  background: #4a90e2;
+  color: white;
+  font-size: 34rpx;
+  padding: 30rpx 40rpx;
+  border-radius: 16rpx;
+  margin-bottom: 40rpx;
+  box-shadow: 0 8rpx 16rpx rgba(74,144,226,0.2);
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.button-hover {
+  transform: translateY(-4rpx);
+  box-shadow: 0 12rpx 24rpx rgba(74,144,226,0.3);
+}

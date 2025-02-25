@@ -1,0 +1,8 @@
+<navigation-bar title="正听反说训练" back="{{true}}"></navigation-bar>
+<view class="container">
+  <text class="page-title">语音训练功能开发中</text>
+  <view class="audio-controls">
+    <view class="record-button">点击开始录音</view>
+    <text class="tip-text">请重复听到的数字序列</text>
+  </view>
+</view> 

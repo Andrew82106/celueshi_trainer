@@ -1,0 +1,19 @@
+.container {
+  padding: 40rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.record-button {
+  padding: 30rpx 60rpx;
+  background: #4a90e2;
+  color: white;
+  border-radius: 40rpx;
+  margin: 80rpx 0;
+}
+
+.tip-text {
+  color: #999;
+  font-size: 28rpx;
+} 

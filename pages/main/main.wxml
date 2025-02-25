@@ -1,0 +1,6 @@
+<!--pages/main/main.wxml-->
+<navigation-bar title="专注力训练" back="{{false}}"></navigation-bar>
+<view class="container">
+  <view class="login-btn" bindtap="handleLogin">微信登录</view>
+  <text class="tip">请先登录以使用完整功能</text>
+</view>
