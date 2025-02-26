@@ -81,4 +81,21 @@
   display: flex;
   justify-content: space-around;
   font-size: 32rpx;
+}
+
+/* 新增当前数字提示样式 */
+.current-number-hint {
+    font-size: 40rpx;
+    color: #4a90e2;
+    margin: 30rpx 0;
+    text-align: center;
+    font-weight: 500;
+}
+
+/* 高亮当前应点击的单元格 */
+.active-cell {
+    background: #4a90e2 !important;
+    color: white !important;
+    transform: scale(1.1);
+    box-shadow: 0 8rpx 24rpx rgba(74,144,226,0.3);
 } 

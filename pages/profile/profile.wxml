@@ -26,5 +26,12 @@
         <text class="btn-title">圆点闪视记录</text>
         <text class="btn-sub">查看训练历史</text>
     </navigator>
+    <navigator 
+        url="/pages/audio-records/audio-records" 
+        class="record-btn audio-btn"
+    >
+        <text class="btn-title">正听反说记录</text>
+        <text class="btn-sub">查看训练历史</text>
+    </navigator>
   </view>
 </view>

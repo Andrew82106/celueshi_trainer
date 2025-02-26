@@ -1,0 +1,47 @@
+<!--pages/audio-records/audio-records.wxml-->
+<navigation-bar 
+    title="正听反说记录" 
+    back="{{true}}"
+    bindback="onBack"
+></navigation-bar>
+<view class="container">
+    <view class="nav-back" bindtap="onBack">
+        <text class="back-icon">←</text>
+        返回训练
+    </view>
+
+    <block wx:for="{{records}}" wx:key="index">
+        <view class="record-card {{item.status}}">
+            <view class="card-header">
+                <view class="length-badge">{{item.length}}位</view>
+                <view class="time-stamp">{{item.date}}</view>
+                <view class="delete-btn" bindtap="deleteRecord" data-index="{{index}}">
+                    <view class="delete-icon"></view>
+                </view>
+            </view>
+            
+            <view class="stats-grid">
+                <view class="stat-item">
+                    <view class="stat-icon">🔢</view>
+                    <view class="stat-content">
+                        <text class="stat-label">原始数字</text>
+                        <text class="stat-value">{{item.numbers}}</text>
+                    </view>
+                </view>
+                
+                <view class="stat-item">
+                    <view class="stat-icon">✅</view>
+                    <view class="stat-content">
+                        <text class="stat-label">正确反转</text>
+                        <text class="stat-value">{{item.reversed}}</text>
+                    </view>
+                </view>
+
+            </view>
+            
+            <view class="status-line">
+                <text class="status-text success">{{ '正确' }}</text>
+            </view>
+        </view>
+    </block>
+</view>

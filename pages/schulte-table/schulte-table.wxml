@@ -12,11 +12,14 @@
 
   <block wx:else>
     <view class="grid-container">
+      <view class="current-number-hint">
+        当前应点击：{{currentNumber}}
+      </view>
       <view class="grid" style="grid-template-columns: repeat({{gridSize}}, 1fr);">
         <view 
           wx:for="{{numberMatrix}}"
           wx:key="index"
-          class="grid-item {{item.status}}"
+          class="grid-item {{item.status}} }}"
           bindtap="handleNumberClick"
           data-number="{{item.num}}"
           data-index="{{index}}"

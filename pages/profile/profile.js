@@ -12,7 +12,8 @@ Page({
         isDotExpanded: true,
         schulteRecords: [],
         dotRecords: [],
-        activeTab: 'schulte'
+        activeTab: 'schulte',
+        audioRecords: []
     },
 
     /**
@@ -46,7 +47,8 @@ Page({
                     ...r,
                     date: new Date(r.date).toLocaleString(),
                     time: typeof r.time === 'number' ? r.time : parseFloat(r.time)
-                })).sort((a, b) => a.time - b.time)
+                })).sort((a, b) => a.time - b.time),
+                audioRecords: wx.getStorageSync('audioRecords')?.[user.openid] || []
             })
         }
     },

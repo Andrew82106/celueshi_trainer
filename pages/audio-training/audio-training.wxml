@@ -1,8 +1,60 @@
-<navigation-bar title="正听反说训练" back="{{true}}"></navigation-bar>
+<navigation-bar title="正听反说训练" back="{{true}}" bindback="onBack"></navigation-bar>
 <view class="container">
-  <text class="page-title">语音训练功能开发中</text>
-  <view class="audio-controls">
-    <view class="record-button">点击开始录音</view>
-    <text class="tip-text">请重复听到的数字序列</text>
-  </view>
+    <!-- 步骤1：选择长度 -->
+    <block wx:if="{{step === 1}}">
+        <view class="length-selector">
+            <text class="label">选择数字长度 (5-20):</text>
+            <slider 
+                min="5" 
+                max="20" 
+                value="{{numberLength}}" 
+                bindchange="handleLengthChange"
+                activeColor="#4a90e2"
+            />
+            <text class="value">{{numberLength}} 位</text>
+            <button class="start-btn" bindtap="startTraining">开始训练</button>
+        </view>
+    </block>
+
+    <!-- 步骤2：训练中 -->
+    <block wx:if="{{step === 2}}">
+        <view class="number-display {{showNumbers ? '' : 'hidden'}}">
+            {{originalNumbers}}
+            <view class="debug-info" wx:if="{{showNumbers}}">
+                <text>当前播放：{{currentPlayingNumber}}</text>
+            </view>
+        </view>
+        
+        <block wx:if="{{!showNumbers}}">
+            <input 
+                class="input-box" 
+                placeholder="请输入反向数字" 
+                value="{{userInput}}"
+                bindinput="onInput"
+            />
+            <button class="confirm-btn" bindtap="validateInput">确认答案</button>
+        </block>
+        
+        <view wx:else class="loading-tip">
+            <text>正在播放音频...</text>
+        </view>
+    </block>
+
+    <!-- 步骤3：结果展示 -->
+    <block wx:if="{{step === 3}}">
+        <view class="result-card {{isCorrect ? 'success' : 'fail'}}">
+            <view class="result-icon">{{isCorrect ? '✓' : '✕'}}</view>
+            <text class="original-numbers">
+                原数字：{{originalNumbers}}
+            </text>
+            <text class="reversed-numbers">
+                正确反转：{{reversedNumbers}}
+            </text>
+            <text class="result-text">{{isCorrect ? '挑战成功！' : '再接再厉'}}</text>
+            <view class="action-buttons">
+                <button class="continue-btn" bindtap="continueTraining">继续训练</button>
+                <navigator url="/pages/index/index" class="end-btn">结束训练</navigator>
+            </view>
+        </view>
+    </block>
 </view> 

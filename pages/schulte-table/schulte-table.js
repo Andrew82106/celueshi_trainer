@@ -160,5 +160,43 @@ Page({
                 this.setData({ isTraining: false })
             }
         })
+    },
+
+    generateNumbers() {
+        const size = this.data.selectedSize
+        const numbers = Array.from({length: size*size}, (_, i) => ({
+            num: i + 1,
+            status: '' // 包含状态字段
+        }))
+        const shuffled = numbers.sort(() => Math.random() - 0.5)
+        
+        this.setData({
+            numberMatrix: shuffled,
+            currentNumber: 1,
+            errorCount: 0,
+            startTime: Date.now(),
+            gridSize: size,
+        })
+    },
+
+    handleCellTap(e) {
+        const value = e.currentTarget.dataset.value;
+        const expected = this.data.currentNumber;
+        
+        if (value === expected) {
+            if (value === this.data.size * this.data.size) {
+                this.endTraining(true);
+            } else {
+                this.setData({ currentNumber: expected + 1 });
+                // 添加点击正确反馈
+                this.animateCell(e.currentTarget.id, true);
+            }
+        } else {
+            // 原有错误处理...
+        }
+    },
+
+    animateCell(id, isCorrect) {
+        // 实现单元格高亮动画的逻辑
     }
 })

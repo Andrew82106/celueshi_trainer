@@ -8,7 +8,8 @@
         "pages/profile/profile",
         "pages/translate/translate",
         "pages/schulte-records/schulte-records",
-        "pages/dot-records/dot-records"
+        "pages/dot-records/dot-records",
+        "pages/audio-records/audio-records"
     ],
     "window": {
         "navigationBarTextStyle": "black",

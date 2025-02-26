@@ -16,4 +16,117 @@
 .tip-text {
   color: #999;
   font-size: 28rpx;
+}
+
+/* 复用舒尔特表样式（startLine:2-10） */
+.length-selector {
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 40rpx;
+  box-shadow: 0 8rpx 40rpx rgba(0,0,0,0.1);
+}
+
+.label {
+  font-size: 32rpx;
+  color: #666;
+  display: block;
+  margin-bottom: 40rpx;
+}
+
+.value {
+  font-size: 36rpx;
+  color: #4a90e2;
+  text-align: center;
+  margin: 30rpx 0;
+}
+
+.start-btn {
+  background: #4a90e2;
+  color: white;
+  margin-top: 60rpx;
+}
+
+.number-display {
+  font-size: 80rpx;
+  text-align: center;
+  letter-spacing: 20rpx;
+  margin: 60rpx 0;
+  transition: opacity 0.3s;
+}
+
+.hidden {
+  opacity: 0;
+}
+
+.input-box {
+  border: 2rpx solid #eee;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin: 40rpx 0;
+}
+
+.result-card {
+  background: #fff;
+  border-radius: 32rpx;
+  padding: 60rpx 40rpx;
+  text-align: center;
+  box-shadow: 0 8rpx 40rpx rgba(0,0,0,0.1);
+}
+
+.result-icon {
+  font-size: 120rpx;
+  margin-bottom: 40rpx;
+}
+
+.success .result-icon {
+  color: #4CAF50;
+}
+
+.fail .result-icon {
+  color: #f44336;
+}
+
+.original-numbers {
+  font-size: 48rpx;
+  color: #333;
+  display: block;
+  margin: 30rpx 0;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 30rpx;
+  margin-top: 60rpx;
+}
+
+.continue-btn {
+  background: #4a90e2;
+  color: white;
+  flex: 1;
+}
+
+.end-btn {
+  border: 2rpx solid #4a90e2;
+  color: #4a90e2;
+  flex: 1;
+  line-height: 80rpx;
+}
+
+/* 新增加载提示样式 */
+.loading-tip {
+    color: #666;
+    font-size: 32rpx;
+    margin-top: 100rpx;
+}
+
+.hidden {
+    display: none;
+}
+
+/* 新增反转数字样式（在startLine:89-94后添加） */
+.reversed-numbers {
+    font-size: 40rpx;
+    color: #666;
+    display: block;
+    margin: 15rpx 0;
 } 

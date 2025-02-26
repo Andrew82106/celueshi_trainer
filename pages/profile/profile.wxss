@@ -260,6 +260,11 @@
     box-shadow: 0 10rpx 30rpx rgba(255,107,107,0.3);
 }
 
+.audio-btn {
+    background: linear-gradient(135deg, #219c02 0%, #487c0b 100%);
+    box-shadow: 0 10rpx 30rpx rgba(255,107,107,0.3);
+}
+
 .btn-title {
     color: white;
     font-size: 38rpx;
@@ -302,4 +307,26 @@
         transform: translateY(-4rpx);
         box-shadow: 0 15rpx 40rpx rgba(0,0,0,0.2);
     }
+}
+
+/* 新增状态徽章样式（参考startLine:70-91） */
+.accuracy-badge {
+    padding: 8rpx 24rpx;
+    border-radius: 40rpx;
+    font-size: 24rpx;
+}
+
+.accuracy-badge.success {
+    background: rgba(76,175,80,0.1);
+    color: #4CAF50;
+}
+
+.accuracy-badge.fail {
+    background: rgba(244,67,54,0.1);
+    color: #f44336;
+}
+
+/* 复用统计网格样式（startLine:21-25） */
+.stats-grid {
+    grid-template-columns: 1fr 1fr;
 }
