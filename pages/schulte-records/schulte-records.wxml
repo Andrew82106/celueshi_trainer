@@ -1,0 +1,43 @@
+<!--pages/schulte-records/schulte-records.wxml-->
+<navigation-bar 
+    title="舒尔特表记录" 
+    back="{{true}}"
+    bindback="onBack"
+></navigation-bar>
+<view class="container">
+  <view class="back-btn" bindtap="onBack">
+    <text class="back-icon">←</text>
+    返回
+  </view>
+  <block wx:for="{{records}}" wx:key="index">
+    <view class="record-card" animation="{{item.animation}}">
+      <view class="card-header">
+        <view class="size-badge">{{item.size}}×{{item.size}}</view>
+        <view class="time-stamp">{{item.formattedDate}}</view>
+        <view class="delete-btn" bindtap="deleteRecord" data-index="{{index}}">×</view>
+      </view>
+      
+      <view class="stats-grid">
+        <view class="stat-item">
+          <view class="stat-icon">⏱</view>
+          <view class="stat-content">
+            <text class="stat-label">训练用时</text>
+            <text class="stat-value">{{item.time}}秒</text>
+          </view>
+        </view>
+        
+        <view class="stat-item">
+          <view class="stat-icon">❌</view>
+          <view class="stat-content">
+            <text class="stat-label">错误次数</text>
+            <text class="stat-value">{{item.errors}}</text>
+          </view>
+        </view>
+      </view>
+      
+      <view class="progress-bar">
+        <view class="progress-inner" style="width: {{Math.min(item.errors*10, 100)}}%"></view>
+      </view>
+    </view>
+  </block>
+</view>

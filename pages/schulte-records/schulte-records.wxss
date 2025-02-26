@@ -1,0 +1,120 @@
+/* pages/schulte-records/schulte-records.wxss */
+.record-card {
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 32rpx;
+  margin: 24rpx 0;
+  box-shadow: 0 8rpx 40rpx rgba(74,144,226,0.12);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.record-card:active {
+  transform: translateY(4rpx);
+  box-shadow: 0 4rpx 20rpx rgba(74,144,226,0.1);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 32rpx;
+}
+
+.size-badge {
+  background: linear-gradient(135deg, #4a90e2, #6aa8f4);
+  color: white;
+  padding: 8rpx 24rpx;
+  border-radius: 40rpx;
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+.time-stamp {
+  color: #999;
+  font-size: 26rpx;
+  margin-left: 20rpx;
+  flex-grow: 1;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40rpx;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+}
+
+.stat-icon {
+  font-size: 44rpx;
+  margin-right: 20rpx;
+  width: 60rpx;
+  text-align: center;
+}
+
+.stat-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-label {
+  color: #666;
+  font-size: 28rpx;
+  margin-bottom: 6rpx;
+}
+
+.stat-value {
+  color: #333;
+  font-size: 36rpx;
+  font-weight: 600;
+}
+
+.progress-bar {
+  height: 12rpx;
+  background: #f3f3f3;
+  border-radius: 6rpx;
+  margin-top: 32rpx;
+  overflow: hidden;
+}
+
+.progress-inner {
+  height: 100%;
+  background: linear-gradient(90deg, #ff6b6b, #ff8787);
+  transition: width 0.6s ease;
+}
+
+.delete-btn {
+  position: absolute;
+  right: 24rpx;
+  top: 24rpx;
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  background: rgba(255,77,77,0.1);
+  color: #ff4d4d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+  transition: all 0.3s;
+}
+
+.delete-btn:active {
+  background: rgba(255,77,77,0.2);
+}
+
+/* 添加备用返回按钮样式 */
+.back-btn {
+    padding: 20rpx 30rpx;
+    color: #4a90e2;
+    font-size: 32rpx;
+    display: flex;
+    align-items: center;
+}
+
+.back-icon {
+    margin-right: 10rpx;
+    font-size: 40rpx;
+}

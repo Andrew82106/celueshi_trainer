@@ -30,7 +30,7 @@
       <view class="time-picker">
         <picker 
           mode="selector" 
-          range="{{['0','1','2','3']}}" 
+          range="{{['0秒','1秒','2秒','3秒']}}" 
           value="{{seconds}}"
           data-type="seconds"
           bindchange="handleTimeChange"
@@ -39,12 +39,12 @@
         </picker>
         <picker 
           mode="selector" 
-          range="{{['000','250','500','750']}}" 
-          value="{{Math.floor(milliseconds/250)}}"
+          range="{{millisecondsOptions}}" 
+          value="{{milliseconds/250}}"
           data-type="milliseconds"
           bindchange="handleTimeChange"
         >
-          <view class="time-unit">{{milliseconds.toString().padStart(3,'0')}}毫秒</view>
+          <view class="time-unit">{{milliseconds}}毫秒</view>
         </picker>
       </view>
     </view>

@@ -1,0 +1,131 @@
+/* pages/dot-records/dot-records.wxss */
+.record-card {
+  background: #fff;
+  border-radius: 32rpx;
+  padding: 40rpx;
+  margin: 24rpx 0;
+  box-shadow: 0 12rpx 48rpx rgba(255,107,107,0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.dot-badge {
+  background: linear-gradient(135deg, #ff6b6b, #ff8787);
+  color: white;
+  padding: 8rpx 24rpx;
+  border-radius: 40rpx;
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48rpx;
+  margin: 32rpx 0;
+  padding: 24rpx 0;
+  border-top: 2rpx solid rgba(255,107,107,0.1);
+  border-bottom: 2rpx solid rgba(255,107,107,0.1);
+}
+
+.stat-icon {
+  font-size: 48rpx;
+  color: #ff6b6b;
+  margin-right: 24rpx;
+}
+
+.stat-value {
+  color: #333;
+  font-size: 38rpx;
+  font-weight: 600;
+  letter-spacing: 0.5rpx;
+}
+
+.answer-section {
+  margin-top: 30rpx;
+  padding-top: 20rpx;
+  border-top: 2rpx solid #f5f5f5;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.answer-label {
+  color: #666;
+  font-size: 28rpx;
+}
+
+.answer-value {
+  color: #4a90e2;
+  font-size: 32rpx;
+  font-weight: 600;
+}
+
+/* 复用公共样式（与舒尔特表相同） */
+.back-btn { /* startLine:1-5 in schulte-records.wxss */ }
+.stat-item { /* startLine:21-30 in schulte-records.wxss */ }
+.delete-btn {
+    position: absolute;
+    right: 24rpx;
+    top: 24rpx;
+    width: 56rpx;
+    height: 56rpx;
+    border-radius: 50%;
+    background: rgba(255,77,77,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.delete-icon {
+    width: 24rpx;
+    height: 24rpx;
+    background: #ff4d4d;
+    clip-path: polygon(
+        20% 0%, 
+        0% 20%, 
+        30% 50%, 
+        0% 80%, 
+        20% 100%, 
+        50% 70%, 
+        80% 100%, 
+        100% 80%, 
+        70% 50%, 
+        100% 20%, 
+        80% 0%, 
+        50% 30%
+    );
+    transition: all 0.3s;
+}
+
+.delete-btn:active {
+    background: rgba(255,77,77,0.2);
+}
+
+.delete-btn:active .delete-icon {
+    transform: scale(0.9);
+    opacity: 0.8;
+}
+
+/* 添加光效装饰 */
+.record-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        45deg,
+        rgba(255,255,255,0.15) 25%,
+        transparent 25%,
+        transparent 50%,
+        rgba(255,255,255,0.15) 50%,
+        rgba(255,255,255,0.15) 75%,
+        transparent 75%
+    );
+    background-size: 80rpx 80rpx;
+    transform: rotate(-45deg);
+    opacity: 0.1;
+}

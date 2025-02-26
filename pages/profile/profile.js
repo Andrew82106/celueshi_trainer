@@ -8,8 +8,11 @@ Page({
      */
     data: {
         userInfo: null,
-        trainingRecords: [],
-        isRecordsExpanded: false
+        isSchulteExpanded: true,
+        isDotExpanded: true,
+        schulteRecords: [],
+        dotRecords: [],
+        activeTab: 'schulte'
     },
 
     /**
@@ -20,6 +23,7 @@ Page({
         // if (app.globalData.userInfo) {
         //   wx.reLaunch({ url: '/pages/index/index' })
         // }
+        this.loadRecords();
     },
 
     /**
@@ -38,7 +42,7 @@ Page({
             const records = wx.getStorageSync('schulteRecords')?.[user.openid] || []
             this.setData({
                 userInfo: user,
-                trainingRecords: records.map(r => ({
+                schulteRecords: records.map(r => ({
                     ...r,
                     date: new Date(r.date).toLocaleString(),
                     time: typeof r.time === 'number' ? r.time : parseFloat(r.time)
@@ -53,7 +57,6 @@ Page({
     onHide() {
 
     },
-
     /**
      * 生命周期函数--监听页面卸载
      */
@@ -102,6 +105,34 @@ Page({
         })
     },
 
+    deleteRecord(e) {
+        const { type, index } = e.currentTarget.dataset
+        const recordType = type === 'schulte' ? 'schulteRecords' : 'dotRecords'
+        wx.showModal({
+            title: '确认删除',
+            content: '确定要删除这条训练记录吗？',
+            success: (res) => {
+                if (res.confirm) {
+                    const records = [...this.data[recordType]]
+                    records.splice(index, 1)
+                    
+                    // 更新存储
+                    const user = getApp().globalData.userInfo
+                    if (user) {
+                        const storageKey = `${type}Records`
+                        const allRecords = wx.getStorageSync(storageKey) || {}
+                        allRecords[user.openid] = records
+                        wx.setStorageSync(storageKey, allRecords)
+                    }
+                    
+                    // 更新视图
+                    this.setData({ [recordType]: records })
+                    wx.showToast({ title: '删除成功' })
+                }
+            }
+        });
+    },
+
     formatTime(ms) {
         const totalSeconds = Math.floor(ms / 1000)
         const minutes = Math.floor(totalSeconds / 60)
@@ -111,7 +142,50 @@ Page({
 
     toggleRecords() {
         this.setData({ 
-            isRecordsExpanded: !this.data.isRecordsExpanded 
+            isSchulteExpanded: !this.data.isSchulteExpanded,
+            isDotExpanded: !this.data.isDotExpanded
+        })
+    },
+
+    loadRecords() {
+        const user = app.globalData.userInfo;
+        if (user) {
+            // 舒尔特表记录
+            const schulte = wx.getStorageSync('schulteRecords')?.[user.openid] || [];
+            // 圆点闪视记录（参考dot-training.js startLine:224-228）
+            const dot = wx.getStorageSync('dotRecords')?.[user.openid] || [];
+            
+            this.setData({
+                schulteRecords: this.formatRecords(schulte, 'schulte'),
+                dotRecords: this.formatRecords(dot, 'dot')
+            });
+        }
+    },
+
+    formatRecords(records, type) {
+        return records.map(r => {
+            const date = new Date(r.date)
+            return {
+                ...r,
+                formattedDate: isNaN(date) ? '未知日期' : date.toLocaleDateString(),
+                accuracy: type === 'dot' ? 
+                    `${Math.round((r.correct / r.userAnswer)*100)}%` : 
+                    null
+            }
+        }).reverse();
+    },
+
+    switchTab(e) {
+        this.setData({ activeTab: e.currentTarget.dataset.type });
+    },
+
+    toggleSchulteRecords() {
+        this.setData({ isSchulteExpanded: !this.data.isSchulteExpanded });
+    },
+
+    toggleDotRecords() {
+        this.setData({ 
+            isDotExpanded: !this.data.isDotExpanded 
         })
     }
 })

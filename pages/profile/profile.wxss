@@ -66,6 +66,30 @@
   position: relative;
 }
 
+/* 添加删除按钮样式（在startLine:67后添加） */
+.delete-btn {
+  position: absolute;
+  right: 20rpx;
+  top: 20rpx;
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  background: #ff4d4d;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36rpx;
+  line-height: 1;
+  z-index: 2;
+  opacity: 0.8;
+  transition: opacity 0.3s;
+}
+
+.delete-btn:active {
+  opacity: 1;
+}
+
 .record-item::after {
   content: '';
   position: absolute;
@@ -123,4 +147,159 @@
 .records-container {
   transition: max-height 0.3s ease-out;
   width: 100%;
+}
+
+/* 复用舒尔特表样式（见 pages/schulte-table/schulte-table.wxss startLine:13-30）*/
+.container {
+    padding: 20rpx;
+}
+
+.tab-bar {
+    display: flex;
+    margin: 30rpx 0;
+    border-bottom: 2rpx solid #eee;
+}
+
+.tab-item {
+    flex: 1;
+    text-align: center;
+    padding: 20rpx;
+    color: #666;
+}
+
+.tab-item.active {
+    color: #4a90e2;
+    border-bottom: 4rpx solid #4a90e2;
+}
+
+.record-card {
+    background: white;
+    border-radius: 16rpx;
+    padding: 30rpx;
+    margin: 20rpx 0;
+    box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.08);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30rpx;
+}
+
+.size {
+    font-size: 32rpx;
+    color: #4a90e2;
+    font-weight: bold;
+}
+
+.date {
+    font-size: 26rpx;
+    color: #999;
+}
+
+.stats {
+    display: flex;
+    justify-content: space-around;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.label {
+    font-size: 28rpx;
+    color: #666;
+    display: block;
+}
+
+.value {
+    font-size: 36rpx;
+    color: #333;
+    font-weight: 500;
+}
+
+.empty-tip {
+    text-align: center;
+    color: #999;
+    margin-top: 100rpx;
+}
+
+/* 新增按钮样式（在startLine:67后添加） */
+.record-btns {
+    width: 100%;
+    margin-top: 60rpx;
+    display: grid;
+    gap: 30rpx;
+    padding: 0 20rpx;
+}
+
+.record-btn {
+    height: 200rpx;
+    border-radius: 24rpx;
+    padding: 30rpx;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+.record-btn:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+}
+
+.schulte-btn {
+    background: linear-gradient(135deg, #4a90e2 0%, #63a4ff 100%);
+    box-shadow: 0 10rpx 30rpx rgba(74,144,226,0.3);
+}
+
+.dot-btn {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ff8787 100%);
+    box-shadow: 0 10rpx 30rpx rgba(255,107,107,0.3);
+}
+
+.btn-title {
+    color: white;
+    font-size: 38rpx;
+    font-weight: 600;
+    letter-spacing: 1rpx;
+    text-shadow: 0 2rpx 4rpx rgba(0,0,0,0.1);
+}
+
+.btn-sub {
+    color: rgba(255,255,255,0.9);
+    font-size: 28rpx;
+    align-self: flex-end;
+}
+
+/* 添加装饰线 */
+.record-btn::after {
+    content: '';
+    position: absolute;
+    width: 120%;
+    height: 80rpx;
+    background: linear-gradient(
+        45deg,
+        rgba(255,255,255,0.15) 25%,
+        transparent 25%,
+        transparent 50%,
+        rgba(255,255,255,0.15) 50%,
+        rgba(255,255,255,0.15) 75%,
+        transparent 75%
+    );
+    background-size: 40rpx 40rpx;
+    transform: rotate(-45deg);
+    top: -20rpx;
+    left: -10%;
+    opacity: 0.3;
+}
+
+/* 悬浮效果（仅支持hover设备） */
+@media (hover: hover) {
+    .record-btn:hover {
+        transform: translateY(-4rpx);
+        box-shadow: 0 15rpx 40rpx rgba(0,0,0,0.2);
+    }
 }

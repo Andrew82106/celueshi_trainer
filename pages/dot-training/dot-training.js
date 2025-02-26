@@ -14,11 +14,14 @@ Page({
     trainingRecords: [],
     savedSettings: null,
     correctAnswer: null,
-    cachedDots: []
+    cachedDots: [],
+    millisecondsIndex: 0,
+    millisecondsOptions: ['000', '250', '500', '750']
   },
 
   onLoad() {
     this.timer = null
+    console.log('[DEBUG] 页面初始化，毫秒选项:', this.data.millisecondsOptions)
   },
 
   // 验证输入范围
@@ -36,21 +39,29 @@ Page({
     this.setData({ displayTime: value.toFixed(1) })
   },
 
-  // 新增时间处理函数
+  // 重构后的时间处理函数
   handleTimeChange(e) {
+    console.log('[DEBUG] 当前毫秒选项:', this.data.millisecondsOptions)
+    console.log('[DEBUG] 接收到的picker值:', e.detail.value)
     const type = e.currentTarget.dataset.type
     const value = parseInt(e.detail.value)
-    let newValue = value
     
-    // 处理毫秒的特殊情况
+    console.log('[DEBUG] 时间选择事件:', type, '原始值:', value)
+    
     if (type === 'milliseconds') {
-        newValue = value * 250 // 250ms步长
+        const msValue = value * 250 // 0=>0, 1=>250, 2=>500, 3=>750
+        console.log('[DEBUG] 毫秒转换:', value, '=>', msValue)
+        this.setData({ milliseconds: msValue })
+    } else {
+        console.log('[DEBUG] 秒数设置:', value)
+        this.setData({ seconds: value })
     }
+
+    // 计算总时间
+    const totalTime = this.data.seconds + (this.data.milliseconds / 1000)
+    console.log('[DEBUG] 当前总时间:', totalTime.toFixed(3), '秒')
     
-    this.setData({ 
-        [type]: newValue,
-        displayTime: (this.data.seconds + this.data.milliseconds/1000).toFixed(3)
-    })
+    this.setData({ displayTime: totalTime.toFixed(3) })
   },
 
   // 开始训练流程
@@ -71,7 +82,8 @@ Page({
       isTraining: true,
       countdown: 3,
       dots: [],
-      correctAnswer: null
+      correctAnswer: null,
+      startTime: Date.now()
     })
     this.runCountdown()
   },
@@ -211,10 +223,13 @@ Page({
 
   // 保存记录（参考舒尔特表存储逻辑 startLine:146-153）
   saveRecord(correct) {
+    const duration = (Date.now() - this.data.startTime) / 1000; // 计算秒数
     const record = {
       correct,
       userAnswer: this.data.userAnswer,
-      time: new Date().toISOString()
+      date: new Date().toISOString(),
+      displayTime: this.data.displayTime,
+      milliseconds: this.data.milliseconds
     }
     this.setData({
       trainingRecords: [...this.data.trainingRecords, record]
@@ -257,5 +272,5 @@ Page({
   bindMaxChange(e) {
     const index = parseInt(e.detail.value)
     this.setData({ maxDots: index + 2 })
-  }
+  },
 }) 
