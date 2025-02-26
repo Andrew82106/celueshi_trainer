@@ -28,17 +28,20 @@ Page({
 
         try {
             const content = JSON.parse(decodeURIComponent(options.content));
-            console.log('[调试] 解析后的内容:', content);
+            console.log('[调试] 原始解析内容:', content);
             
             this.setData({
                 content: content.map(item => ({
-                    source: item.split('=')[0].trim(),
-                    reference: item.split('=')[1]?.trim() || ''
+                    source: item.source || '（无原文）',
+                    reference: item.reference || '（无参考译文）'
                 })),
                 title: decodeURIComponent(options.title || '翻译训练'),
                 userTranslations: new Array(content.length).fill(''),
                 currentItem: {}
-            }, () => this.updateCurrentItem());
+            }, () => {
+                console.log('[调试] 初始化完成后的content:', this.data.content);
+                this.updateCurrentItem();
+            });
             
             console.log('[调试] 初始化后的页面数据:', this.data);
         } catch (e) {
@@ -142,6 +145,9 @@ Page({
         wx.navigateTo({
             url: `/pages/translate-review/translate-review?content=${encodeURIComponent(JSON.stringify(this.data.content))}&translations=${encodeURIComponent(JSON.stringify(this.data.userTranslations))}`
         });
+        console.log('[DEBUG] 传递的原文数据：', this.data.content);
+        //debug
+        console.log('[DEBUG] 传递的翻译数据：', this.data.userTranslations);
     },
 
     mockLLMEvaluation() {
