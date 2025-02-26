@@ -2,6 +2,8 @@ Page({
   data: {
     minDots: 2,
     maxDots: 5,
+    seconds: 1,
+    milliseconds: 0,
     displayTime: 1,
     isTraining: false,
     countdown: 3,
@@ -10,7 +12,9 @@ Page({
     userAnswer: '',
     correctCount: 0,
     trainingRecords: [],
-    savedSettings: null
+    savedSettings: null,
+    correctAnswer: null,
+    cachedDots: []
   },
 
   onLoad() {
@@ -32,6 +36,23 @@ Page({
     this.setData({ displayTime: value.toFixed(1) })
   },
 
+  // 新增时间处理函数
+  handleTimeChange(e) {
+    const type = e.currentTarget.dataset.type
+    const value = parseInt(e.detail.value)
+    let newValue = value
+    
+    // 处理毫秒的特殊情况
+    if (type === 'milliseconds') {
+        newValue = value * 250 // 250ms步长
+    }
+    
+    this.setData({ 
+        [type]: newValue,
+        displayTime: (this.data.seconds + this.data.milliseconds/1000).toFixed(3)
+    })
+  },
+
   // 开始训练流程
   startTraining() {
     const settings = this.data.savedSettings || {
@@ -49,7 +70,8 @@ Page({
     this.setData({ 
       isTraining: true,
       countdown: 3,
-      dots: []
+      dots: [],
+      correctAnswer: null
     })
     this.runCountdown()
   },
@@ -62,7 +84,8 @@ Page({
         this.runCountdown()
       }, 1000)
     } else {
-      this.generateDots()
+      const correct = this.generateDots()
+      this.setData({ correctAnswer: correct })
     }
   },
 
@@ -70,27 +93,47 @@ Page({
   generateDots() {
     const count = this.getRandomCount()
     const dots = []
-    const screenWidth = wx.getSystemInfoSync().screenWidth
-    const screenHeight = wx.getSystemInfoSync().screenHeight - 100
-    const displayTime = this.data.savedSettings.time * 1000
-
+    
+    // 调试用：在四个角生成固定坐标点
+    const debugPoints = [
+        {x: 0, y: 0, size: 40, isDebug: true},
+        {x: 710, y: 0, size: 40, isDebug: true},
+        {x: 0, y: 600, size: 40, isDebug: true},
+        {x: 710, y: 600, size: 40, isDebug: true}
+    ]
+    
+    // 正式生成逻辑
     for (let i = 0; i < count; i++) {
       let newDot
       do {
+        // 生成在边框内的坐标（保留5rpx安全边距）
+        const x = Math.random() * (710 - 10) + 5
+        const y = Math.random() * (600 - 10) + 5
+        
         newDot = {
-          x: Math.random() * (screenWidth - 40),
-          y: Math.random() * (screenHeight - 40),
-          size: 20
+          x: x,
+          y: y,
+          size: 20 // 20rpx
         }
-      } while (this.checkOverlap(newDot, dots))
-      
+      } while (this.checkOverlap(newDot, dots) || this.isOutOfBounds(newDot))
+      //debug：打印圆点坐标
+      console.log(newDot)
+      newDot.isDebug = false // 标记为非调试点
       dots.push(newDot)
     }
 
-    this.setData({ dots })
+    // 合并调试点
+    this.setData({ 
+        dots: [...debugPoints, ...dots],
+        cachedDots: [...debugPoints, ...dots]
+    })
     setTimeout(() => {
-      this.setData({ showInput: true })
+        this.setData({ 
+            showInput: true,
+            dots: [] // 清空显示但保留缓存
+        })
     }, this.data.savedSettings.time * 1000)
+    return count
   },
 
   // 检查圆点是否重叠
@@ -100,8 +143,21 @@ Page({
         Math.pow(dot.x - newDot.x, 2) + 
         Math.pow(dot.y - newDot.y, 2)
       )
-      return distance < 40 // 保持至少40px间距
+      return distance < 5 // 保持至少30rpx间距
     })
+  },
+
+  // 检查圆点是否超出边框范围
+  isOutOfBounds(dot) {
+    const areaWidth = 710 // rpx (750-20*2)
+    const areaHeight = 600 // rpx
+    
+    return (
+      dot.x < 0 || 
+      dot.x > areaWidth ||
+      dot.y < 0 ||
+      dot.y > areaHeight
+    )
   },
 
   // 获取随机数量
@@ -118,21 +174,21 @@ Page({
 
   // 提交答案
   submitAnswer() {
-    const correct = parseInt(this.getRandomCount())
-    const userAns = parseInt(this.data.userAnswer)
+    const correct = this.data.correctAnswer;
+    const userAns = parseInt(this.data.userAnswer);
     
     if (userAns === correct) {
         this.saveRecord(correct)
         wx.showModal({
             title: '正确！',
-            content: `你答对了，本次数量：${correct}`,
+            content: `你答对了,本次数量：${correct}`,
             showCancel: false,
             complete: () => {
                 this.setData({ 
                     showInput: false,
                     userAnswer: '',
-                    isTraining: false,
-                    dots: this.data.dots
+                    isTraining: true, // 保持训练状态
+                    dots: this.data.cachedDots // 从缓存恢复
                 })
             }
         })
@@ -145,8 +201,8 @@ Page({
                 this.setData({ 
                     showInput: false,
                     userAnswer: '',
-                    isTraining: false,
-                    dots: this.data.dots
+                    isTraining: true, // 保持训练状态
+                    dots: this.data.cachedDots // 从缓存恢复
                 })
             }
         })
@@ -182,5 +238,24 @@ Page({
   stopTraining() {
     clearTimeout(this.timer)
     this.setData({ isTraining: false, dots: [], countdown: 0 })
+  },
+
+  // 新增继续训练方法
+  continueTraining() {
+    this.setData({ 
+        dots: [],
+        cachedDots: []
+    })
+    this.startTraining()
+  },
+
+  bindMinChange(e) {
+    const index = parseInt(e.detail.value)
+    this.setData({ minDots: index + 2 })
+  },
+
+  bindMaxChange(e) {
+    const index = parseInt(e.detail.value)
+    this.setData({ maxDots: index + 2 })
   }
 }) 

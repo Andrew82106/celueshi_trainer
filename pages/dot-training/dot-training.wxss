@@ -20,8 +20,20 @@
 }
 
 .training-area {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 70vh;
+}
+
+.dot-area {
+  border: 4rpx dashed #4a90e2;
+  width: 710rpx;
+  height: 600rpx;
+  margin: 20rpx auto;
   position: relative;
-  height: 80vh;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .countdown {
@@ -37,6 +49,9 @@
   position: absolute;
   background: #4a90e2;
   border-radius: 50%;
+  width: 20rpx;
+  height: 20rpx;
+  transform: translate(-50%, -50%);
 }
 
 .mask {
@@ -78,4 +93,64 @@
   background: #4a90e2;
   color: white;
   border-radius: 8rpx;
+}
+
+.dot[style*="40rpx"] {
+  background: red !important;
+  opacity: 0.5;
+  z-index: 999;
+}
+
+.debugdot {
+  background: red !important;
+  opacity: 0.5;
+  z-index: 999;
+  border-radius: 50%;
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+
+.setting-item {
+  margin: 40rpx 0;
+}
+
+.label {
+  font-size: 32rpx;
+  color: #666;
+  margin-right: 30rpx;
+}
+
+.picker-group {
+  display: flex;
+  align-items: center;
+  margin-top: 20rpx;
+}
+
+.picker {
+  border: 2rpx solid #4a90e2;
+  padding: 15rpx 30rpx;
+  border-radius: 8rpx;
+  color: #4a90e2;
+  min-width: 100rpx;
+  text-align: center;
+}
+
+.separator {
+  margin: 0 20rpx;
+  color: #666;
+}
+
+.time-picker {
+  display: flex;
+  gap: 30rpx;
+  margin-top: 20rpx;
+}
+
+.time-unit {
+  border: 2rpx solid #4a90e2;
+  padding: 15rpx 30rpx;
+  border-radius: 8rpx;
+  color: #4a90e2;
+  min-width: 150rpx;
+  text-align: center;
 } 

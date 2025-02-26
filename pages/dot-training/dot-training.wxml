@@ -2,24 +2,62 @@
 <view class="container">
   <!-- 设置区域 -->
   <view class="settings" wx:if="{{!isTraining}}">
-    <view class="input-group">
-      <text>圆点数量范围：</text>
-      <input type="number" data-field="minDots" value="{{minDots}}" bindinput="validateRange" placeholder="最小值(2-20)"/>
-      <text>-</text>
-      <input type="number" data-field="maxDots" value="{{maxDots}}" bindinput="validateRange" placeholder="最大值(2-20)"/>
+    <view class="setting-item">
+      <text class="label">圆点数量范围：</text>
+      <view class="picker-group">
+        <picker 
+          mode="selector" 
+          range="{{['2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20']}}" 
+          value="{{minDots-2}}"
+          bindchange="bindMinChange"
+        >
+          <view class="picker">{{minDots}}</view>
+        </picker>
+        <text class="separator">-</text>
+        <picker 
+          mode="selector" 
+          range="{{['2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20']}}" 
+          value="{{maxDots-2}}"
+          bindchange="bindMaxChange"
+        >
+          <view class="picker">{{maxDots}}</view>
+        </picker>
+      </view>
     </view>
-    <view class="input-group">
-      <text>闪视时间（秒）：</text>
-      <input type="number" value="{{displayTime}}" bindinput="validateTime" placeholder="0.1-3"/>
+
+    <view class="setting-item">
+      <text class="label">闪视时间：</text>
+      <view class="time-picker">
+        <picker 
+          mode="selector" 
+          range="{{['0','1','2','3']}}" 
+          value="{{seconds}}"
+          data-type="seconds"
+          bindchange="handleTimeChange"
+        >
+          <view class="time-unit">{{seconds}}秒</view>
+        </picker>
+        <picker 
+          mode="selector" 
+          range="{{['000','250','500','750']}}" 
+          value="{{Math.floor(milliseconds/250)}}"
+          data-type="milliseconds"
+          bindchange="handleTimeChange"
+        >
+          <view class="time-unit">{{milliseconds.toString().padStart(3,'0')}}毫秒</view>
+        </picker>
+      </view>
     </view>
   </view>
 
   <!-- 训练显示区域 -->
   <view class="training-area" wx:if="{{isTraining}}">
     <text wx:if="{{countdown > 0}}" class="countdown">{{countdown}}</text>
-    <view wx:for="{{dots}}" wx:key="index" 
-          class="dot"
-          style="left: {{item.x}}px; top: {{item.y}}px; width: {{item.size}}px; height: {{item.size}}px">
+    <view class="dot-area">
+      <view wx:for="{{dots}}" wx:key="index" 
+            class="{{item.isDebug ? 'debugdot' : 'dot'}}"
+            style="left: {{item.x}}rpx; top: {{item.y}}rpx; width: {{item.size}}rpx; height: {{item.size}}rpx">
+      </view>
     </view>
   </view>
 
@@ -34,7 +72,11 @@
 
   <!-- 操作按钮 -->
   <view class="button-group" wx:if="{{!isTraining && !showInput}}">
-    <button bindtap="startTraining" type="primary">{{trainingRecords.length ? '继续训练' : '开始训练'}}</button>
+    <button bindtap="startTraining" type="primary">{{trainingRecords.length ? '开始新训练' : '开始训练'}}</button>
+  </view>
+
+  <view class="button-group" wx:if="{{isTraining && !showInput}}">
+    <button bindtap="continueTraining" type="primary">继续训练</button>
     <button bindtap="endTraining">结束训练</button>
   </view>
 </view> 
