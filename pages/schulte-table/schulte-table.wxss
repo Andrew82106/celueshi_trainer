@@ -62,21 +62,6 @@
   font-weight: bold;
 }
 
-.grid-item.active {
-  background: #4a90e2;
-  color: white;
-}
-
-.grid-item.correct {
-  background: #4a90e2;
-  color: white;
-}
-
-.grid-item.wrong {
-  background: #e64340;
-  color: white;
-}
-
 .stats {
   display: flex;
   justify-content: space-around;
@@ -91,11 +76,3 @@
     text-align: center;
     font-weight: 500;
 }
-
-/* 高亮当前应点击的单元格 */
-.active-cell {
-    background: #4a90e2 !important;
-    color: white !important;
-    transform: scale(1.1);
-    box-shadow: 0 8rpx 24rpx rgba(74,144,226,0.3);
-} 

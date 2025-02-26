@@ -19,10 +19,9 @@
         <view 
           wx:for="{{numberMatrix}}"
           wx:key="index"
-          class="grid-item {{item.status}} }}"
+          class="grid-item"
           bindtap="handleNumberClick"
           data-number="{{item.num}}"
-          data-index="{{index}}"
         >
           {{item.num}}
         </view>

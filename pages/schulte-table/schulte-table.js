@@ -98,37 +98,19 @@ Page({
     },
 
     handleNumberClick(e) {
-        const { number, index } = e.currentTarget.dataset;
+        const { number } = e.currentTarget.dataset;
         const current = parseInt(number);
         const correctNumber = this.data.currentNumber;
-        const matrix = [...this.data.numberMatrix];
 
         if (current === correctNumber) {
-            matrix[index].status = 'correct';
-            this.setData({ numberMatrix: matrix });
+            const newNumber = correctNumber + 1;
+            this.setData({ currentNumber: newNumber });
             
-            setTimeout(() => {
-                matrix[index].status = '';
-                this.setData({ 
-                    numberMatrix: matrix,
-                    currentNumber: correctNumber + 1
-                });
-                
-                if (correctNumber === this.data.gridSize ** 2) {
-                    this.endTraining(true);
-                }
-            }, 300);
+            if (newNumber > this.data.gridSize ** 2) {
+                this.endTraining(true);
+            }
         } else {
-            matrix[index].status = 'wrong';
-            this.setData({
-                numberMatrix: matrix,
-                errorCount: this.data.errorCount + 1
-            });
-            
-            setTimeout(() => {
-                matrix[index].status = '';
-                this.setData({ numberMatrix: matrix });
-            }, 300);
+            this.setData({ errorCount: this.data.errorCount + 1 });
         }
     },
 
@@ -180,23 +162,18 @@ Page({
     },
 
     handleCellTap(e) {
-        const value = e.currentTarget.dataset.value;
+        const value = parseInt(e.currentTarget.dataset.value);
         const expected = this.data.currentNumber;
         
         if (value === expected) {
-            if (value === this.data.size * this.data.size) {
+            const newNumber = expected + 1;
+            this.setData({ currentNumber: newNumber });
+            
+            if (newNumber > this.data.gridSize ** 2) {
                 this.endTraining(true);
-            } else {
-                this.setData({ currentNumber: expected + 1 });
-                // 添加点击正确反馈
-                this.animateCell(e.currentTarget.id, true);
             }
         } else {
-            // 原有错误处理...
+            this.setData({ errorCount: this.data.errorCount + 1 });
         }
     },
-
-    animateCell(id, isCorrect) {
-        // 实现单元格高亮动画的逻辑
-    }
 })
