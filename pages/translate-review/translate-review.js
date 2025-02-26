@@ -110,7 +110,7 @@ Page({
                         reference: this.data.content[index].reference || '暂无参考译文',
                         userTranslation: this.data.userTranslations[index],
                         score: res.score,
-                        displayScore: (res.score),
+                        displayScore: res.score,
                         suggestions: res.suggestions
                     };
                     console.log(`[DEBUG] 第${index + 1}项详情：`, detail);
@@ -201,6 +201,6 @@ Page({
         if (validResults.length === 0) return 0.0
 
         const total = validResults.reduce((sum, r) => sum + r.score, 0)
-        return (total / validResults.length).toFixed(1)
+        return (total / validResults.length).toFixed(2)
     }
 })

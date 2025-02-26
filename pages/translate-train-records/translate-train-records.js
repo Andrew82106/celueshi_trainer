@@ -79,5 +79,11 @@ Page({
 
     onBack() {
         wx.navigateBack()
+    },
+
+    goHome() {
+        wx.reLaunch({
+            url: '/pages/index/index' // 根据实际主页路径调整
+        })
     }
 })

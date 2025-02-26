@@ -1,6 +1,6 @@
 /* pages/translate-drill/translate-drill.wxss */
 .container {
-    padding: 40rpx;
+    padding: 20rpx;
     height: 100vh;
     display: flex;
     flex-direction: column;
@@ -14,42 +14,43 @@
 }
 
 .card {
-    flex: 1;
     background: #fff;
-    border-radius: 32rpx;
-    padding: 40rpx;
-    box-shadow: 0 8rpx 24rpx rgba(0,0,0,0.1);
+    border-radius: 16rpx;
+    box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.1);
+    padding: 32rpx;
+    margin-bottom: 40rpx;
 }
 
 .source-text {
-    font-size: 36rpx;
-    color: #333;
-    margin-bottom: 60rpx;
+    font-size: 32rpx;
     line-height: 1.6;
-    min-height: 300rpx;
+    color: #333;
+    border-left: 8rpx solid #07c160;
+    padding-left: 20rpx;
+    margin-bottom: 40rpx;
 }
 
 .translation-input {
-    width: 100%;
-    min-height: 400rpx;
-    font-size: 32rpx;
+    font-size: 30rpx;
+    min-height: 200rpx;
+    padding: 20rpx;
     border: 2rpx solid #eee;
-    border-radius: 16rpx;
-    padding: 30rpx;
+    border-radius: 12rpx;
+    background: #f8f8f8;
 }
 
 .action-buttons {
-    margin-top: 60rpx;
     display: flex;
-    gap: 30rpx;
+    gap: 20rpx;
+    justify-content: space-between;
 }
 
 .nav-button {
     flex: 1;
-    height: 100rpx;
-    line-height: 100rpx;
-    border-radius: 50rpx;
-    font-size: 34rpx;
+    border-radius: 12rpx;
+    font-size: 30rpx;
+    height: 80rpx;
+    line-height: 80rpx;
 }
 
 .prev-button {
@@ -58,7 +59,7 @@
 }
 
 .next-button {
-    background: #4a90e2;
+    background: #07c160;
     color: white;
 }
 

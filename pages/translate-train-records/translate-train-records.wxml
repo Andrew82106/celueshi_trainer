@@ -7,11 +7,17 @@
     ></navigation-bar>
 </page-meta>
 
+
 <view class="container">
     <!-- 综合评分 -->
     <view class="overall-score">
         <text class="score-label">综合准确率：</text>
         <text class="score-value">{{evaluationResult.accuracy}}</text>
+    </view>
+
+    <!-- 新增返回主页按钮 -->
+    <view class="home-button-container">
+        <button class="home-button" bindtap="goHome">返回首页</button>
     </view>
 
     <!-- 详细条目 -->
@@ -54,4 +60,5 @@
             </view>
         </block>
     </view>
+
 </view>

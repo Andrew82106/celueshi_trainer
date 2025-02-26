@@ -19,12 +19,25 @@
 }
 
 /* 新增样式 */
+.overall-score {
+    background: linear-gradient(135deg, #08a8ff, #0066cc);
+    color: white;
+    padding: 32rpx;
+    border-radius: 16rpx;
+    margin: 20rpx 0;
+    box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.1);
+}
+
+.detail-list {
+    margin-top: 40rpx;
+}
+
 .detail-card {
     background: #fff;
-    border-radius: 24rpx;
+    border-radius: 16rpx;
     padding: 32rpx;
     margin-bottom: 30rpx;
-    box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.08);
+    box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.08);
 }
 
 .section {
@@ -32,25 +45,32 @@
 }
 
 .section-label {
+    display: block;
     font-size: 28rpx;
-    color: #4a90e2;
-    font-weight: 500;
+    color: #666;
+    margin-bottom: 12rpx;
 }
 
 .section-content {
     font-size: 30rpx;
-    color: #333;
     line-height: 1.6;
+    color: #333;
     display: block;
-    margin-top: 12rpx;
+    padding: 16rpx;
+    background: #f8f8f8;
+    border-radius: 8rpx;
 }
 
 .reference {
-    color: #666;
+    color: #07c160;
+    border-left: 4rpx solid #07c160;
+    padding-left: 12rpx;
 }
 
 .user-translation {
-    color: #4a90e2;
+    color: #08a8ff;
+    border-left: 4rpx solid #08a8ff;
+    padding-left: 12rpx;
 }
 
 .score-section {
@@ -82,4 +102,33 @@
 .suggestion-index {
     color: #4a90e2;
     margin-right: 8rpx;
+}
+
+.icon {
+    width: 60rpx;
+    height: 60rpx;
+    display: block;
+    margin: 0 auto;
+}
+
+/* 修正后的按钮样式 */
+.home-button-container {
+    margin: 40rpx 0;
+    padding: 0 30rpx;
+}
+
+.home-button {
+    width: 100%;
+    background: linear-gradient(135deg, #08a8ff, #0066cc);
+    color: white;
+    border-radius: 50rpx;
+    padding: 25rpx 0;
+    font-size: 32rpx;
+    box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.1);
+    transition: all 0.2s;
+}
+
+.home-button:hover {
+    transform: scale(0.98);
+    opacity: 0.9;
 }
