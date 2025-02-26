@@ -29,7 +29,7 @@ Page({
   },
   navigateTranslate() {
     wx.navigateTo({
-        url: '/pages/translate/translate'
+        url: '/pages/translate-training/translate-training'
       })
   }
 })

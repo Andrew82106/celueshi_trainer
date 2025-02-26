@@ -1,0 +1,34 @@
+<!--pages/translate-review/translate-review.wxml-->
+<page-meta>
+    <navigation-bar 
+        title="翻译汇总" 
+        back="{{true}}"
+        bindback="onBack"
+    ></navigation-bar>
+</page-meta>
+
+<view class="container">
+    <view class="review-list">
+        <block wx:for="{{content}}" wx:key="index">
+            <view class="review-item">
+                <view class="original">{{item.source}}</view>
+                <view class="translation">{{userTranslations[index]}}</view>
+            </view>
+        </block>
+    </view>
+
+    <view class="action-buttons">
+        <button 
+            class="nav-button edit-button" 
+            bindtap="navigateBackToEdit"
+        >
+            返回修改
+        </button>
+        <button 
+            class="nav-button evaluate-button" 
+            bindtap="startEvaluation"
+        >
+            开始评测
+        </button>
+    </view>
+</view>

@@ -1,9 +1,11 @@
 <!--pages/schulte-records/schulte-records.wxml-->
-<navigation-bar 
-    title="舒尔特表记录" 
-    back="{{true}}"
-    bindback="onBack"
-></navigation-bar>
+<page-meta>
+    <navigation-bar 
+        title="舒尔特表记录" 
+        back="{{true}}"
+        bindback="onBack"
+    ></navigation-bar>
+</page-meta>
 <view class="container">
   <view class="back-btn" bindtap="onBack">
     <text class="back-icon">←</text>

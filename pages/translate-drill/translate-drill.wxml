@@ -1,0 +1,59 @@
+<!--pages/translate-drill/translate-drill.wxml-->
+<page-meta>
+    <navigation-bar 
+        title="{{title}}" 
+        back="{{true}}"
+        bindback="onBack"
+    ></navigation-bar>
+</page-meta>
+
+<view class="container">
+    <view class="progress">
+        进度：{{currentIndex + 1}}/{{content.length}}
+    </view>
+    
+    <view class="debug-info" hidden>
+        当前索引: {{currentIndex}} 
+        内容长度: {{content.length}}
+        用户输入: {{userTranslations}}
+    </view>
+
+    <view class="card">
+        <!-- 原文展示区域 -->
+        <view class="source-text">
+            {{currentItem.source || '加载中...'}}
+        </view>
+        
+        <!-- 翻译输入区域 -->
+        <textarea 
+            class="translation-input"
+            placeholder="请输入中文翻译"
+            value="{{userTranslations[currentIndex]}}"
+            bindinput="handleTranslationInput"
+            maxlength="500"
+            auto-height
+            show-confirm-bar="{{false}}"
+        />
+    </view>
+
+    <!-- 操作按钮区域 -->
+    <view class="action-buttons">
+        <button 
+            class="nav-button prev-button" 
+            bindtap="handlePrev"
+            disabled="{{currentIndex === 0}}"
+            wx:if="{{currentIndex > 0}}"
+        >
+            上一句
+        </button>
+        
+        <button 
+            class="nav-button next-button" 
+            bindtap="{{currentIndex === content.length - 1 ? 'submitAllTranslations' : 'handleNext'}}"
+            loading="{{isSubmitting}}"
+            disabled="{{!userTranslations[currentIndex] || isSubmitting}}"
+        >
+            {{currentIndex === content.length - 1 ? '提交翻译' : '下一句'}}
+        </button>
+    </view>
+</view>

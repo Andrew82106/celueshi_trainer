@@ -1,0 +1,67 @@
+/* pages/translate-drill/translate-drill.wxss */
+.container {
+    padding: 40rpx;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.progress {
+    font-size: 28rpx;
+    color: #666;
+    margin-bottom: 40rpx;
+    text-align: center;
+}
+
+.card {
+    flex: 1;
+    background: #fff;
+    border-radius: 32rpx;
+    padding: 40rpx;
+    box-shadow: 0 8rpx 24rpx rgba(0,0,0,0.1);
+}
+
+.source-text {
+    font-size: 36rpx;
+    color: #333;
+    margin-bottom: 60rpx;
+    line-height: 1.6;
+    min-height: 300rpx;
+}
+
+.translation-input {
+    width: 100%;
+    min-height: 400rpx;
+    font-size: 32rpx;
+    border: 2rpx solid #eee;
+    border-radius: 16rpx;
+    padding: 30rpx;
+}
+
+.action-buttons {
+    margin-top: 60rpx;
+    display: flex;
+    gap: 30rpx;
+}
+
+.nav-button {
+    flex: 1;
+    height: 100rpx;
+    line-height: 100rpx;
+    border-radius: 50rpx;
+    font-size: 34rpx;
+}
+
+.prev-button {
+    background: #f0f0f0;
+    color: #666;
+}
+
+.next-button {
+    background: #4a90e2;
+    color: white;
+}
+
+button[disabled] {
+    opacity: 0.6;
+}

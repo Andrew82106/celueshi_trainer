@@ -1,0 +1,25 @@
+<page-meta>
+    <navigation-bar 
+        title="中英互翻训练" 
+        back="{{true}}"
+        bindback="onBack"
+    ></navigation-bar>
+</page-meta>
+
+
+<view class="container">
+
+    <view class="back-btn" bindtap="onBack">← 返回训练列表</view>
+  <view class="file-list">
+    <block wx:for="{{textFiles}}" wx:key="id">
+      <view class="file-card" bindtap="selectTextFile" data-id="{{item.id}}">
+        <view class="file-header">
+          <text class="file-title">{{item.title}}</text>
+          <view class="file-status">未开始</view>
+        </view>
+        <text class="file-sample">{{item.content[0] || '示例内容'}}</text>
+      </view>
+    </block>
+    <view wx:if="{{loading}}" class="loading">加载训练内容中...</view>
+  </view>
+</view> 

@@ -1,6 +1,0 @@
-<!--pages/translate/translate.wxml-->
-<navigation-bar title="中英互翻训练" back="{{true}}"></navigation-bar>
-<view class="container">
-  <text class="page-title">中英互翻训练功能开发中</text>
-  <view class="training-button" bindtap="navigateBack">点击返回主页</view>
-</view> 

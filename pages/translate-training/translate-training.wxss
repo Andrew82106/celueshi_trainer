@@ -1,0 +1,52 @@
+.file-list {
+  padding: 30rpx;
+}
+
+.file-card {
+  background: #fff;
+  border-radius: 25rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.1);
+}
+
+.back-btn {
+    padding: 20rpx 30rpx;
+    color: #4a90e2;
+    font-size: 30rpx;
+    margin-bottom: 30rpx;
+  }
+  
+.file-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.file-title {
+  font-size: 34rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.file-status {
+  font-size: 28rpx;
+  color: #4a90e2;
+  padding: 8rpx 16rpx;
+  border: 1rpx solid #4a90e2;
+  border-radius: 8rpx;
+}
+
+.file-sample {
+  font-size: 28rpx;
+  color: #666;
+  line-height: 1.6;
+}
+
+.loading {
+  text-align: center;
+  color: #999;
+  font-size: 28rpx;
+  padding: 40rpx 0;
+} 

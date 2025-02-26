@@ -1,6 +1,4 @@
-// pages/translate/translate.js
-const app = getApp()
-
+// pages/translate-train-records/translate-train-records.js
 Page({
 
     /**
@@ -64,8 +62,5 @@ Page({
      */
     onShareAppMessage() {
 
-    },
-    navigateBack() {
-        wx.navigateBack()
     }
 })

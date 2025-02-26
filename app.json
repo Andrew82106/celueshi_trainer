@@ -6,10 +6,13 @@
         "pages/audio-training/audio-training",
         "pages/schulte-table/schulte-table",
         "pages/profile/profile",
-        "pages/translate/translate",
         "pages/schulte-records/schulte-records",
         "pages/dot-records/dot-records",
-        "pages/audio-records/audio-records"
+        "pages/audio-records/audio-records",
+        "pages/translate-training/translate-training",
+        "pages/translate-train-records/translate-train-records",
+        "pages/translate-drill/translate-drill",
+        "pages/translate-review/translate-review"
     ],
     "window": {
         "navigationBarTextStyle": "black",
