@@ -255,6 +255,11 @@
     box-shadow: 0 10rpx 30rpx rgba(74,144,226,0.3);
 }
 
+.translate-btn {
+    background: linear-gradient(135deg, #b4ab09 0%, #ac7000 100%);
+    box-shadow: 0 10rpx 30rpx rgba(74,144,226,0.3);
+}
+
 .dot-btn {
     background: linear-gradient(135deg, #ff6b6b 0%, #ff8787 100%);
     box-shadow: 0 10rpx 30rpx rgba(255,107,107,0.3);

@@ -1,4 +1,4 @@
-<navigation-bar title="舒尔特表训练" back="{{true}}"></navigation-bar>
+<navigation-bar title="舒尔特方格训练" back="{{true}}"></navigation-bar>
 <view class="container">
   <block wx:if="{{!isTraining}}">
     <view class="size-selector">

@@ -1,15 +1,6 @@
 <!--pages/audio-records/audio-records.wxml-->
-<navigation-bar 
-    title="正听反说记录" 
-    back="{{true}}"
-    bindback="onBack"
-></navigation-bar>
+<navigation-bar title="正听反说记录" back="{{true}}"bindback="onBack"></navigation-bar>
 <view class="container">
-    <view class="nav-back" bindtap="onBack">
-        <text class="back-icon">←</text>
-        返回训练
-    </view>
-
     <block wx:for="{{records}}" wx:key="index">
         <view class="record-card {{item.status}}">
             <view class="card-header">

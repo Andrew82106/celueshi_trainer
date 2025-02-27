@@ -1,10 +1,13 @@
 /* pages/translate-drill/translate-drill.wxss */
+
+
 .container {
-    padding: 20rpx;
-    height: 100vh;
+    padding: 50rpx;
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
-}
+    min-height: 80vh;
+} 
 
 .progress {
     font-size: 28rpx;
@@ -41,16 +44,24 @@
 
 .action-buttons {
     display: flex;
+    flex-direction: column;
     gap: 20rpx;
-    justify-content: space-between;
+    padding: 0 20rpx;
+    max-width: 600rpx;
+    margin: 0 auto;
 }
 
 .nav-button {
-    flex: 1;
+    width: 100%;
+    min-width: auto;
+    max-width: 100%;
     border-radius: 12rpx;
-    font-size: 30rpx;
-    height: 80rpx;
-    line-height: 80rpx;
+    font-size: 32rpx;
+    height: 96rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
 }
 
 .prev-button {
@@ -66,3 +77,4 @@
 button[disabled] {
     opacity: 0.6;
 }
+

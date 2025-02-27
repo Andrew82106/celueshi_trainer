@@ -13,6 +13,13 @@
 
   <view class="record-btns">
     <navigator 
+        url="/pages/translate-records/translate-records" 
+        class="record-btn translate-btn"
+    >
+        <text class="btn-title">中英互翻训练记录</text>
+        <text class="btn-sub">查看训练历史</text>
+    </navigator>
+    <navigator 
         url="/pages/schulte-records/schulte-records" 
         class="record-btn schulte-btn"
     >

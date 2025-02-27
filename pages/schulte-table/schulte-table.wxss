@@ -76,3 +76,9 @@
     text-align: center;
     font-weight: 500;
 }
+
+.container {
+  padding: 50rpx;
+  box-sizing: border-box;
+  min-height: 50vh;
+} 

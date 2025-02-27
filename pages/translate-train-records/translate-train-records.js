@@ -13,18 +13,24 @@ Page({
      */
     onLoad(options) {
         try {
-            const result = JSON.parse(decodeURIComponent(options.result))
-            console.log('[DEBUG] 参考译文数据：', result.details.map(d => d.reference))
+            const rawResult = options.result ? 
+                JSON.parse(decodeURIComponent(options.result)) : null;
             
+            // 适配历史记录数据结构
+            const result = rawResult.details ? rawResult : {
+                accuracy: rawResult.accuracy,
+                details: rawResult.details
+            };
+
             this.setData({
                 evaluationResult: {
                     ...result,
-                    accuracy: result.accuracy + '%'
+                    accuracy: result.accuracy.includes('%') ? result.accuracy : result.accuracy + '%'
                 }
-            })
+            });
+            console.log('[DEBUG] 加载到的结果（训练记录）:', this.data.evaluationResult);
         } catch (e) {
-            wx.showToast({ title: '数据加载失败', icon: 'none' })
-            setTimeout(() => wx.navigateBack(), 1500)
+            wx.showToast({ title: '数据加载失败', icon: 'none' });
         }
     },
 

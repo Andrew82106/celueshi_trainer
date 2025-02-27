@@ -46,7 +46,7 @@
 
                 <!-- 评分和建议 -->
                 <view class="score-section">
-                    <text class="score-text">评分：{{item.displayScore}}/10</text>
+                    <text class="score-text">评分：{{item.score}}/10</text>
                     <view class="suggestions">
                         <text class="suggestions-title">改进建议：</text>
                         <block wx:for="{{item.suggestions}}" wx:key="*this">

@@ -10,7 +10,8 @@ Page({
         userTranslations: [],
         isSubmitting: false,
         title: '',
-        currentItem: {}
+        currentItem: {},
+        translationMode: 'en2zh'
     },
 
     /**
@@ -19,6 +20,7 @@ Page({
     onLoad(options) {
         console.log('[DEBUG] 页面参数:', options);
         console.log('[DEBUG] 原始content参数:', options.content);
+        console.log('[DEBUG] 接收到的模式参数:', options.mode);
         
         if (!options.content) {
             wx.showToast({ title: '缺少训练内容参数', icon: 'none' });
@@ -31,15 +33,17 @@ Page({
             console.log('[调试] 原始解析内容:', content);
             
             this.setData({
-                content: content.map(item => ({
-                    source: item.source || '（无原文）',
-                    reference: item.reference || '（无参考译文）'
-                })),
+                content: content,
                 title: decodeURIComponent(options.title || '翻译训练'),
+                translationMode: options.mode || 'en2zh',
                 userTranslations: new Array(content.length).fill(''),
                 currentItem: {}
             }, () => {
-                console.log('[调试] 初始化完成后的content:', this.data.content);
+                console.log('[调试] 初始化后的数据:', {
+                    content: this.data.content,
+                    mode: this.data.translationMode,
+                    translations: this.data.userTranslations
+                });
                 this.updateCurrentItem();
             });
             
@@ -142,12 +146,17 @@ Page({
             return wx.showToast({ title: '请完成所有翻译', icon: 'none' });
         }
 
-        wx.navigateTo({
-            url: `/pages/translate-review/translate-review?content=${encodeURIComponent(JSON.stringify(this.data.content))}&translations=${encodeURIComponent(JSON.stringify(this.data.userTranslations))}`
-        });
+        
+        //debug
+        console.log('[DEBUG] 传递的数据：', this.data)
         console.log('[DEBUG] 传递的原文数据：', this.data.content);
         //debug
         console.log('[DEBUG] 传递的翻译数据：', this.data.userTranslations);
+        //debug
+        console.log('[DEBUG] 传递的模式数据：', this.data.translationMode);
+        wx.navigateTo({
+            url: `/pages/translate-review/translate-review?content=${encodeURIComponent(JSON.stringify(this.data.content))}&translations=${encodeURIComponent(JSON.stringify(this.data.userTranslations))}&translationMode=${encodeURIComponent(JSON.stringify(this.data.translationMode))}`
+        });
     },
 
     mockLLMEvaluation() {
