@@ -1,5 +1,5 @@
 <!--index.wxml-->
-<navigation-bar title="Classic Trainer" back="{{false}}" color="black" background="#FFF"></navigation-bar>
+<navigation-bar title="山门知行" back="{{false}}" color="black" background="#FFF"></navigation-bar>
 <scroll-view class="scrollarea" scroll-y>
   <view class="container">
     <view class="button-container">

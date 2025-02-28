@@ -17,7 +17,7 @@
                     </view>
                     <view class="accuracy-progress">
                         <progress 
-                            percent="{{item.accuracy}}" 
+                            percent="{{item.accuracy * 10}}" 
                             stroke-width="12" 
                             activeColor="#08a8ff"
                             backgroundColor="#eee"
