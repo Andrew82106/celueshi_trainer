@@ -54,8 +54,8 @@
   <view class="training-area" wx:if="{{isTraining}}">
     <text wx:if="{{countdown > 0}}" class="countdown">{{countdown}}</text>
     <view class="dot-area">
-      <view wx:for="{{dots}}" wx:key="index" 
-            class="{{item.isDebug ? 'debugdot' : 'dot'}}"
+      <view wx:for="{{dots}}" wx:key="index" wx:if="{{!item.isDebug}}"
+            class="dot"
             style="left: {{item.x}}rpx; top: {{item.y}}rpx; width: {{item.size}}rpx; height: {{item.size}}rpx">
       </view>
     </view>

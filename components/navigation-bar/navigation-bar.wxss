@@ -4,9 +4,9 @@
   --left: 32rpx;
   background: linear-gradient(
     145deg,
-    rgba(230,247,255,1) 0%,    /* #e6f7ff */
-    rgba(204,237,255,1) 50%,   /* #ccedff */
-    rgba(179,224,255,1) 100%   /* #b3e0ff */
+    rgba(230,247,255,1) 0%,
+    rgba(204,237,255,1) 50%,
+    rgba(179,224,255,1) 100%
   );
 }
 .weui-navigation-bar .android {

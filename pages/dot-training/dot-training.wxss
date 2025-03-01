@@ -113,13 +113,14 @@
 }
 
 .setting-item {
-  margin: 40rpx 0;
+  margin: 120rpx 0;
 }
 
 .label {
-  font-size: 32rpx;
+  font-size: 40rpx;
   color: #666;
-  margin-right: 30rpx;
+  align-items: center;
+  text-align: center;
 }
 
 .picker-group {
@@ -130,15 +131,17 @@
 
 .picker {
   border: 2rpx solid #4a90e2;
-  padding: 15rpx 30rpx;
+  padding: 30rpx 40rpx;
   border-radius: 8rpx;
   color: #4a90e2;
   min-width: 100rpx;
   text-align: center;
+  font-weight: bold; /* 加粗显示 */
+  box-shadow: 0 4rpx 8rpx rgba(7, 38, 194, 0.4); /* 边框阴影 */
 }
 
 .separator {
-  margin: 0 20rpx;
+  margin: 0 30rpx;
   color: #666;
 }
 
@@ -150,9 +153,11 @@
 
 .time-unit {
   border: 2rpx solid #4a90e2;
-  padding: 15rpx 30rpx;
+  padding: 30rpx 45rpx;
   border-radius: 8rpx;
   color: #4a90e2;
   min-width: 150rpx;
   text-align: center;
+  font-weight: bold; /* 加粗显示 */
+  box-shadow: 0 4rpx 8rpx rgba(7, 38, 194, 0.4); /* 边框阴影 */
 }
