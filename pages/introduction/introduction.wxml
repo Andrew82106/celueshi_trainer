@@ -48,7 +48,13 @@
     <text class="section-title">开发记录</text>
     
     <view class="feature-item">
-      <text class="feature-title">版本0.1.4(当前)</text>
+      <text class="feature-title">版本0.1.5(当前)</text>
+      <text class="feature-desc">按照官方要求新增了游客模式</text>
+      <text class="feature-desc">>>Andrew 在 2025年3月2日下午2点16分 提交上传</text>
+    </view>
+
+    <view class="feature-item">
+      <text class="feature-title">版本0.1.4</text>
       <text class="feature-desc">修改了登录界面的样式和主页的样式，按照官方要求新增用户数据搜集说明</text>
       <text class="feature-desc">>>Andrew 在 2025年3月2日下午2点16分 提交上传</text>
     </view>

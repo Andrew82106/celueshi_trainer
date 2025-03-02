@@ -16,14 +16,18 @@ Page({
         startTime: null,
         timeElapsed: 0,
         timer: null,
-        gridSize: 5 // 新增gridSize用于动态样式
+        gridSize: 5, // 新增gridSize用于动态样式
+        isGuest: false,
     },
 
     /**
      * 生命周期函数--监听页面加载
      */
     onLoad(options) {
-
+        const app = getApp();
+        this.setData({
+            isGuest: app.globalData.isGuest || false
+        });
     },
 
     /**
@@ -174,6 +178,33 @@ Page({
             }
         } else {
             this.setData({ errorCount: this.data.errorCount + 1 });
+        }
+    },
+
+    saveRecord(endTime) {
+        const duration = (endTime - this.data.startTime) / 1000; // 转换为秒
+        const record = {
+            date: new Date().toISOString(),
+            gridSize: this.data.gridSize,
+            duration: duration.toFixed(2),
+            mistakes: this.data.errorCount
+        };
+        
+        // 更新当前会话中显示的记录（游客模式也可以查看本次会话的记录）
+        this.setData({
+            records: [record, ...this.data.records]
+        });
+        
+        // 只有非游客模式才永久存储数据
+        if (!this.data.isGuest && getApp().globalData.userInfo) {
+            // 获取之前的记录
+            const records = wx.getStorageSync('schulteRecords') || {};
+            const userId = getApp().globalData.userInfo.openid || getApp().globalData.userInfo.nickName;
+            records[userId] = records[userId] || [];
+            records[userId].push(record);
+            
+            // 保存记录
+            wx.setStorageSync('schulteRecords', records);
         }
     },
 })

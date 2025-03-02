@@ -32,9 +32,14 @@ Page({
     ],
     loading: false,
     translationMode: 'en2zh', // 新增翻译模式状态，默认英译中
+    isGuest: false,
   },
 
-  onLoad() {
+  onLoad(options) {
+    const app = getApp();
+    this.setData({
+      isGuest: app.globalData.isGuest || false
+    });
   },
 
   onBack() {
@@ -68,5 +73,32 @@ Page({
     wx.navigateTo({
       url: `/pages/translate-drill/translate-drill?content=${encodeURIComponent(JSON.stringify(structuredContent))}&title=${encodeURIComponent(file.title)}&mode=${this.data.translationMode}`
     });
+  },
+
+  saveRecord: function(result) {
+    const record = {
+      date: new Date().toISOString(),
+      word: this.data.currentWord,
+      userTranslation: this.data.userInput,
+      correct: result.correct,
+      correctTranslation: result.correctTranslation
+    };
+    
+    // 更新当前会话中显示的记录（游客模式也可以查看本次会话的记录）
+    this.setData({
+      records: [record, ...this.data.records]
+    });
+    
+    // 只有非游客模式才永久存储数据
+    if (!this.data.isGuest && getApp().globalData.userInfo) {
+      // 获取之前的记录
+      const records = wx.getStorageSync('translateRecords') || {};
+      const userId = getApp().globalData.userInfo.openid || getApp().globalData.userInfo.nickName;
+      records[userId] = records[userId] || [];
+      records[userId].push(record);
+      
+      // 保存记录
+      wx.setStorageSync('translateRecords', records);
+    }
   }
 }); 

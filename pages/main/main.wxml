@@ -8,8 +8,12 @@
   </view>
   
   <view class="login-section">
-    <view class="login-btn" bindtap="handleLogin">
+    <view class="login-btn primary-btn" bindtap="handleLogin">
       <text>微信登录</text>
+    </view>
+
+    <view class="login-btn secondary-btn" bindtap="tuoristLogin">
+      <text>游客模式</text>
     </view>
     
     <view class="tips-container">
@@ -21,6 +25,6 @@
   </view>
   
   <view class="footer">
-    <text class="copyright">© 2023 山门知行 - 专注于认知能力训练</text>
+    <text class="copyright">© 山门知行 - 专注于认知能力训练</text>
   </view>
 </view>

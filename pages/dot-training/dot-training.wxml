@@ -50,6 +50,12 @@
     </view>
   </view>
 
+
+  <!-- 在按钮组上方添加游客模式提示 -->
+  <view class="guest-tip" wx:if="{{isGuest}}">
+    <text>您正在使用游客模式，训练记录不会被永久保存</text>
+  </view>
+  
   <!-- 训练显示区域 -->
   <view class="training-area" wx:if="{{isTraining}}">
     <text wx:if="{{countdown > 0}}" class="countdown">{{countdown}}</text>
@@ -69,6 +75,8 @@
       <button bindtap="submitAnswer">提交</button>
     </view>
   </view>
+
+  
 
   <!-- 操作按钮 -->
   <view class="button-group" wx:if="{{!isTraining && !showInput}}">

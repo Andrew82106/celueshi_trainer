@@ -87,4 +87,16 @@
     padding: 50rpx;
     box-sizing: border-box;
     min-height: 50vh;
+}
+
+/* 添加游客模式提示样式 */
+.guest-tip {
+  background-color: rgba(255, 193, 7, 0.2);
+  color: #e65100;
+  padding: 16rpx 20rpx;
+  margin: 20rpx 0;
+  border-radius: 10rpx;
+  font-size: 28rpx;
+  text-align: center;
+  border-left: 8rpx solid #ffb300;
 } 

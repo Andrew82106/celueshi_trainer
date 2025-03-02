@@ -35,4 +35,9 @@
         </block>
         <view wx:if="{{loading}}" class="loading">加载训练内容中...</view>
     </view>
+
+    <!-- 添加游客模式提示 -->
+    <view class="guest-tip" wx:if="{{isGuest}}">
+        <text>您正在使用游客模式，训练记录不会被永久保存</text>
+    </view>
 </view> 

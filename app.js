@@ -2,6 +2,7 @@
 App({
   globalData: {
     userInfo: null,
+    isGuest: false, // 新增游客模式标识
     glmApiKey: '33b333df733a7ba7174034ef5d757c8f.1MlCkHLb22BysIPi', // 请替换为实际API Key
     glmBaseUrl: 'https://open.bigmodel.cn/api/paas/v4/chat/completions' // 修正API地址
   },

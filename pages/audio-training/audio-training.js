@@ -10,7 +10,9 @@ Page({
     currentPlayingNumber: '', // 新增当前播放数字
     reversedNumbers: '', // 新增反转数据存储
     lastUsedLength: 5, // 缓存最后使用的长度
-    numberDisplayClass: '' // 添加类名变量
+    numberDisplayClass: '', // 添加类名变量
+    isGuest: false,
+    trainingRecords: [] // 添加当前会话的记录数组
   },
 
   // 处理长度选择
@@ -136,8 +138,15 @@ Page({
       numbers: this.data.originalNumbers,
       reversed: this.data.reversedNumbers
     };
-    const user = getApp().globalData.userInfo;
-    if (user) {
+    
+    // 更新当前会话中显示的记录（游客模式也可以查看本次会话记录）
+    this.setData({
+      trainingRecords: [record, ...this.data.trainingRecords]
+    });
+    
+    // 只有非游客模式才永久存储数据
+    if (!this.data.isGuest && getApp().globalData.userInfo) {
+      const user = getApp().globalData.userInfo;
       const records = wx.getStorageSync('audioRecords') || {};
       records[user.openid] = [...(records[user.openid] || []), record];
       wx.setStorageSync('audioRecords', records);
@@ -153,7 +162,12 @@ Page({
     wx.navigateBack()
   },
 
-  onLoad() {
+  onLoad(options) {
+    const app = getApp();
+    this.setData({
+      isGuest: app.globalData.isGuest || false
+    });
+    
     const cachedLength = wx.getStorageSync('lastAudioLength') || 5;
     this.setData({ numberLength: cachedLength });
   }

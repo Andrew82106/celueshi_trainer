@@ -16,11 +16,16 @@ Page({
     correctAnswer: null,
     cachedDots: [],
     millisecondsIndex: 0,
-    millisecondsOptions: ['000', '250', '500', '750']
+    millisecondsOptions: ['000', '250', '500', '750'],
+    isGuest: false
   },
 
-  onLoad() {
+  onLoad(options) {
     this.timer = null
+    const app = getApp();
+    this.setData({
+      isGuest: app.globalData.isGuest || false
+    });
     console.log('[DEBUG] 页面初始化，毫秒选项:', this.data.millisecondsOptions)
   },
 
@@ -231,16 +236,21 @@ Page({
       displayTime: this.data.displayTime,
       milliseconds: this.data.milliseconds
     }
+    
+    // 更新当前页面显示的记录（游客模式也可查看当前会话记录）
     this.setData({
       trainingRecords: [...this.data.trainingRecords, record]
     })
 
-    const user = getApp().globalData.userInfo
-    if (user) {
-      const records = wx.getStorageSync('dotRecords') || {}
-      records[user.openid] = records[user.openid] || []
-      records[user.openid].push(record)
-      wx.setStorageSync('dotRecords', records)
+    // 只有非游客模式才存储数据
+    const app = getApp();
+    if (!this.data.isGuest && app.globalData.userInfo) {
+      const records = wx.getStorageSync('dotRecords') || {};
+      // 使用可靠的标识符
+      const userId = app.globalData.userInfo.openid || app.globalData.userInfo.nickName;
+      records[userId] = records[userId] || [];
+      records[userId].push(record);
+      wx.setStorageSync('dotRecords', records);
     }
   },
 

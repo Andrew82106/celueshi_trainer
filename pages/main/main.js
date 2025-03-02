@@ -73,6 +73,7 @@ Page({
         desc: '用于记录训练数据',
         success: res => {
           app.globalData.userInfo = res.userInfo
+          app.globalData.isGuest = false
           wx.setStorageSync('userInfo', res.userInfo)
           wx.reLaunch({ url: '/pages/index/index' })
         },
@@ -80,5 +81,12 @@ Page({
           wx.showToast({ title: '登录失败', icon: 'error' })
         }
       })
+    },
+
+    tuoristLogin() {
+      // 游客模式
+      app.globalData.isGuest = true
+      app.globalData.userInfo = { nickName: '游客' }
+      wx.reLaunch({ url: '/pages/index/index' })
     }
 })
