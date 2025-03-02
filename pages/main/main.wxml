@@ -1,6 +1,26 @@
 <!--pages/main/main.wxml-->
-<navigation-bar title="专注力训练" back="{{false}}"></navigation-bar>
+<navigation-bar title="山门知行" back="{{false}}"></navigation-bar>
 <view class="container">
-  <view class="login-btn" bindtap="handleLogin">微信登录</view>
-  <text class="tip">请先登录以使用完整功能</text>
+  <view class="welcome-section">
+    <image class="logo" src="https://wx.qlogo.cn/mmhead/QzPtZqIzA0n7k2vHljg5do4WkVqFc8ddgKNFwiaZ63JgOgMfCWLD6xQNqSLBoEoB5z5zuIhKqM4s/0" mode="aspectFill"></image>
+    <text class="app-title">山门知行</text>
+    <text class="app-slogan">提升认知能力，培养专注思维</text>
+  </view>
+  
+  <view class="login-section">
+    <view class="login-btn" bindtap="handleLogin">
+      <text>微信登录</text>
+    </view>
+    
+    <view class="tips-container">
+      <text class="tip">请先登录以使用完整功能</text>
+      <text class="tip">本小程序仅供个人使用</text>
+      <text class="tip">用户登录功能仅用于用户手机本地数据缓存</text>
+      <text class="tip">不涉及用户信息读取和传输</text>
+    </view>
+  </view>
+  
+  <view class="footer">
+    <text class="copyright">© 2023 山门知行 - 专注于认知能力训练</text>
+  </view>
 </view>
