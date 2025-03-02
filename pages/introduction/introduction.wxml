@@ -36,17 +36,7 @@
       <text class="feature-desc">系统播放随机数字音频，用户需逆序输入，支持5-20位数字长度，锻炼听觉记忆能力。</text>
     </view>
   </view>
-  
-  <!--<view class="info-card">
-    <text class="section-title">项目特色</text>
-    <view class="feature-tag-container">
-      <text class="feature-tag">科学训练</text>
-      <text class="feature-tag">多维能力</text>
-      <text class="feature-tag">个性化设置</text>
-      <text class="feature-tag">数据驱动</text>
-      <text class="feature-tag">简洁界面</text>
-    </view>
-  </view>-->
+
   
   <view class="info-card">
     <text class="section-title">技术支持</text>
@@ -74,9 +64,14 @@
       <text class="feature-desc">完成主要功能,修改前端，功能基本完善</text>
       <text class="feature-desc">Andrew 在 2025年2月28日下午12点34分 提交上传</text>
     </view>
-    
-    
   </view>
+  <view class="info-card">
+        <text class="section-title">TODO list</text>
+        <view class="feature-tag-container">
+        <text class="feature-tag">多维训练数据展示与分析</text>
+        <text class="feature-tag">社交功能及用户训练数据共享</text>
+        </view>
+    </view>
   
   <view class="footer">
     <text>2025 山门知行 - 专注于认知能力训练的微信小程序</text>

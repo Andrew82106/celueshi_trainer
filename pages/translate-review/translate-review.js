@@ -226,5 +226,8 @@ Page({
         } catch (e) {
             console.error('存储训练记录失败:', e);
         }
+    },
+    onBack() {
+        wx.navigateBack();
     }
 })

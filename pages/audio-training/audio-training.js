@@ -9,7 +9,8 @@ Page({
     showInput: false,
     currentPlayingNumber: '', // 新增当前播放数字
     reversedNumbers: '', // 新增反转数据存储
-    lastUsedLength: 5 // 缓存最后使用的长度
+    lastUsedLength: 5, // 缓存最后使用的长度
+    numberDisplayClass: '' // 添加类名变量
   },
 
   // 处理长度选择
@@ -29,12 +30,21 @@ Page({
     const length = wx.getStorageSync('lastAudioLength') || this.data.numberLength;
     const numbers = Array.from({length}, () => Math.floor(Math.random()*10)).join('');
     
+    // 根据数字长度设置额外的类名
+    let numberDisplayClass = '';
+    if (length > 10 && length <= 15) {
+      numberDisplayClass = 'long-number';
+    } else if (length > 15) {
+      numberDisplayClass = 'very-long-number';
+    }
+    
     this.setData({
       step: 2,
       originalNumbers: numbers,
       showNumbers: true,
       userInput: '',
-      numberLength: length // 同步显示
+      numberLength: length,
+      numberDisplayClass: numberDisplayClass // 添加类名变量
     });
 
     this.playNumberAudio(numbers).then(() => {

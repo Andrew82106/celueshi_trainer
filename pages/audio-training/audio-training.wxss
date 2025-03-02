@@ -49,9 +49,30 @@
 .number-display {
   font-size: 80rpx;
   text-align: center;
-  letter-spacing: 20rpx;
+  letter-spacing: 8rpx;
   margin: 60rpx 0;
   transition: opacity 0.3s;
+  word-wrap: break-word;
+  width: 100%;
+  max-width: 650rpx;
+}
+
+/* 添加响应式字体大小 */
+@media screen and (max-width: 768rpx) {
+  .number-display {
+    font-size: 70rpx;
+  }
+}
+
+/* 针对超长数字的适配 */
+.number-display.long-number {
+  font-size: 60rpx;
+  letter-spacing: 4rpx;
+}
+
+.number-display.very-long-number {
+  font-size: 50rpx;
+  letter-spacing: 2rpx;
 }
 
 .hidden {

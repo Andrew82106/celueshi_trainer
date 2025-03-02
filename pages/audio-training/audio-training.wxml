@@ -18,7 +18,7 @@
 
     <!-- 步骤2：训练中 -->
     <block wx:if="{{step === 2}}">
-        <view class="number-display {{showNumbers ? '' : 'hidden'}}">
+        <view class="number-display {{numberDisplayClass}} {{showNumbers ? '' : 'hidden'}}">
             {{originalNumbers}}
             <view class="debug-info" wx:if="{{showNumbers}}">
                 <text>当前播放：{{currentPlayingNumber}}</text>

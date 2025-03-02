@@ -31,19 +31,25 @@
 
 .action-buttons {
     display: flex;
-    gap: 30rpx;
+    justify-content: center;
+    gap: 50rpx;
+    margin: 10rpx;
 }
 
 .nav-button {
-    flex: 1;
+    width: 300rpx !important;
     height: 100rpx;
-    line-height: 100rpx;
-    border-radius: 50rpx;
+    border-radius: 30rpx;
     font-size: 34rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
 }
 
 .edit-button {
-    background: #f0f0f0;
+    background: #ebe7e7;
     color: #666;
 }
 
