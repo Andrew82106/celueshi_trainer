@@ -27,6 +27,11 @@ Page({
       url: '/pages/profile/profile'
     })
   },
+  navigateToAbout() {
+    wx.navigateTo({
+      url: '/pages/introduction/introduction'
+    })
+  },
   navigateTranslate() {
     wx.navigateTo({
         url: '/pages/translate-training/translate-training'

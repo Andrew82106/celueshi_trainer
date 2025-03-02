@@ -28,6 +28,11 @@
         bindtap="navigateToProfile"
         hover-class="button-hover"
       >个人信息</view>
+      <view 
+        class="training-button" 
+        bindtap="navigateToAbout"
+        hover-class="button-hover"
+      >关于</view>
     </view>
   </view>
 </scroll-view>

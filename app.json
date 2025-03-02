@@ -13,7 +13,8 @@
         "pages/translate-train-records/translate-train-records",
         "pages/translate-drill/translate-drill",
         "pages/translate-review/translate-review",
-        "pages/translate-records/translate-records"
+        "pages/translate-records/translate-records",
+        "pages/introduction/introduction"
     ],
     "window": {
         "navigationBarTextStyle": "black",
