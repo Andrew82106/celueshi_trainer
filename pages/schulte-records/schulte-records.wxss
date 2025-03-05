@@ -1,4 +1,48 @@
 /* pages/schulte-records/schulte-records.wxss */
+.container {
+  padding: 20rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+  margin: 30rpx 0 20rpx;
+  padding-left: 10rpx;
+  border-left: 8rpx solid #4a90e2;
+}
+
+/* 图表区域样式 */
+.chart-section {
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 30rpx 20rpx;
+  margin: 24rpx 0;
+  width: 100%;
+  box-shadow: 0 8rpx 40rpx rgba(74,144,226,0.12);
+}
+
+.records-section {
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 30rpx 20rpx;
+  margin: 24rpx 0;
+  width: 100%;
+  box-shadow: 0 8rpx 40rpx rgba(74,144,226,0.12);
+}
+.chart-container {
+  display: flex;
+  justify-content: center;
+  margin: 20rpx 0;
+}
+
+.chart-legend {
+  font-size: 24rpx;
+  color: #999;
+  text-align: center;
+  margin-top: 10rpx;
+}
+
 .record-card {
   background: #fff;
   border-radius: 24rpx;
@@ -40,6 +84,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 40rpx;
+  margin-bottom: 20rpx;
 }
 
 .stat-item {
@@ -69,6 +114,21 @@
   color: #333;
   font-size: 36rpx;
   font-weight: 600;
+}
+
+/* 每秒点击次数高亮样式 */
+.stat-highlight {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 0;
+  margin: 16rpx 0;
+  border-top: 1px dashed #eee;
+  border-bottom: 1px dashed #eee;
+}
+
+.stat-value.highlight {
+  color: #ff6b6b;
+  font-size: 40rpx;
 }
 
 .progress-bar {

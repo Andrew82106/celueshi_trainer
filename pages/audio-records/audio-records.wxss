@@ -1,4 +1,56 @@
 /* pages/audio-records/audio-records.wxss */
+.container {
+    padding: 30rpx;
+}
+
+.section-title {
+    font-size: 32rpx;
+    font-weight: 600;
+    color: #333;
+    margin: 30rpx 0 20rpx;
+    padding-left: 10rpx;
+    border-left: 8rpx solid #4a90e2;
+}
+
+/* 图表区域样式 */
+.chart-section {
+    background: #fff;
+    border-radius: 32rpx;
+    padding: 30rpx 20rpx;
+    margin: 24rpx 0;
+    box-shadow: 0 12rpx 48rpx rgba(74,144,226,0.12);
+}
+.records-section {
+    background: #fff;
+    border-radius: 24rpx;
+    padding: 30rpx 20rpx;
+    margin: 24rpx 0;
+    width: 100%;
+    box-shadow: 0 8rpx 40rpx rgba(74,144,226,0.12);
+  }
+
+.chart-container {
+    display: flex;
+    justify-content: center;
+    margin: 20rpx 0;
+}
+
+.chart-legend {
+    font-size: 24rpx;
+    color: #999;
+    text-align: center;
+    margin-top: 10rpx;
+}
+
+/* 记录列表区域 */
+.records-section {
+    background: #fff;
+    border-radius: 32rpx;
+    padding: 30rpx 20rpx;
+    margin: 24rpx 0;
+    box-shadow: 0 12rpx 48rpx rgba(74,144,226,0.12);
+}
+
 .record-card {
     background: #fff;
     border-radius: 32rpx;
@@ -118,6 +170,13 @@
     font-size: 28rpx;
 }
 
+.time-stamp {
+    color: #999;
+    font-size: 26rpx;
+    margin-left: 20rpx;
+    flex-grow: 1;
+}
+
 .stats-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -134,18 +193,48 @@
     margin-right: 20rpx;
 }
 
+.stat-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-label {
+    color: #666;
+    font-size: 28rpx;
+    margin-bottom: 6rpx;
+}
+
+.stat-value {
+    color: #333;
+    font-size: 34rpx;
+    font-weight: 500;
+}
+
 .status-line {
     border-top: 2rpx solid #eee;
     margin-top: 30rpx;
-    padding-top: 30rpx;
+    padding-top: 20rpx;
+    display: flex;
+    justify-content: flex-end;
 }
 
 .status-text.success {
     color: #4CAF50;
+    font-weight: 600;
 }
 
 .status-text.fail {
     color: #f44336;
+    font-weight: 600;
+}
+
+/* 添加记录卡片样式差异 */
+.record-card.success {
+    border-left: 6rpx solid #4CAF50;
+}
+
+.record-card.fail {
+    border-left: 6rpx solid #f44336;
 }
 
 /* 新增修正箭头样式 */
@@ -176,8 +265,4 @@
 .back-icon {
     margin-right: 10rpx;
     font-size: 40rpx;
-}
-
-.container {
-    padding: 30rpx;
 }

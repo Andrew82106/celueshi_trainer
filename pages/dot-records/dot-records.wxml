@@ -2,42 +2,71 @@
 <navigation-bar title="圆点闪视记录" back="{{true}}"bindback="onBack"></navigation-bar>
 
 <view class="container">
-  <block wx:for="{{records}}" wx:key="index">
-    <view class="record-card">
-      <view class="card-header">
-        <view class="dot-badge">{{item.correct}}个圆点</view>
-        <view class="time-stamp">{{item.formattedDate}}</view>
-        <view 
-            class="delete-btn" 
-            bindtap="deleteRecord" 
-            data-index="{{index}}"
-        >
-            <view class="delete-icon"></view>
-        </view>
-      </view>
-      
-      <view class="stats-grid">
-        <view class="stat-item">
-          <view class="stat-icon">⏳</view>
-          <view class="stat-content">
-            <text class="stat-label">闪视时长</text>
-            <text class="stat-value">{{item.duration}}</text>
+  <!-- 折线图区域 -->
+  <view class="chart-section">
+    <view class="section-title">训练趋势</view>
+    <view class="chart-container">
+      <canvas canvas-id="avgTimeChart" style="width: {{canvasWidth}}px; height: {{canvasHeight}}px;"></canvas>
+    </view>
+    <view class="chart-legend">
+      <text>训练记录 (横轴: 训练次序, 纵轴: 平均圆点观察时间-毫秒/个)</text>
+    </view>
+  </view>
+  
+  <!-- 训练记录详情区域 -->
+  <view class="records-section">
+    <view class="section-title">训练记录详情</view>
+    <block wx:for="{{records}}" wx:key="index">
+      <view class="record-card">
+        <view class="card-header">
+          <view class="dot-badge">{{item.correct}}个圆点</view>
+          <view class="time-stamp">{{item.formattedDate}}</view>
+          <view 
+              class="delete-btn" 
+              bindtap="deleteRecord" 
+              data-index="{{index}}"
+          >
+              <view class="delete-icon"></view>
           </view>
         </view>
         
-        <view class="stat-item">
-          <view class="stat-icon">🎯</view>
+        <view class="stats-grid">
+          <view class="stat-item">
+            <view class="stat-icon">⏳</view>
+            <view class="stat-content">
+              <text class="stat-label">闪视时长</text>
+              <text class="stat-value">{{item.duration}}</text>
+            </view>
+          </view>
+          
+          <view class="stat-item">
+            <view class="stat-icon">🎯</view>
+            <view class="stat-content">
+              <text class="stat-label">准确率</text>
+              <text class="stat-value">{{item.accuracy}}</text>
+            </view>
+          </view>
+        </view>
+        
+        <view class="stat-highlight">
+          <view class="stat-icon">⚡</view>
           <view class="stat-content">
-            <text class="stat-label">准确率</text>
-            <text class="stat-value">{{item.accuracy}}</text>
+            <text class="stat-label">平均观察时间</text>
+            <text class="stat-value highlight">{{item.avgObservationTime}} 毫秒/个</text>
+          </view>
+        </view>
+        
+        <view class="stats-detail">
+          <view class="detail-item">
+            <text class="detail-label">毫秒数：</text>
+            <text class="detail-value">{{item.milliseconds}}</text>
+          </view>
+          <view class="detail-item">
+            <text class="detail-label">用户答案：</text>
+            <text class="detail-value">{{item.userAnswer}}</text>
           </view>
         </view>
       </view>
-      
-      <view class="answer-section">
-        <text class="answer-label">回答数量：</text>
-        <text class="answer-value">{{item.userAnswer}}</text>
-      </view>
-    </view>
-  </block>
+    </block>
+  </view>
 </view>

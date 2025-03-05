@@ -10,7 +10,7 @@
   );
 }
 .weui-navigation-bar .android {
-  --height: 120rpx;
+  --height: 200rpx;
 }
 
 .weui-navigation-bar {

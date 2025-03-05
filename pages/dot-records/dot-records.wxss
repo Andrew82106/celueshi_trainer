@@ -1,4 +1,46 @@
 /* pages/dot-records/dot-records.wxss */
+.container {
+  padding: 20rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+  margin: 30rpx 0 20rpx;
+  padding-left: 10rpx;
+  border-left: 8rpx solid #ff6b6b;
+}
+
+/* 图表区域样式 */
+.chart-section {
+  background: #fff;
+  border-radius: 32rpx;
+  padding: 30rpx 20rpx;
+  margin: 24rpx 0;
+  box-shadow: 0 12rpx 48rpx rgba(255,107,107,0.1);
+}
+.records-section {
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 30rpx 20rpx;
+  margin: 24rpx 0;
+  width: 100%;
+  box-shadow: 0 8rpx 40rpx rgba(74,144,226,0.12);
+}
+.chart-container {
+  display: flex;
+  justify-content: center;
+  margin: 20rpx 0;
+}
+
+.chart-legend {
+  font-size: 24rpx;
+  color: #999;
+  text-align: center;
+  margin-top: 10rpx;
+}
+
 .record-card {
   background: #fff;
   border-radius: 32rpx;
@@ -9,6 +51,12 @@
   overflow: hidden;
 }
 
+.card-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 32rpx;
+}
+
 .dot-badge {
   background: linear-gradient(135deg, #ff6b6b, #ff8787);
   color: white;
@@ -16,6 +64,13 @@
   border-radius: 40rpx;
   font-size: 28rpx;
   font-weight: 500;
+}
+
+.time-stamp {
+  color: #999;
+  font-size: 26rpx;
+  margin-left: 20rpx;
+  flex-grow: 1;
 }
 
 .stats-grid {
@@ -28,10 +83,28 @@
   border-bottom: 2rpx solid rgba(255,107,107,0.1);
 }
 
+.stat-item {
+  display: flex;
+  align-items: center;
+}
+
 .stat-icon {
   font-size: 48rpx;
   color: #ff6b6b;
   margin-right: 24rpx;
+  width: 60rpx;
+  text-align: center;
+}
+
+.stat-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-label {
+  color: #666;
+  font-size: 28rpx;
+  margin-bottom: 6rpx;
 }
 
 .stat-value {
@@ -41,29 +114,45 @@
   letter-spacing: 0.5rpx;
 }
 
-.answer-section {
+/* 新增样式 */
+.stat-highlight {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 0;
+  margin: 16rpx 0;
+  border-bottom: 2rpx dashed rgba(255,107,107,0.2);
+}
+
+.stat-value.highlight {
+  color: #ff6b6b;
+  font-size: 40rpx;
+}
+
+.stats-detail {
   margin-top: 30rpx;
   padding-top: 20rpx;
-  border-top: 2rpx solid #f5f5f5;
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.detail-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.answer-label {
+.detail-label {
   color: #666;
   font-size: 28rpx;
 }
 
-.answer-value {
+.detail-value {
   color: #4a90e2;
   font-size: 32rpx;
-  font-weight: 600;
+  font-weight: 500;
 }
 
-/* 复用公共样式（与舒尔特表相同） */
-.back-btn { /* startLine:1-5 in schulte-records.wxss */ }
-.stat-item { /* startLine:21-30 in schulte-records.wxss */ }
 .delete-btn {
     position: absolute;
     right: 24rpx;

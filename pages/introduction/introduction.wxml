@@ -46,9 +46,15 @@
   
   <view class="info-card">
     <text class="section-title">开发记录</text>
+
+    <view class="feature-item">
+      <text class="feature-title">版本0.1.7(当前)</text>
+      <text class="feature-desc">美化了用户记录使用情况图表（舒尔特表，圆点闪视，正听反说）</text>
+      <text class="feature-desc">>>Andrew 在 2025年3月5日下午20点58分 提交上传</text>
+    </view>
     
     <view class="feature-item">
-      <text class="feature-title">版本0.1.6(当前)</text>
+      <text class="feature-title">版本0.1.6</text>
       <text class="feature-desc">添加了用户登录功能，修改了登录界面样式，解决了登录后无法跳转的问题</text>
       <text class="feature-desc">>>Andrew 在 2025年3月5日下午17点08分 提交上传</text>
     </view>
