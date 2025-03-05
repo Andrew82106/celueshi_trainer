@@ -1,0 +1,20 @@
+<navigation-bar title="登录" back="{{true}}"></navigation-bar>
+<view class="container">
+  <view class="welcome-section">
+    <button class="avatar-wrapper" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar" >
+    <image class="avatar" src="{{avatarUrl}}"></image>
+  </button> 
+  </view>
+
+    <view class="login-section">
+        <input type="nickname" class="login-input" placeholder="请输入昵称" value="{{nickName}}" bindinput="onInput"/>
+        <text class="login-tip">昵称长度为2-10个字符</text>
+      </view>
+      <button class="login-btn primary-btn" bindtap="onSubmit">登录</button>
+
+  
+  
+  <view class="footer">
+    <text class="copyright">© 山门知行 - 专注于认知能力训练</text>
+  </view>
+</view>

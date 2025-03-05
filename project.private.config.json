@@ -3,5 +3,6 @@
     "projectname": "celueshi_trainer",
     "setting": {
         "compileHotReLoad": true
-    }
+    },
+    "libVersion": "3.7.8"
 }

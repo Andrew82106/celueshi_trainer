@@ -72,10 +72,21 @@ Page({
       wx.getUserProfile({
         desc: '用于记录训练数据',
         success: res => {
-          app.globalData.userInfo = res.userInfo
-          app.globalData.isGuest = false
-          wx.setStorageSync('userInfo', res.userInfo)
-          wx.reLaunch({ url: '/pages/index/index' })
+          // 存储基础用户信息
+          const userData = {
+            ...res.userInfo,
+            openid: app.globalData.openid // 确保有唯一标识
+          };
+          userData.nickName = "未登录";
+          userData.isLogin = false;
+          userData.isTourist = false;
+          app.globalData.userInfo = userData;
+          app.globalData.isGuest = false;
+          wx.setStorageSync('userInfo', userData);
+          console.log("in handleLogin")
+          console.log(userData)
+          // 跳转到信息完善页面
+          wx.reLaunch({ url: '/pages/login/login' });
         },
         fail: () => {
           wx.showToast({ title: '登录失败', icon: 'error' })
@@ -86,7 +97,7 @@ Page({
     tuoristLogin() {
       // 游客模式
       app.globalData.isGuest = true
-      app.globalData.userInfo = { nickName: '游客' }
+      app.globalData.userInfo = { nickName: '游客' ,isTourist: true}
       wx.reLaunch({ url: '/pages/index/index' })
     }
 })

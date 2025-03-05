@@ -107,6 +107,10 @@ Page({
         })
     },
 
+    reLogin() {
+        wx.reLaunch({ url: '/pages/login/login' })
+    },
+
     deleteRecord(e) {
         const { type, index } = e.currentTarget.dataset
         const recordType = type === 'schulte' ? 'schulteRecords' : 'dotRecords'

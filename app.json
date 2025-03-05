@@ -14,7 +14,8 @@
         "pages/translate-drill/translate-drill",
         "pages/translate-review/translate-review",
         "pages/translate-records/translate-records",
-        "pages/introduction/introduction"
+        "pages/introduction/introduction",
+        "pages/login/login"
     ],
     "window": {
         "navigationBarTextStyle": "black",
@@ -22,6 +23,5 @@
     },
     "style": "v2",
     "componentFramework": "glass-easel",
-    "sitemapLocation": "sitemap.json",
-    "lazyCodeLoading": "requiredComponents"
+    "sitemapLocation": "sitemap.json"
 }

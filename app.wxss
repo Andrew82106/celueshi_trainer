@@ -8,3 +8,23 @@
   padding: 200rpx 0;
   box-sizing: border-box;
 } 
+
+/** 新增头像样式 **/
+.avatar-container {
+  margin: 40rpx 0;
+  text-align: center;
+}
+
+.avatar-preview {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+  border: 4rpx solid #eee;
+}
+
+.nickname-input {
+  width: 80%;
+  margin: 40rpx auto;
+  padding: 20rpx;
+  border-bottom: 2rpx solid #4a90e2;
+} 
