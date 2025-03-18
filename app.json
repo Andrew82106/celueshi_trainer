@@ -15,11 +15,41 @@
         "pages/translate-review/translate-review",
         "pages/translate-records/translate-records",
         "pages/introduction/introduction",
-        "pages/login/login"
+        "pages/login/login",
+        "pages/shanmen/shanmen",
+        "pages/muyu/muyu",
+        "pages/songbo/songbo",
+        "pages/profileshanmen/profileshanmen"
     ],
     "window": {
         "navigationBarTextStyle": "black",
         "navigationStyle": "custom"
+    },
+    "tabBar": {
+        "color": "#999999",
+        "selectedColor": "#333333",
+        "backgroundColor": "#ffffff",
+        "borderStyle": "black",
+        "list": [
+            {
+                "pagePath": "pages/muyu/muyu",
+                "iconPath": "assets/picture/muyu.png",
+                "selectedIconPath": "assets/picture/muyuClick.png",
+                "text": "木鱼"
+            },
+            {
+                "pagePath": "pages/songbo/songbo",
+                "iconPath": "assets/picture/songbo.png",
+                "selectedIconPath": "assets/picture/songboClick.png",
+                "text": "颂钵"
+            },
+            {
+                "pagePath": "pages/profileshanmen/profileshanmen",
+                "iconPath": "assets/picture/personalInfo.png",
+                "selectedIconPath": "assets/picture/personalInfo.png",
+                "text": "我的"
+            }
+        ]
     },
     "style": "v2",
     "componentFramework": "glass-easel",

@@ -41,5 +41,12 @@
         <text class="btn-title">正听反说记录</text>
         <text class="btn-sub">查看训练历史</text>
     </navigator>
+    <navigator 
+        url="/pages/shanmen/shanmen" 
+        class="shanmen-broader-btn shanmen-btn"
+    >
+        <text class="btn-shanmen-title">知行</text>
+        <text class="btn-shanmen-sub">训练</text>
+    </navigator>
   </view>
 </view>

@@ -1,0 +1,4 @@
+<!--pages/shanmen/shanmen.wxml-->
+<view class="container">
+  <text class="title">山门页面</text>
+</view>

@@ -1,0 +1,37 @@
+<!--pages/muyu/muyu.wxml-->
+<view class="container">
+  <!-- 设置按钮 -->
+  <view class="settings-btn" bindtap="showSettingsModal">
+    <image src="/assets/picture/muyu.png" mode="aspectFit" class="settings-icon"></image>
+    <text>设置</text>
+  </view>
+  
+  <!-- 敲击计数 -->
+  <view class="counter">
+    <text class="count-text">{{count}}</text>
+    <text class="merit-text">今日功德</text>
+    <text class="total-count">总计：{{totalCount}}</text>
+  </view>
+  
+  <!-- 木鱼图片 -->
+  <view class="muyu-container" bindtap="tapMuyu">
+    <image src="/assets/picture/muyuBig.webp" mode="aspectFit" class="muyu-image {{isAnimating ? 'tap-animation' : ''}}"></image>
+  </view>
+  
+  <!-- 设置模态框 -->
+  <view class="modal" wx:if="{{showModal}}">
+    <view class="modal-content">
+      <view class="modal-header">
+        <text class="modal-title">自动敲击设置</text>
+      </view>
+      <view class="modal-body">
+        <text>每次敲击间隔时间（秒）：{{interval}}秒</text>
+        <slider min="0.5" max="5" step="0.1" value="{{interval}}" show-value="{{false}}" block-size="28" activeColor="#9F8053" backgroundColor="#D9D9D9" bindchange="sliderChange"/>
+      </view>
+      <view class="modal-footer">
+        <button class="btn cancel" bindtap="hideSettingsModal">取消</button>
+        <button class="btn confirm" bindtap="startAutoTap">确定</button>
+      </view>
+    </view>
+  </view>
+</view> 

@@ -1,0 +1,142 @@
+/* pages/muyu/muyu.wxss */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  position: relative;
+  background-color: #F5F5F5;
+}
+
+/* 设置按钮样式 */
+.settings-btn {
+  position: absolute;
+  top: 60px;
+  left: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 10;
+}
+
+.settings-icon {
+  width: 30px;
+  height: 30px;
+  margin-bottom: 5px;
+}
+
+/* 计数器样式 */
+.counter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.count-text {
+  font-size: 60px;
+  font-weight: bold;
+  color: #9F8053;
+}
+
+.merit-text {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.total-count {
+  font-size: 14px;
+  color: #999;
+}
+
+/* 木鱼样式 */
+.muyu-container {
+  width: 250px;
+  height: 250px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.muyu-image {
+  width: 100%;
+  height: 100%;
+  transition: transform 0.1s;
+}
+
+/* 木鱼敲击动画 */
+.tap-animation {
+  transform: scale(0.95);
+}
+
+/* 模态框样式 */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+
+.modal-content {
+  width: 80%;
+  background-color: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.modal-header {
+  padding: 20px;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.modal-footer {
+  display: flex;
+  border-top: 1px solid #eee;
+}
+
+.btn {
+  flex: 1;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  background-color: #fff;
+  border-radius: 0;
+  font-size: 16px;
+}
+
+.btn::after {
+  border: none;
+}
+
+.cancel {
+  color: #666;
+  border-right: 1px solid #eee;
+}
+
+.confirm {
+  color: #9F8053;
+  font-weight: bold;
+}
+
+.title {
+  font-size: 20px;
+  margin-bottom: 20px;
+} 

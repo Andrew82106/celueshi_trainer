@@ -1,0 +1,91 @@
+<!--pages/profileshanmen/profileshanmen.wxml-->
+<view class="container">
+  <view class="header">
+    <view class="avatar-container">
+      <image class="avatar" src="{{userInfo.avatarUrl || '/assets/picture/personalInfo.png'}}"></image>
+    </view>
+    <view class="user-info">
+      <text class="nickname">{{userInfo.nickName || '禅修者'}}</text>
+      <text class="user-desc">修行不辍，日进一步</text>
+    </view>
+  </view>
+  
+  <view class="statistics-section">
+    <view class="section-title">
+      <text>修行统计</text>
+    </view>
+    
+    <view class="stat-cards">
+      <!-- 木鱼统计卡片 -->
+      <view class="stat-card">
+        <view class="card-header">
+          <image class="card-icon" src="/assets/picture/muyu.png"></image>
+          <text class="card-title">木鱼敲击</text>
+        </view>
+        
+        <view class="card-content">
+          <view class="stat-item">
+            <text class="stat-label">今日</text>
+            <text class="stat-value">{{muyuTodayCount}}</text>
+          </view>
+          <view class="stat-item">
+            <text class="stat-label">累计</text>
+            <text class="stat-value">{{muyuTotalCount}}</text>
+          </view>
+          <view class="stat-item">
+            <text class="stat-label">连续天数</text>
+            <text class="stat-value">{{muyuStreakDays}}</text>
+          </view>
+        </view>
+      </view>
+      
+      <!-- 颂钵统计卡片 -->
+      <view class="stat-card">
+        <view class="card-header">
+          <image class="card-icon" src="/assets/picture/songbo.png"></image>
+          <text class="card-title">颂钵敲击</text>
+        </view>
+        
+        <view class="card-content">
+          <view class="stat-item">
+            <text class="stat-label">今日</text>
+            <text class="stat-value">{{songboTodayCount}}</text>
+          </view>
+          <view class="stat-item">
+            <text class="stat-label">累计</text>
+            <text class="stat-value">{{songboTotalCount}}</text>
+          </view>
+          <view class="stat-item">
+            <text class="stat-label">连续天数</text>
+            <text class="stat-value">{{songboStreakDays}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+  
+  <view class="history-section">
+    <view class="section-title">
+      <text>近期记录</text>
+    </view>
+    
+    <view class="calendar">
+      <view class="calendar-header">
+        <text wx:for="{{daysOfWeek}}" wx:key="index" class="day-label">{{item}}</text>
+      </view>
+      <view class="calendar-body">
+        <view wx:for="{{calendarDays}}" wx:key="date" class="calendar-day {{item.isToday ? 'today' : ''}}">
+          <text class="day-number">{{item.day}}</text>
+          <view class="day-activities">
+            <view class="day-activity muyu" wx:if="{{item.muyuCount > 0}}">{{item.muyuCount}}</view>
+            <view class="day-activity songbo" wx:if="{{item.songboCount > 0}}">{{item.songboCount}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+  
+  <view class="footer">
+    <text>心如止水，日日精进</text>
+  </view>
+</view> 
