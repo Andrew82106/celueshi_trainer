@@ -7,16 +7,23 @@ Page({
      * 页面的初始数据
      */
     data: {
-
+        userInfo: null,
+        isLoading: false
     },
 
     /**
      * 生命周期函数--监听页面加载
      */
     onLoad(options) {
-      if (app.globalData.userInfo) {
-        wx.reLaunch({ url: '/pages/index/index' })
-      }
+        // 检查全局用户信息
+        this.setData({
+            userInfo: app.globalData.userInfo
+        });
+        
+        // 如果用户已经登录，直接跳转到首页
+        if (app.globalData.userInfo && app.globalData.userInfo.isLogin) {
+            wx.reLaunch({ url: '/pages/index/index' });
+        }
     },
 
     /**
@@ -68,36 +75,33 @@ Page({
 
     },
 
-    handleLogin() {
-      wx.getUserProfile({
-        desc: '用于记录训练数据',
-        success: res => {
-          // 存储基础用户信息
-          const userData = {
-            ...res.userInfo,
-            openid: app.globalData.openid // 确保有唯一标识
-          };
-          userData.nickName = "未登录";
-          userData.isLogin = false;
-          userData.isTourist = false;
-          app.globalData.userInfo = userData;
-          app.globalData.isGuest = false;
-          wx.setStorageSync('userInfo', userData);
-          console.log("in handleLogin")
-          console.log(userData)
-          // 跳转到信息完善页面
-          wx.reLaunch({ url: '/pages/login/login' });
-        },
-        fail: () => {
-          wx.showToast({ title: '登录失败', icon: 'error' })
-        }
-      })
+    // 微信登录处理
+    handleLogin(e) {
+        if (this.data.isLoading) return;
+        
+        this.setData({ isLoading: true });
+        
+        wx.reLaunch({
+            url: '/pages/login/login'
+        });
+        
     },
 
-    tuoristLogin() {
-      // 游客模式
-      app.globalData.isGuest = true
-      app.globalData.userInfo = { nickName: '游客' ,isTourist: true}
-      wx.reLaunch({ url: '/pages/index/index' })
+    // 游客登录处理
+    touristLogin() {
+        // 设置游客信息
+        const userInfo = {
+            nickName: '游客',
+            avatarUrl: '',
+            isTourist: true,
+            isLogin: false
+        };
+        
+        // 保存到全局变量和本地
+        app.globalData.userInfo = userInfo;
+        wx.setStorageSync('userInfo', userInfo);
+        
+        // 跳转到首页
+        wx.reLaunch({ url: '/pages/index/index' });
     }
 })

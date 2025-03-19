@@ -3,6 +3,9 @@ const app = getApp()
 
 Page({
   onShow() {
+      console.log("userData debug in index.js:")
+      console.log(app.globalData.userInfo)
+      console.log(app.globalData.userInfo.isTourist)
     if (!app.globalData.userInfo) {
       wx.redirectTo({ url: '/pages/main/main' })
     }

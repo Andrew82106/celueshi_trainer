@@ -9,15 +9,33 @@
   background-color: #F5F5F5;
 }
 
-/* 设置按钮样式 */
-.settings-btn {
+/* 按钮容器样式 */
+.settings-container {
   position: absolute;
-  top: 60px;
-  left: 20px;
+  top: 130rpx;
+  left: 30rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  z-index: 10;
+}
+
+/* 每个按钮的样式 */
+.settings-btn {
   display: flex;
   flex-direction: column;
   align-items: center;
-  z-index: 10;
+  margin-right: 40rpx;  /* 按钮之间的间距 */
+}
+
+.settings-config {
+  right: 30rpx;
+  top: 30rpx;
+}
+
+.settings-upload {
+  right: 30rpx;
+  top: 150rpx; /* 调整这个值以控制按钮间距 */
 }
 
 .settings-icon {
@@ -139,4 +157,15 @@
 .title {
   font-size: 20px;
   margin-bottom: 20px;
+}
+
+.training-time {
+  font-size: 28rpx;
+  color: #7D7D7D;
+  margin-top: 10rpx;
+}
+
+.disabled-muyu {
+  opacity: 0.5;
+  filter: grayscale(50%);
 } 

@@ -4,7 +4,8 @@
   <block wx:if="{{userInfo}}">
     <image class="avatar" src="{{userInfo.avatarUrl}}" bindtap="reLogin"></image>
     <text class="nickname">{{userInfo.nickName}}</text>
-    <text class="login-tip">点击上方图片进行重新登录</text>
+    <text class="login-tip" wx:if="{{userInfo.isTourist}}">点击上方图片进行重新登录</text>
+    <text class="login-tip" wx:else>点击图片修改信息</text>
   </block>
   
   <block wx:else>

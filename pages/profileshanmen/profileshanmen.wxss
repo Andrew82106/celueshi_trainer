@@ -46,6 +46,7 @@
 }
 
 .user-desc {
+  margin-left: 10rpx;
   font-size: 26rpx;
   color: #999;
 }
@@ -210,4 +211,55 @@
   margin-bottom: 30rpx;
   font-size: 26rpx;
   color: #999;
+}
+
+/* 排名部分样式 */
+.ranking-section {
+  width: 100%;
+  margin-top: 30rpx;
+  background-color: #fff;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  box-sizing: border-box;
+}
+
+.ranking-list {
+  width: 100%;
+  margin-top: 20rpx;
+}
+
+.ranking-header, .ranking-item {
+  display: flex;
+  width: 100%;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+  font-size: 28rpx;
+}
+
+.ranking-header {
+  font-weight: bold;
+  color: #333;
+}
+
+.rank-column {
+  width: 15%;
+  text-align: center;
+}
+
+.name-column {
+  width: 35%;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.time-column, .count-column {
+  width: 25%;
+  text-align: center;
+}
+
+.current-user {
+  background-color: rgba(189, 174, 141, 0.1);
+  font-weight: bold;
 } 

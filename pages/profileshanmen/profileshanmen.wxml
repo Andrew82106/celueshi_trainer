@@ -6,13 +6,12 @@
     </view>
     <view class="user-info">
       <text class="nickname">{{userInfo.nickName || '禅修者'}}</text>
-      <text class="user-desc">修行不辍，日进一步</text>
     </view>
   </view>
   
   <view class="statistics-section">
     <view class="section-title">
-      <text>修行统计</text>
+      <text>数据统计</text>
     </view>
     
     <view class="stat-cards">
@@ -35,6 +34,14 @@
           <view class="stat-item">
             <text class="stat-label">连续天数</text>
             <text class="stat-value">{{muyuStreakDays}}</text>
+          </view>
+          <view class="stat-item">
+            <text class="stat-label">今日时长</text>
+            <text class="stat-value">{{muyuTodayMinutes}}min</text>
+          </view>
+          <view class="stat-item">
+            <text class="stat-label">累计时长</text>
+            <text class="stat-value">{{muyuTotalMinutes}}min</text>
           </view>
         </view>
       </view>
@@ -59,6 +66,14 @@
             <text class="stat-label">连续天数</text>
             <text class="stat-value">{{songboStreakDays}}</text>
           </view>
+          <view class="stat-item">
+            <text class="stat-label">今日时长</text>
+            <text class="stat-value">{{songboTodayMinutes}}min</text>
+          </view>
+          <view class="stat-item">
+            <text class="stat-label">累计时长</text>
+            <text class="stat-value">{{songboTotalMinutes}}min</text>
+          </view>
         </view>
       </view>
     </view>
@@ -81,6 +96,28 @@
             <view class="day-activity songbo" wx:if="{{item.songboCount > 0}}">{{item.songboCount}}</view>
           </view>
         </view>
+      </view>
+    </view>
+  </view>
+  
+  <view class="ranking-section">
+    <view class="section-title">
+      <text>修行排名</text>
+    </view>
+    
+    <view class="ranking-list">
+      <view class="ranking-header">
+        <text class="rank-column">排名</text>
+        <text class="name-column">用户</text>
+        <text class="time-column">总时长(分)</text>
+        <text class="count-column">总次数</text>
+      </view>
+      
+      <view class="ranking-item {{item.isCurrentUser ? 'current-user' : ''}}" wx:for="{{rankingList}}" wx:key="index">
+        <text class="rank-column">{{index + 1}}</text>
+        <text class="name-column">{{item.nickName || '禅修者'}}</text>
+        <text class="time-column">{{item.totalMinutes}}</text>
+        <text class="count-column">{{item.totalCount}}</text>
       </view>
     </view>
   </view>

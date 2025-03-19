@@ -18,48 +18,143 @@ App({
   },
 
   onLaunch() {
+    // 如果是下载 SDK 的方式，改成 const { init } = require('./wxCloudClientSDK.umd.js')
+    const { init } = require("./wxCloudClientSDK.umd.js");
+
+    // 指定云开发环境 ID
+    wx.cloud.init({
+      env: "shanmen-2g47tf5h9b090d06", // 当前的云开发环境 ID
+      traceUser: true
+    });
+    const client = init(wx.cloud);
+    // const models = client.models; // 或者也可以直接从 wx.cloud.models 上获取，这种方式的类型提示会弱一些
+    this.globalData.cloud = client; // 挂载到全局
+    this.globalData.models = client.models;
+    this.globalData.db = wx.cloud.database();
+
+    console.log("in app.js debug: 完成云环境初始化，已将client和database挂载到全局")
+    /*console.log("开始测试database")
+    this.globalData.db.collection("userinfo").get({
+        success: res=>{
+            console.log(res)
+        }
+    })
+
+    console.log("测试database end")*/
     // 初始化木鱼和颂钵的记录数据
     this.initStatisticsData();
+
+    console.log("in app.js debug: 初始化木鱼和颂钵的记录数据")
     
-    const user = wx.getStorageSync('userInfo');
-    console.log("in app.js")
+    // 设置默认游客信息
+    this.globalData.userInfo = {
+      nickName: '游客',
+      isTourist: true,
+      isLogin: false
+    };
+    console.log("in app.js debug: 设置默认游客信息")
     
-    if (user) {
-      this.globalData.userInfo = user;
-      console.log(user)
-      if (user.isLogin == false && user.isTourist == false) {
-        console.log("in app.js, user.isLogin == false && user.isTourist == false")
-        wx.reLaunch({ url: '/pages/login/login' });
-      }
-      else if (user.nickName == "微信用户") {
-        console.log("in app.js, user.nickName == 微信用户")
-        wx.reLaunch({ url: '/pages/login/login' });
-      }
-      else if (user.nickName && user.avatarUrl) {
-        console.log("in app.js, user.nickName && user.avatarUrl")
-        wx.reLaunch({ url: '/pages/index/index' });
-      }
-      else {
-        console.log("in app.js, else")
-        wx.reLaunch({ url: '/pages/login/login' });
-      }
+    // 检查本地存储是否有用户信息
+    const localUserInfo = wx.getStorageSync('userInfo');
+
+    console.log("in app.js debug: 检查本地存储是否有用户信息")
+    console.log(localUserInfo)
+    console.log("in app.js debug: 检查本地存储是否有用户信息 end")
+
+    if (localUserInfo) {
+      this.globalData.userInfo = localUserInfo;
+      
+      // 调用云函数获取用户openID
+      wx.cloud.callFunction({
+        name: 'fetchwxinfo',
+        success: res => {
+          console.log("in app.js debug: 获取用户openId成功");
+          console.log(res);
+          const openId = res.result.openid;
+          this.globalData.userInfo.openId = openId;
+          
+          // 获取到openId后，查询数据库中是否存在该用户
+          this.globalData.db.collection("userinfo").where({
+            openId: openId
+          }).get().then(res => {
+            console.log("in app.js debug: 查询用户信息成功");
+            console.log(res);
+            
+            // 获取用户的昵称和头像
+            const nickname = this.globalData.userInfo.nickName || "";
+            const avatarUrl = this.globalData.userInfo.avatarUrl || "";
+            
+            if (res.data && res.data.length > 0) {
+              // 用户已存在，更新信息
+              this.globalData.db.collection("userinfo").where({
+                openId: openId
+              }).update({
+                data: {
+                  nickName: nickname,
+                  avatarUrl: avatarUrl
+                }
+              }).then(updateRes => {
+                console.log("in app.js debug: 更新用户信息成功");
+                console.log(updateRes);
+              }).catch(err => {
+                console.log("in app.js debug: 更新用户信息失败");
+                console.log(err);
+              });
+            } else {
+              // 用户不存在，创建新用户
+              this.globalData.db.collection("userinfo").add({
+                data: {
+                  openId: openId,
+                  nickName: nickname,
+                  avatarUrl: avatarUrl
+                }
+              }).then(addRes => {
+                console.log("in app.js debug: 创建用户信息成功");
+                console.log(addRes);
+              }).catch(err => {
+                console.log("in app.js debug: 创建用户信息失败");
+                console.log(err);
+              });
+            }
+          }).catch(err => {
+            console.log("in app.js debug: 查询用户信息失败");
+            console.log(err);
+          });
+        },
+        fail: err => {
+          console.log("in app.js debug: 获取用户openId失败");
+          console.log(err);
+          wx.showToast({
+            title: '获取用户openId失败',
+            icon: 'none'
+          });
+        }
+      });
     } else {
-      wx.reLaunch({ url: '/pages/main/main' });
+      console.log("in app.js debug: 本地没有用户信息，用游客模式");
+      this.globalData.userInfo = {
+        nickName: '游客',
+        isTourist: true,
+        isLogin: false
+      };
+      console.log("in app.js debug: 设置默认游客信息");
+      console.log(this.globalData.userInfo);
     }
+    
   },
 
   checkLogin() {
     return new Promise((resolve) => {
-      if (this.globalData.userInfo) return resolve(true)
-      const user = wx.getStorageSync('userInfo')
+      if (this.globalData.userInfo && this.globalData.userInfo.isLogin) return resolve(true);
+      const user = wx.getStorageSync('userInfo');
       
-      if (user) {
-        this.globalData.userInfo = user
-        resolve(true)
+      if (user && user.isLogin) {
+        this.globalData.userInfo = user;
+        resolve(true);
       } else {
-        resolve(false)
+        resolve(false);
       }
-    })
+    });
   },
 
   // 初始化统计数据

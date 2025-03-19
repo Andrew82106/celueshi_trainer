@@ -8,19 +8,22 @@
   </view>
   
   <view class="login-section">
-    <view class="login-btn primary-btn" bindtap="handleLogin">
+    <!--<view class="login-btn primary-btn" bindtap="handleLogin">
       <text>微信登录</text>
+    </view>-->
+    <view class="login-btn primary-btn" bindtap="handleLogin">
+    <text>微信登录</text>
     </view>
 
-    <view class="login-btn secondary-btn" bindtap="tuoristLogin">
+    <view class="login-btn secondary-btn" bindtap="touristLogin">
       <text>游客模式</text>
     </view>
     
     <view class="tips-container">
       <text class="tip">请先登录以使用完整功能</text>
       <text class="tip">本小程序仅供个人使用</text>
-      <text class="tip">用户登录功能仅用于用户手机本地数据缓存</text>
-      <text class="tip">不涉及用户信息读取和传输</text>
+      <text class="tip">用户登录功能读取用户微信头像和姓名</text>
+      <text class="tip">不涉及其他用户隐私</text>
     </view>
   </view>
   
