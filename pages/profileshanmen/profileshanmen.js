@@ -395,6 +395,15 @@ Page({
     },
 
     /**
+     * 导航到主页
+     */
+    navigateToHome() {
+        wx.navigateTo({
+            url: '/pages/index/index'
+        });
+    },
+
+    /**
      * 加载用户排名数据
      */
     loadRankingData() {
@@ -403,6 +412,7 @@ Page({
         const db = app.globalData.db;
         const _ = db.command;
         const currentUserOpenId = app.globalData.userInfo.openId;
+        const today = this.getTodayDateString(); // 获取今天的日期
         
         // 预先定义usersMap，防止Promise错误时变量未定义
         let usersMap = {};
@@ -443,7 +453,9 @@ Page({
                         muyuTotalCount: 0,
                         songboTotalCount: 0,
                         muyuTotalSeconds: 0,
-                        songboTotalSeconds: 0
+                        songboTotalSeconds: 0,
+                        muyuTodaySeconds: 0,
+                        songboTodaySeconds: 0
                     };
                 }
                 
@@ -452,6 +464,12 @@ Page({
                 userStatsMap[record.openId].songboTotalCount += (record.songboCounts || 0);
                 userStatsMap[record.openId].muyuTotalSeconds += (record.muyuSeconds || 0);
                 userStatsMap[record.openId].songboTotalSeconds += (record.songboSeconds || 0);
+                
+                // 累加今日数据
+                if (record.date === today) {
+                    userStatsMap[record.openId].muyuTodaySeconds = (record.muyuSeconds || 0);
+                    userStatsMap[record.openId].songboTodaySeconds = (record.songboSeconds || 0);
+                }
             });
             
             // 整合用户信息和统计数据，并转换为数组
@@ -464,6 +482,10 @@ Page({
                 const totalSeconds = stats.muyuTotalSeconds + stats.songboTotalSeconds;
                 const totalMinutes = Math.ceil(totalSeconds / 60);
                 
+                // 计算今日时长（分钟）
+                const todaySeconds = stats.muyuTodaySeconds + stats.songboTodaySeconds;
+                const todayMinutes = Math.ceil(todaySeconds / 60);
+                
                 return {
                     openId,
                     nickName: user.nickName,
@@ -472,14 +494,22 @@ Page({
                     songboTotalCount: stats.songboTotalCount,
                     muyuTotalSeconds: stats.muyuTotalSeconds,
                     songboTotalSeconds: stats.songboTotalSeconds,
+                    muyuTodaySeconds: stats.muyuTodaySeconds,
+                    songboTodaySeconds: stats.songboTodaySeconds,
                     totalCount,
                     totalMinutes,
+                    todayMinutes,
                     isCurrentUser: openId === currentUserOpenId
                 };
             });
             
-            // 按总时长排序（降序）
-            rankingData.sort((a, b) => b.totalMinutes - a.totalMinutes);
+            // 按今日时长排序（降序），若今日时长相同则按总时长排序
+            rankingData.sort((a, b) => {
+                if (b.todayMinutes !== a.todayMinutes) {
+                    return b.todayMinutes - a.todayMinutes;
+                }
+                return b.totalMinutes - a.totalMinutes;
+            });
             
             // 更新页面数据
             this.setData({

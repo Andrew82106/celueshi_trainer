@@ -1,5 +1,8 @@
 <!--pages/muyu/muyu.wxml-->
 <view class="container">
+  <!-- 背景图片 -->
+  <image class="background-image" src="/assets/picture/trainingBackground.jpeg" mode="aspectFill"></image>
+  
   <!-- 设置按钮组 -->
   <view class="settings-container">
     <view class="settings-btn" bindtap="toggleTraining">
@@ -7,7 +10,7 @@
       <text>{{isTraining ? '结束训练' : '开始训练'}}</text>
     </view>
 
-    <view class="settings-btn" bindtap="{{isAutoTapping ? 'stopAutoTap' : 'showSettingsModal'}}">
+    <view class="settings-btn" bindtap="{{isAutoTapping ? 'stopAutoTap' : 'showSettingsModal'}}" wx:if="{{isTraining}}">
       <image src="/assets/picture/auto.png" mode="aspectFit" class="settings-icon"></image>
       <text>{{isAutoTapping ? '停止自动' : '自动敲击'}}</text>
     </view>
@@ -34,7 +37,7 @@
       </view>
       <view class="modal-body">
         <text>每次敲击间隔时间（秒）：{{interval}}秒</text>
-        <slider min="0.5" max="5" step="0.1" value="{{interval}}" show-value="{{false}}" block-size="28" activeColor="#9F8053" backgroundColor="#D9D9D9" bindchange="sliderChange"/>
+        <slider min="1" max="50" step="0.5" value="{{interval}}" show-value="{{false}}" block-size="28" activeColor="#9F8053" backgroundColor="#D9D9D9" bindchange="sliderChange"/>
         <text>自动敲击时长（分钟）：{{autoTapDuration}}分钟</text>
         <slider min="1" max="30" step="1" value="{{autoTapDuration}}" show-value="{{false}}" block-size="28" activeColor="#9F8053" backgroundColor="#D9D9D9" bindchange="durationChange"/>
       </view>

@@ -6,7 +6,19 @@
   justify-content: center;
   height: 100vh;
   position: relative;
-  background-color: #F8F4FB; /* 稍微偏紫色的背景 */
+  /* 移除背景色，使用背景图片 */
+  /* background-color: #F8F4FB; */
+}
+
+/* 背景图片样式 */
+.background-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  filter: brightness(0.6) grayscale(0.4); /* 降低亮度并增加灰度 */
 }
 
 /* 按钮容器样式 */
@@ -26,6 +38,14 @@
   flex-direction: column;
   align-items: center;
   margin-right: 40rpx;  /* 按钮之间的间距 */
+  padding: 10rpx 20rpx;
+  /* 移除背景色 */
+}
+
+.settings-btn text {
+  color: #e9d8f4; /* 浅紫色文字 */
+  font-weight: bold;
+  text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.8); /* 增强文字阴影 */
 }
 
 .settings-icon {
@@ -40,23 +60,30 @@
   flex-direction: column;
   align-items: center;
   margin-bottom: 40px;
+  z-index: 10; /* 确保在背景上方 */
+  padding: 20rpx 40rpx;
+  /* 移除背景色 */
 }
 
 .count-text {
   font-size: 60px;
   font-weight: bold;
-  color: #7D6B91; /* 紫色调 */
+  color: #d4c2e5; /* 更浅的紫色 */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6); /* 增强文字阴影效果 */
 }
 
 .merit-text {
   font-size: 16px;
-  color: #666;
+  color: #e9d8f4; /* 浅紫色文字 */
   margin-bottom: 5px;
+  font-weight: bold;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .total-count {
   font-size: 14px;
-  color: #999;
+  color: #ddd;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 /* 颂钵样式 */
@@ -66,6 +93,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 10; /* 确保在背景上方 */
 }
 
 .songbo-image {
@@ -151,8 +179,10 @@
 
 .training-time {
   font-size: 28rpx;
-  color: #7D7D7D;
+  color: #e9d8f4; /* 浅紫色文字 */
   margin-top: 10rpx;
+  font-weight: bold;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .disabled-songbo {

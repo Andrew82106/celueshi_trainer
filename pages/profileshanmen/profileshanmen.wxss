@@ -51,6 +51,24 @@
   color: #999;
 }
 
+/* 返回主页按钮样式 */
+.home-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10rpx 20rpx;
+  margin-left: auto;
+  background-color: #f0e6d2;
+  border-radius: 12rpx;
+}
+
+
+.home-text {
+  font-size: 22rpx;
+  color: #9F8053;
+}
+
 /* 统计部分样式 */
 .statistics-section {
   width: 100%;
@@ -242,7 +260,7 @@
 }
 
 .rank-column {
-  width: 15%;
+  width: 10%;
   text-align: center;
 }
 
@@ -255,7 +273,7 @@
 }
 
 .time-column, .count-column {
-  width: 25%;
+  width: 18%;
   text-align: center;
 }
 

@@ -175,6 +175,11 @@ Page({
             clearInterval(this.data.trainingTimer);
         }
 
+        // 如果自动敲击还在运行，停止它
+        if (this.data.isAutoTapping) {
+            this.stopAutoTap();
+        }
+
         // 保存最终训练时长
         const finalSeconds = this.data.trainingSeconds;
 
@@ -189,7 +194,7 @@ Page({
 
         // 显示提示
         wx.showToast({
-            title: '数据已上传',
+            title: '训练结束',
             icon: 'success',
             duration: 2000
         });
@@ -269,7 +274,7 @@ Page({
         innerAudioContext.autoplay = true;
         
         // 颂钵音效路径
-        innerAudioContext.src = '/assets/vedio/songbo.mp3';
+        innerAudioContext.src = '/assets/audio/songbo.wav';
         
         innerAudioContext.onError((res) => {
             console.log('音频播放失败：', res);
