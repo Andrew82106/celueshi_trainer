@@ -51,9 +51,14 @@
   
   <view class="info-card">
     <text class="section-title">开发记录</text>
+    <view class="feature-item">
+      <text class="feature-title">版本0.2.3(当前)</text>
+      <text class="feature-desc">添加了山门训练的动画效果，根据用户反馈修改了山门训练的入口页面</text>
+      <text class="feature-desc">>>Andrew 在 2025年3月20日下午20点50分 提交上传</text>
+    </view>
 
     <view class="feature-item">
-      <text class="feature-title">版本0.2.2(当前)</text>
+      <text class="feature-title">版本0.2.2</text>
       <text class="feature-desc">修改了页面逻辑，确保当用户为游客模式时无法进入山门版块进行训练，以免造成后台数据库混乱。</text>
       <text class="feature-desc">>>Andrew 在 2025年3月20日上午09点02分 提交上传</text>
     </view>

@@ -39,5 +39,10 @@ Page({
     wx.navigateTo({
         url: '/pages/translate-training/translate-training'
       })
+  },
+  navigateToShanmen() {
+    wx.navigateTo({
+      url: '/pages/shanmen/shanmen'
+    })
   }
 })

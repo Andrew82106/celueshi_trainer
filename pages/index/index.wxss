@@ -80,3 +80,52 @@ page {
   box-shadow: 0 10rpx 24rpx rgba(0,0,0,0.08);
   background-color: #f8faff;
 }
+
+/* 山门训练按钮样式 */
+.shanmen-btn-container {
+  width: 65%;
+  height: 300rpx;
+  margin-top: 50rpx;
+  padding: 0 20rpx;
+}
+
+.shanmen-btn {
+  background-image: url("https://wx.qlogo.cn/mmhead/QzPtZqIzA0n7k2vHljg5do4WkVqFc8ddgKNFwiaZ63JgOgMfCWLD6xQNqSLBoEoB5z5zuIhKqM4s/0");
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+  background-size: 100% auto;
+  background-position: center bottom;
+  padding-bottom: 30%; /* 16:9 比例 */
+  width: 100%;
+  height: 100rpx;
+  border-radius: 24rpx;
+  box-shadow: 0 10rpx 30rpx rgba(255,107,107,0.3);
+  transition: all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+.shanmen-btn:active {
+  transform: scale(0.98);
+  opacity: 0.9;
+}
+
+.btn-shanmen-title {
+  position: absolute;
+  top: 30rpx;
+  left: 30rpx;
+  color: white;
+  font-size: 44rpx;
+  font-weight: 600;
+  letter-spacing: 1rpx;
+  text-shadow: 0 2rpx 4rpx rgba(0,0,0,0.3);
+}
+
+.btn-shanmen-sub {
+  position: absolute;
+  top: 90rpx;
+  left: 32rpx;
+  color: white;
+  font-size: 32rpx;
+  letter-spacing: 1rpx;
+  text-shadow: 0 2rpx 4rpx rgba(0,0,0,0.3);
+}
