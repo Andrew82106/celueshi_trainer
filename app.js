@@ -80,28 +80,39 @@ App({
             console.log("in app.js debug: 查询用户信息成功");
             console.log(res);
             
-            // 获取用户的昵称和头像
-            const nickname = this.globalData.userInfo.nickName || "";
-            const avatarUrl = this.globalData.userInfo.avatarUrl || "";
-            
             if (res.data && res.data.length > 0) {
-              // 用户已存在，更新信息
-              this.globalData.db.collection("userinfo").where({
-                openId: openId
-              }).update({
-                data: {
-                  nickName: nickname,
-                  avatarUrl: avatarUrl
-                }
-              }).then(updateRes => {
-                console.log("in app.js debug: 更新用户信息成功");
-                console.log(updateRes);
-              }).catch(err => {
-                console.log("in app.js debug: 更新用户信息失败");
-                console.log(err);
-              });
+              // 用户已存在，从数据库获取用户信息
+              const userInfo = res.data[0];
+              const nickname = userInfo.nickName || "未命名用户";
+              const avatarUrl = userInfo.avatarUrl || "None";
+              
+              // 更新全局数据
+              this.globalData.userInfo.nickName = nickname;
+              this.globalData.userInfo.avatarUrl = avatarUrl;
+              
+              // 检查是否需要更新数据库中的信息
+              if (!userInfo.nickName || !userInfo.avatarUrl) {
+                this.globalData.db.collection("userinfo").where({
+                  openId: openId
+                }).update({
+                  data: {
+                    nickName: nickname,
+                    avatarUrl: avatarUrl
+                  }
+                }).then(updateRes => {
+                  console.log("in app.js debug: 更新用户信息成功");
+                  console.log(updateRes);
+                }).catch(err => {
+                  console.log("in app.js debug: 更新用户信息失败");
+                  console.log(err);
+                });
+              }
             } else {
               // 用户不存在，创建新用户
+              // 从云端获取用户的昵称和头像
+              const nickname = this.globalData.userInfo.nickName || "未命名用户";
+              const avatarUrl = this.globalData.userInfo.avatarUrl || "None";
+              
               this.globalData.db.collection("userinfo").add({
                 data: {
                   openId: openId,

@@ -19,7 +19,7 @@
   <!-- 敲击计数 -->
   <view class="counter">
     <text class="count-text">{{count}}</text>
-    <text class="merit-text">今日功德</text>
+    <text class="merit-text">今日次数</text>
     <!--<text class="total-count">总计：{{totalCount}}</text>-->
     <text class="training-time" wx:if="{{isTraining}}">训练时长: {{trainingSeconds}}秒</text>
   </view>
@@ -37,9 +37,9 @@
       </view>
       <view class="modal-body">
         <text>每次敲击间隔时间（秒）：{{interval}}秒</text>
-        <slider min="2" max="50" step="1" value="{{interval}}" show-value="{{false}}" block-size="28" activeColor="#7D6B91" backgroundColor="#D9D9D9" bindchange="sliderChange"/>
+        <slider min="2" max="10" step="1" value="{{interval}}" show-value="{{false}}" block-size="28" activeColor="#7D6B91" backgroundColor="#D9D9D9" bindchange="sliderChange"/>
         <text>自动敲击时长（分钟）：{{autoTapDuration}}分钟</text>
-        <slider min="1" max="30" step="1" value="{{autoTapDuration}}" show-value="{{false}}" block-size="28" activeColor="#7D6B91" backgroundColor="#D9D9D9" bindchange="durationChange"/>
+        <slider min="1" max="120" step="1" value="{{autoTapDuration}}" show-value="{{false}}" block-size="28" activeColor="#7D6B91" backgroundColor="#D9D9D9" bindchange="durationChange"/>
       </view>
       <view class="modal-footer">
         <button class="btn cancel" bindtap="hideSettingsModal">取消</button>

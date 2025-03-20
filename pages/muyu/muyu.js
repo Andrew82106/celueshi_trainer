@@ -28,21 +28,12 @@ Page({
         // 获取今天的日期字符串 (格式: YYYY-MM-DD)
         const today = this.getTodayDateString();
         
-        // 从缓存中读取所有敲击记录
-        const muyuRecords = wx.getStorageSync('muyuRecords') || {};
-        const todayCount = muyuRecords[today] || 0;
-        
-        // 计算总计数
-        let totalCount = 0;
-        for (const date in muyuRecords) {
-            totalCount += muyuRecords[date];
-        }
-        
         this.setData({
-            count: todayCount,
-            totalCount: totalCount,
             today: today
         });
+        
+        // 从数据库加载木鱼训练数据
+        this.loadTrainingDataFromDB();
     },
     
     /**
@@ -54,6 +45,108 @@ Page({
         const month = (now.getMonth() + 1).toString().padStart(2, '0');
         const day = now.getDate().toString().padStart(2, '0');
         return `${year}-${month}-${day}`;
+    },
+
+    /**
+     * 从数据库加载训练数据
+     */
+    loadTrainingDataFromDB() {
+        // 获取openId，如果没有登录则使用本地缓存
+        const openId = app.globalData.userInfo.openId;
+        if (!openId) {
+            console.log("未登录或openId不存在，使用本地缓存");
+            this.loadFromLocalStorage();
+            return;
+        }
+        
+        const today = this.data.today;
+        const db = app.globalData.db;
+        
+        // 查询数据库获取所有训练记录
+        db.collection("trainlog").where({
+            openId: openId
+        }).get().then(res => {
+            console.log("获取训练记录成功:", res);
+            
+            if (res.data && res.data.length > 0) {
+                // 计算总计数和今日计数
+                let totalCount = 0;
+                let todayCount = 0;
+                
+                // 遍历所有训练记录
+                res.data.forEach(record => {
+                    // 累计总敲击次数
+                    totalCount += record.muyuCounts || 0;
+                    
+                    // 如果是今天的记录，设置今日计数
+                    if (record.date === today) {
+                        todayCount = record.muyuCounts || 0;
+                    }
+                });
+                
+                // 更新页面数据
+                this.setData({
+                    count: todayCount,
+                    totalCount: totalCount
+                });
+                
+                // 同时更新全局数据和本地缓存，保持一致
+                this.updateGlobalAndLocalData(todayCount, totalCount);
+            } else {
+                console.log("没有找到训练记录，使用默认值");
+                this.setData({
+                    count: 0,
+                    totalCount: 0
+                });
+                // 同时更新全局数据和本地缓存，保持一致
+                this.updateGlobalAndLocalData(0, 0);
+            }
+        }).catch(err => {
+            console.error("获取训练记录失败:", err);
+            // 出错时使用本地缓存数据
+            this.loadFromLocalStorage();
+        });
+    },
+    
+    /**
+     * 从本地存储加载数据（作为备用方案）
+     */
+    loadFromLocalStorage() {
+        // 从缓存中读取所有敲击记录
+        const muyuRecords = wx.getStorageSync('muyuRecords') || {};
+        const todayCount = muyuRecords[this.data.today] || 0;
+        
+        // 计算总计数
+        let totalCount = 0;
+        for (const date in muyuRecords) {
+            totalCount += muyuRecords[date];
+        }
+        
+        this.setData({
+            count: todayCount,
+            totalCount: totalCount
+        });
+    },
+    
+    /**
+     * 更新全局数据和本地缓存
+     */
+    updateGlobalAndLocalData(todayCount, totalCount) {
+        // 更新本地缓存
+        const muyuRecords = wx.getStorageSync('muyuRecords') || {};
+        muyuRecords[this.data.today] = todayCount;
+        wx.setStorageSync('muyuRecords', muyuRecords);
+        
+        // 更新全局数据
+        if (app.globalData) {
+            app.globalData.muyuRecords = muyuRecords;
+            app.globalData.muyuTodayCount = todayCount;
+            app.globalData.muyuTotalCount = totalCount;
+            
+            // 更新用户信息中的木鱼数据
+            app.globalData.userInfo.muyuTodayCount = todayCount;
+            app.globalData.userInfo.muyuTotalCount = totalCount;
+        }
     },
 
     /**
@@ -116,8 +209,10 @@ Page({
         // 将今日敲击记录放到用户信息中
         app.globalData.userInfo.muyuTodayCount = count;
         app.globalData.userInfo.muyuTotalCount = this.data.totalCount;
+        
+        // 注意：不再每次敲击时上传数据库，而是在结束训练时一次性上传
     },
-
+    
     /**
      * 切换训练状态（开始/结束训练）
      */
@@ -225,6 +320,9 @@ Page({
                     }
                 }).then(res => {
                     console.log("更新训练记录成功:", res);
+                    
+                    // 更新后重新从数据库获取最新数据
+                    this.loadTrainingDataFromDB();
                 }).catch(err => {
                     console.error("更新训练记录失败:", err);
                 });
@@ -240,6 +338,9 @@ Page({
                     }
                 }).then(res => {
                     console.log("添加训练记录成功:", res);
+                    
+                    // 添加后重新从数据库获取最新数据
+                    this.loadTrainingDataFromDB();
                 }).catch(err => {
                     console.error("添加训练记录失败:", err);
                 });
@@ -384,7 +485,8 @@ Page({
      * 生命周期函数--监听页面显示
      */
     onShow() {
-
+        // 每次显示页面时，从数据库重新加载最新数据
+        this.loadTrainingDataFromDB();
     },
 
     /**

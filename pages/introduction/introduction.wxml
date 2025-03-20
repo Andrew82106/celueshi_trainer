@@ -35,12 +35,17 @@
       <text class="feature-title">正听反说训练</text>
       <text class="feature-desc">系统播放随机数字音频，用户需逆序输入，支持5-20位数字长度，锻炼听觉记忆能力。</text>
     </view>
+
+    <view class="feature-item">
+      <text class="feature-title">山门训练</text>
+      <text class="feature-desc">提供木鱼和颂钵计时功能，辅助专注力训练，并且提供专注力训练时长记录和排名功能。</text>
+    </view>
   </view>
 
   
   <view class="info-card">
     <text class="section-title">技术支持</text>
-    <text class="info-text">微信小程序原生开发框架，自定义组件，智谱GLM-4大模型API，本地数据存储，不读取用户隐私，不涉及音频处理和视频处理，不涉及文字生成</text>
+    <text class="info-text">微信小程序原生开发框架，自定义组件，智谱GLM-4大模型API，采用微信云全套框架进行数据存储和资源存储，不涉及外部数据库调用，不涉及音频处理和视频处理，不涉及文字生成</text>
   </view>
 
   
@@ -48,7 +53,19 @@
     <text class="section-title">开发记录</text>
 
     <view class="feature-item">
-      <text class="feature-title">版本0.1.7(当前)</text>
+      <text class="feature-title">版本0.2.2(当前)</text>
+      <text class="feature-desc">修改了页面逻辑，确保当用户为游客模式时无法进入山门版块进行训练，以免造成后台数据库混乱。</text>
+      <text class="feature-desc">>>Andrew 在 2025年3月20日上午09点02分 提交上传</text>
+    </view>
+
+    <view class="feature-item">
+      <text class="feature-title">版本0.2.1</text>
+      <text class="feature-desc">在用户信息界面下开发了山门训练界面，添加了用户排名版块，修改了用户登录逻辑，使用微信云接口进行安全鉴权，获取用户头像和姓名，数据存储在微信云数据库中。</text>
+      <text class="feature-desc">>>Andrew 在 2025年3月20日上午08点35分 提交上传</text>
+    </view>
+
+    <view class="feature-item">
+      <text class="feature-title">版本0.1.7</text>
       <text class="feature-desc">美化了用户记录使用情况图表（舒尔特表，圆点闪视，正听反说）</text>
       <text class="feature-desc">>>Andrew 在 2025年3月5日下午20点58分 提交上传</text>
     </view>
