@@ -82,6 +82,30 @@ Page({
                     // 如果是今天的记录，设置今日计数
                     if (record.date === today) {
                         todayCount = record.songboCounts || 0;
+                        
+                        // 比较远端数据和本地缓存数据，取最大值
+                        const localRecords = wx.getStorageSync('songboRecords') || {};
+                        const localTodayCount = localRecords[today] || 0;
+                        
+                        if (localTodayCount > todayCount) {
+                            // 本地数据大于远端数据，更新远端数据
+                            console.log("本地数据大于远端数据，更新远端数据");
+                            todayCount = localTodayCount;
+                            
+                            // 更新远端数据库
+                            db.collection("trainlog").where({
+                                openId: openId,
+                                date: today
+                            }).update({
+                                data: {
+                                    songboCounts: todayCount
+                                }
+                            }).then(updateRes => {
+                                console.log("远端数据更新成功:", updateRes);
+                            }).catch(updateErr => {
+                                console.error("远端数据更新失败:", updateErr);
+                            });
+                        }
                     }
                 });
                 
@@ -95,12 +119,42 @@ Page({
                 this.updateGlobalAndLocalData(todayCount, totalCount);
             } else {
                 console.log("没有找到训练记录，使用默认值");
-                this.setData({
-                    count: 0,
-                    totalCount: 0
-                });
+                
+                // 检查本地是否有今日记录
+                const localRecords = wx.getStorageSync('songboRecords') || {};
+                const localTodayCount = localRecords[today] || 0;
+                
+                if (localTodayCount > 0) {
+                    // 本地有今日记录，但远端没有，创建远端记录
+                    console.log("本地有今日记录，但远端没有，创建远端记录");
+                    db.collection("trainlog").add({
+                        data: {
+                            openId: openId,
+                            date: today,
+                            songboCounts: localTodayCount,
+                            songboSeconds: 0
+                        }
+                    }).then(addRes => {
+                        console.log("创建远端记录成功:", addRes);
+                    }).catch(addErr => {
+                        console.error("创建远端记录失败:", addErr);
+                    });
+                    
+                    // 设置页面显示
+                    this.setData({
+                        count: localTodayCount,
+                        totalCount: localTodayCount
+                    });
+                } else {
+                    // 本地和远端都没有记录
+                    this.setData({
+                        count: 0,
+                        totalCount: 0
+                    });
+                }
+                
                 // 同时更新全局数据和本地缓存，保持一致
-                this.updateGlobalAndLocalData(0, 0);
+                this.updateGlobalAndLocalData(this.data.count, this.data.totalCount);
             }
         }).catch(err => {
             console.error("获取训练记录失败:", err);
@@ -310,14 +364,29 @@ Page({
             date: today
         }).get().then(res => {
             if (res.data.length > 0) {
-                // 有今日的训练记录，更新记录
-                console.log("in uploadTrainingData 有今日的训练记录，更新记录");
+                // 有今日的训练记录，对比远端和本地数据，取最大值
+                console.log("in uploadTrainingData 有今日的训练记录，比较远端和本地数据");
+                const remoteCount = res.data[0].songboCounts || 0;
+                const localCount = this.data.count;
+                
+                // 取本地和远端的最大值
+                const finalCount = Math.max(remoteCount, localCount);
+                
+                // 更新本地显示
+                if (finalCount > localCount) {
+                    this.setData({
+                        count: finalCount
+                    });
+                    // 同步更新本地存储
+                    this.saveCountToStorage(finalCount);
+                }
+                
                 app.globalData.db.collection("trainlog").where({
                     openId: app.globalData.userInfo.openId,
                     date: today
                 }).update({
                     data: {
-                        songboCounts: this.data.count,
+                        songboCounts: finalCount,
                         songboSeconds: _.inc(seconds) // 累加训练秒数
                     }
                 }).then(res => {
@@ -493,6 +562,17 @@ Page({
     onShow() {
         // 每次显示页面时，从数据库重新加载最新数据
         this.loadTrainingDataFromDB();
+        
+        // 确保页面恢复时是初始状态（只有开始训练按钮）
+        this.setData({
+            isTraining: false,
+            isAutoTapping: false,
+            trainingStartTime: null,
+            trainingSeconds: 0,
+            trainingTimer: null,
+            autoTapTimer: null,
+            autoTapEndTimer: null
+        });
     },
 
     /**
@@ -509,6 +589,27 @@ Page({
         if (this.data.trainingTimer) {
             clearInterval(this.data.trainingTimer);
         }
+        
+        // 如果正在训练，结束训练并上传数据
+        if (this.data.isTraining) {
+            // 保存最终训练时长
+            const finalSeconds = this.data.trainingSeconds;
+
+            // 重置训练状态
+            this.setData({
+                isTraining: false,
+                trainingTimer: null,
+                isAutoTapping: false
+            });
+
+            // 停止自动敲击如果正在进行
+            if (this.data.isAutoTapping) {
+                this.stopAutoTap();
+            }
+
+            // 上传训练数据到数据库
+            this.uploadTrainingData(finalSeconds);
+        }
     },
 
     /**
@@ -524,6 +625,27 @@ Page({
         }
         if (this.data.trainingTimer) {
             clearInterval(this.data.trainingTimer);
+        }
+        
+        // 如果正在训练，结束训练并上传数据
+        if (this.data.isTraining) {
+            // 保存最终训练时长
+            const finalSeconds = this.data.trainingSeconds;
+
+            // 重置训练状态
+            this.setData({
+                isTraining: false,
+                trainingTimer: null,
+                isAutoTapping: false
+            });
+
+            // 停止自动敲击如果正在进行
+            if (this.data.isAutoTapping) {
+                this.stopAutoTap();
+            }
+
+            // 上传训练数据到数据库
+            this.uploadTrainingData(finalSeconds);
         }
     },
 

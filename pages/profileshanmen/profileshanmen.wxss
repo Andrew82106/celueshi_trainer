@@ -45,6 +45,20 @@
   margin-bottom: 10rpx;
 }
 
+.user-level {
+  display: block;
+  font-size: 24rpx;
+  color: #9F8053;
+  margin-top: 5rpx;
+}
+
+.avatar-tip {
+  display: block;
+  font-size: 20rpx;
+  color: #999;
+  margin-top: 10rpx;
+}
+
 .user-desc {
   margin-left: 10rpx;
   font-size: 26rpx;
@@ -272,9 +286,20 @@
   text-overflow: ellipsis;
 }
 
-.time-column, .count-column {
+.time-column {
   width: 18%;
   text-align: center;
+}
+
+.count-column {
+  width: 18%;
+  text-align: center;
+}
+
+.level-column {
+  width: 18%;
+  text-align: center;
+  color: #9F8053;
 }
 
 .current-user {

@@ -50,9 +50,17 @@
 
   
   <view class="info-card">
+
     <text class="section-title">开发记录</text>
+    
     <view class="feature-item">
-      <text class="feature-title">版本0.2.3(当前)</text>
+    <text class="feature-title">版本0.2.4(当前)</text>
+      <text class="feature-desc">修改了山门加载页面的错误显示情况，在山门用户信息页面添加了用户信息修改链接，添加了用户段位展示，并且修改了退出页面后训练次数异常显示的情况</text>
+      <text class="feature-desc">>>Andrew 在 2025年3月25日上午10点20分 提交上传</text>
+    </view>
+
+    <view class="feature-item">
+      <text class="feature-title">版本0.2.3</text>
       <text class="feature-desc">添加了山门训练的动画效果，根据用户反馈修改了山门训练的入口页面</text>
       <text class="feature-desc">>>Andrew 在 2025年3月20日下午20点50分 提交上传</text>
     </view>

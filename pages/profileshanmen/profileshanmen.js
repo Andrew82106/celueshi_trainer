@@ -19,6 +19,7 @@ Page({
         daysOfWeek: ['日', '一', '二', '三', '四', '五', '六'],  // 星期标签
         calendarDays: [],       // 日历天数数据
         rankingList: [],        // 用户排名列表
+        userLevel: '',          // 用户段位
     },
 
     /**
@@ -128,6 +129,10 @@ Page({
                 const muyuTotalMinutes = Math.ceil(muyuTotalSeconds / 60);
                 const songboTotalMinutes = Math.ceil(songboTotalSeconds / 60);
                 
+                // 计算用户段位
+                const userLevel = this.calculateUserLevel(muyuTotalMinutes + songboTotalMinutes);
+                app.globalData.userInfo.userLevel = userLevel;
+                
                 // 更新全局数据
                 app.globalData.muyuRecords = muyuRecords;
                 app.globalData.songboRecords = songboRecords;
@@ -151,6 +156,7 @@ Page({
                 app.globalData.userInfo.songboTodayMinutes = songboTodayMinutes;
                 app.globalData.userInfo.muyuTotalMinutes = muyuTotalMinutes;
                 app.globalData.userInfo.songboTotalMinutes = songboTotalMinutes;
+                app.globalData.userInfo.userLevel = userLevel;
                 
                 // 更新页面数据
                 this.setData({
@@ -163,7 +169,8 @@ Page({
                     muyuTodayMinutes,
                     muyuTotalMinutes,
                     songboTodayMinutes,
-                    songboTotalMinutes
+                    songboTotalMinutes,
+                    userLevel
                 });
                 
                 console.log("统计数据加载完成", {
@@ -176,7 +183,8 @@ Page({
                     muyuTodayMinutes,
                     muyuTotalMinutes,
                     songboTodayMinutes,
-                    songboTotalMinutes
+                    songboTotalMinutes,
+                    userLevel
                 });
             } else {
                 console.log("未找到训练记录，初始化为0");
@@ -191,7 +199,8 @@ Page({
                     muyuTodayMinutes: 0,
                     muyuTotalMinutes: 0,
                     songboTodayMinutes: 0,
-                    songboTotalMinutes: 0
+                    songboTotalMinutes: 0,
+                    userLevel: '初入山门'
                 });
             }
         }).catch(err => {
@@ -211,7 +220,8 @@ Page({
                 muyuTodayMinutes: 0,
                 muyuTotalMinutes: 0,
                 songboTodayMinutes: 0,
-                songboTotalMinutes: 0
+                songboTotalMinutes: 0,
+                userLevel: '初入山门'
             });
         });
     },
@@ -404,6 +414,15 @@ Page({
     },
 
     /**
+     * 导航到用户信息修改页面
+     */
+    navigateToUserInfo() {
+        wx.navigateTo({
+            url: '/pages/login/login'
+        });
+    },
+
+    /**
      * 加载用户排名数据
      */
     loadRankingData() {
@@ -431,6 +450,7 @@ Page({
                         avatarUrl: user.avatarUrl
                     };
                 }
+                console.log("获取到用户信息:", user);
             });
             
             console.log("获取到用户信息:", users.length, "个用户");
@@ -454,6 +474,8 @@ Page({
                         songboTotalCount: 0,
                         muyuTotalSeconds: 0,
                         songboTotalSeconds: 0,
+                        muyuTodayCount: 0,
+                        songboTodayCount: 0,
                         muyuTodaySeconds: 0,
                         songboTodaySeconds: 0
                     };
@@ -465,58 +487,73 @@ Page({
                 userStatsMap[record.openId].muyuTotalSeconds += (record.muyuSeconds || 0);
                 userStatsMap[record.openId].songboTotalSeconds += (record.songboSeconds || 0);
                 
-                // 累加今日数据
+                // 记录今日数据（只设置，不累加，因为今日只有一条记录）
                 if (record.date === today) {
-                    userStatsMap[record.openId].muyuTodaySeconds = (record.muyuSeconds || 0);
-                    userStatsMap[record.openId].songboTodaySeconds = (record.songboSeconds || 0);
+                    console.log(`今日记录 - 用户:${record.openId}, 木鱼:${record.muyuCounts}, 木鱼秒数:${record.muyuSeconds}, 颂钵:${record.songboCounts}, 颂钵秒数:${record.songboSeconds}`);
+                    userStatsMap[record.openId].muyuTodayCount = record.muyuCounts || 0;
+                    userStatsMap[record.openId].songboTodayCount = record.songboCounts || 0;
+                    userStatsMap[record.openId].muyuTodaySeconds = record.muyuSeconds || 0;
+                    userStatsMap[record.openId].songboTodaySeconds = record.songboSeconds || 0;
                 }
             });
             
-            // 整合用户信息和统计数据，并转换为数组
-            const rankingData = Object.keys(userStatsMap).map(openId => {
-                const stats = userStatsMap[openId];
-                const user = usersMap[openId] || { nickName: '禅修者', avatarUrl: '' };
-                
-                // 计算总次数和总时长（分钟）
-                const totalCount = stats.muyuTotalCount + stats.songboTotalCount;
-                const totalSeconds = stats.muyuTotalSeconds + stats.songboTotalSeconds;
-                const totalMinutes = Math.ceil(totalSeconds / 60);
-                
-                // 计算今日时长（分钟）
-                const todaySeconds = stats.muyuTodaySeconds + stats.songboTodaySeconds;
-                const todayMinutes = Math.ceil(todaySeconds / 60);
-                
-                return {
-                    openId,
-                    nickName: user.nickName,
-                    avatarUrl: user.avatarUrl,
-                    muyuTotalCount: stats.muyuTotalCount,
-                    songboTotalCount: stats.songboTotalCount,
-                    muyuTotalSeconds: stats.muyuTotalSeconds,
-                    songboTotalSeconds: stats.songboTotalSeconds,
-                    muyuTodaySeconds: stats.muyuTodaySeconds,
-                    songboTodaySeconds: stats.songboTodaySeconds,
-                    totalCount,
-                    totalMinutes,
-                    todayMinutes,
-                    isCurrentUser: openId === currentUserOpenId
-                };
-            });
+            // 如果当前用户ID存在，专门查询今日训练记录以确保获取最新数据
+            if (currentUserOpenId) {
+                // 直接从数据库查询今日记录
+                return db.collection("trainlog").where({
+                    openId: currentUserOpenId,
+                    date: today
+                }).get().then(todayRes => {
+                    if (todayRes.data && todayRes.data.length > 0) {
+                        const todayRecord = todayRes.data[0];
+                        console.log(`今日单独查询记录 - ID:${todayRecord._id}, 木鱼:${todayRecord.muyuCounts}, 木鱼秒数:${todayRecord.muyuSeconds}, 颂钵:${todayRecord.songboCounts}, 颂钵秒数:${todayRecord.songboSeconds}`);
+                        
+                        // 确保用户在userStatsMap中存在
+                        if (!userStatsMap[currentUserOpenId]) {
+                            userStatsMap[currentUserOpenId] = {
+                                openId: currentUserOpenId,
+                                muyuTotalCount: todayRecord.muyuCounts || 0,
+                                songboTotalCount: todayRecord.songboCounts || 0,
+                                muyuTotalSeconds: todayRecord.muyuSeconds || 0,
+                                songboTotalSeconds: todayRecord.songboSeconds || 0,
+                                muyuTodayCount: todayRecord.muyuCounts || 0,
+                                songboTodayCount: todayRecord.songboCounts || 0,
+                                muyuTodaySeconds: todayRecord.muyuSeconds || 0,
+                                songboTodaySeconds: todayRecord.songboSeconds || 0
+                            };
+                        } else {
+                            // 更新今日数据
+                            userStatsMap[currentUserOpenId].muyuTodayCount = todayRecord.muyuCounts || 0;
+                            userStatsMap[currentUserOpenId].songboTodayCount = todayRecord.songboCounts || 0;
+                            userStatsMap[currentUserOpenId].muyuTodaySeconds = todayRecord.muyuSeconds || 0;
+                            userStatsMap[currentUserOpenId].songboTodaySeconds = todayRecord.songboSeconds || 0;
+                        }
+                    }
+                    
+                    // 继续处理本地数据
+                    return this.processLocalData(userStatsMap, usersMap, currentUserOpenId, today, db);
+                });
+            }
             
-            // 按今日时长排序（降序），若今日时长相同则按总时长排序
-            rankingData.sort((a, b) => {
-                if (b.todayMinutes !== a.todayMinutes) {
-                    return b.todayMinutes - a.todayMinutes;
-                }
-                return b.totalMinutes - a.totalMinutes;
-            });
-            
-            // 更新页面数据
-            this.setData({
-                rankingList: rankingData
-            });
-            
-            console.log("排名数据加载完成，共", rankingData.length, "名用户");
+            // 如果没有当前用户ID，直接处理本地数据
+            return this.processLocalData(userStatsMap, usersMap, currentUserOpenId, today, db);
+        }).then(result => {
+            // rankingData将由processLocalData方法返回
+            if (result && result.rankingData) {
+                // 更新页面数据
+                this.setData({
+                    rankingList: result.rankingData
+                });
+                
+                // 打印排行榜数据的关键信息
+                result.rankingData.forEach(user => {
+                    console.log(`用户排名信息 - ${user.nickName}: 今日(${user.todayMinutes}分钟/${user.todayCount}次), 累计(${user.totalMinutes}分钟/${user.totalCount}次)`);
+                });
+                
+                console.log("排名数据:", result.rankingData);
+                
+                console.log("排名数据加载完成，共", result.rankingData.length, "名用户");
+            }
         }).catch(err => {
             console.error("获取排名数据失败:", err);
             wx.showToast({
@@ -531,4 +568,183 @@ Page({
             });
         });
     },
+
+    /**
+     * 计算用户段位
+     */
+    calculateUserLevel(totalMinutes) {
+        if (totalMinutes >= 1500) {
+            return "山门9段";
+        } else if (totalMinutes >= 1200) {
+            return "山门8段";
+        } else if (totalMinutes >= 900) {
+            return "山门7段";
+        } else if (totalMinutes >= 600) {
+            return "山门6段";
+        } else if (totalMinutes >= 300) {
+            return "山门5段";
+        } else if (totalMinutes >= 200) {
+            return "山门4段";
+        } else if (totalMinutes >= 120) {
+            return "山门3段";
+        } else if (totalMinutes >= 60) {
+            return "山门2段";
+        } else if (totalMinutes >= 10) {
+            return "山门1段";
+        } else {
+            return "初入山门";
+        }
+    },
+
+    /**
+     * 处理本地数据并生成排行榜
+     */
+    processLocalData(userStatsMap, usersMap, currentUserOpenId, today, db) {
+        // 检查并更新当前用户的本地今日数据
+        if (currentUserOpenId && userStatsMap[currentUserOpenId]) {
+            // 获取本地记录
+            const muyuRecords = wx.getStorageSync('muyuRecords') || {};
+            const songboRecords = wx.getStorageSync('songboRecords') || {};
+            const localMuyuTodayCount = muyuRecords[today] || 0;
+            const localSongboTodayCount = songboRecords[today] || 0;
+            
+            console.log(`本地今日记录 - 木鱼:${localMuyuTodayCount}, 颂钵:${localSongboTodayCount}`);
+            console.log(`远端今日记录 - 木鱼:${userStatsMap[currentUserOpenId].muyuTodayCount}, 颂钵:${userStatsMap[currentUserOpenId].songboTodayCount}`);
+            
+            // 比较本地和远端数据，取最大值
+            if (localMuyuTodayCount > userStatsMap[currentUserOpenId].muyuTodayCount) {
+                userStatsMap[currentUserOpenId].muyuTodayCount = localMuyuTodayCount;
+            }
+            
+            if (localSongboTodayCount > userStatsMap[currentUserOpenId].songboTodayCount) {
+                userStatsMap[currentUserOpenId].songboTodayCount = localSongboTodayCount;
+            }
+            
+            // 从全局变量中获取当日训练时长（分钟）
+            const globalMuyuTodayMinutes = app.globalData.muyuTodayMinutes || 0;
+            const globalSongboTodayMinutes = app.globalData.songboTodayMinutes || 0;
+            
+            // 将分钟转换为秒（先检查全局数据是否存在）
+            const globalMuyuTodaySeconds = globalMuyuTodayMinutes > 0 ? globalMuyuTodayMinutes * 60 : 0;
+            const globalSongboTodaySeconds = globalSongboTodayMinutes > 0 ? globalSongboTodayMinutes * 60 : 0;
+            
+            console.log(`全局今日训练时长 - 木鱼:${globalMuyuTodayMinutes}分钟, 颂钵:${globalSongboTodayMinutes}分钟`);
+            console.log(`远端今日训练时长 - 木鱼:${Math.ceil(userStatsMap[currentUserOpenId].muyuTodaySeconds / 60)}分钟, 颂钵:${Math.ceil(userStatsMap[currentUserOpenId].songboTodaySeconds / 60)}分钟`);
+            
+            // 比较全局变量和远端的训练时长，取最大值
+            if (globalMuyuTodaySeconds > userStatsMap[currentUserOpenId].muyuTodaySeconds) {
+                console.log(`更新木鱼时长: ${userStatsMap[currentUserOpenId].muyuTodaySeconds} -> ${globalMuyuTodaySeconds}`);
+                userStatsMap[currentUserOpenId].muyuTodaySeconds = globalMuyuTodaySeconds;
+                
+                // 同时更新数据库中的记录
+                db.collection("trainlog").where({
+                    openId: currentUserOpenId,
+                    date: today
+                }).get().then(res => {
+                    if (res.data && res.data.length > 0) {
+                        // 有今日记录，更新
+                        db.collection("trainlog").doc(res.data[0]._id).update({
+                            data: {
+                                muyuSeconds: globalMuyuTodaySeconds
+                            }
+                        }).then(() => {
+                            console.log("更新木鱼时长到数据库成功");
+                        }).catch(err => {
+                            console.error("更新木鱼时长到数据库失败:", err);
+                        });
+                    }
+                }).catch(err => {
+                    console.error("查询今日记录失败:", err);
+                });
+            }
+            
+            if (globalSongboTodaySeconds > userStatsMap[currentUserOpenId].songboTodaySeconds) {
+                console.log(`更新颂钵时长: ${userStatsMap[currentUserOpenId].songboTodaySeconds} -> ${globalSongboTodaySeconds}`);
+                userStatsMap[currentUserOpenId].songboTodaySeconds = globalSongboTodaySeconds;
+                
+                // 同时更新数据库中的记录
+                db.collection("trainlog").where({
+                    openId: currentUserOpenId,
+                    date: today
+                }).get().then(res => {
+                    if (res.data && res.data.length > 0) {
+                        // 有今日记录，更新
+                        db.collection("trainlog").doc(res.data[0]._id).update({
+                            data: {
+                                songboSeconds: globalSongboTodaySeconds
+                            }
+                        }).then(() => {
+                            console.log("更新颂钵时长到数据库成功");
+                        }).catch(err => {
+                            console.error("更新颂钵时长到数据库失败:", err);
+                        });
+                    }
+                }).catch(err => {
+                    console.error("查询今日记录失败:", err);
+                });
+            }
+        }
+        
+        // 整合用户信息和统计数据，并转换为数组
+        const rankingData = Object.keys(userStatsMap).map(openId => {
+            const stats = userStatsMap[openId];
+            const user = usersMap[openId] || { nickName: '禅修者', avatarUrl: '' };
+            
+            // 计算总次数和总时长（分钟）
+            const totalCount = stats.muyuTotalCount + stats.songboTotalCount;
+            const totalSeconds = stats.muyuTotalSeconds + stats.songboTotalSeconds;
+            const totalMinutes = Math.ceil(totalSeconds / 60);
+            
+            // 计算今日次数和今日时长（分钟）
+            const todayCount = stats.muyuTodayCount + stats.songboTodayCount;
+            const todaySeconds = stats.muyuTodaySeconds + stats.songboTodaySeconds;
+            const todayMinutes = Math.ceil(todaySeconds / 60);
+            
+            // 计算用户段位
+            const userLevel = this.calculateUserLevel(totalMinutes);
+            
+            return {
+                openId,
+                nickName: user.nickName,
+                avatarUrl: user.avatarUrl,
+                muyuTotalCount: stats.muyuTotalCount,
+                songboTotalCount: stats.songboTotalCount,
+                muyuTodayCount: stats.muyuTodayCount,
+                songboTodayCount: stats.songboTodayCount,
+                muyuTotalSeconds: stats.muyuTotalSeconds,
+                songboTotalSeconds: stats.songboTotalSeconds,
+                muyuTodaySeconds: stats.muyuTodaySeconds,
+                songboTodaySeconds: stats.songboTodaySeconds,
+                totalCount,
+                todayCount,
+                totalMinutes,
+                todayMinutes,
+                userLevel,
+                isCurrentUser: openId === currentUserOpenId
+            };
+        });
+        
+        // 如果当前用户存在，更新当前用户的段位
+        if (currentUserOpenId && rankingData.find(user => user.openId === currentUserOpenId)) {
+            const currentUser = rankingData.find(user => user.openId === currentUserOpenId);
+            this.setData({
+                userLevel: currentUser.userLevel
+            });
+        }
+        
+        // 按今日时长排序（降序），若今日时长相同则按总时长排序
+        rankingData.sort((a, b) => {
+            if (b.todayMinutes !== a.todayMinutes) {
+                return b.todayMinutes - a.todayMinutes;
+            }
+            // 如果今日时长相同，按今日敲击次数排序
+            if (b.todayCount !== a.todayCount) {
+                return b.todayCount - a.todayCount;
+            }
+            // 如果今日时长和敲击次数都相同，按总时长排序
+            return b.totalMinutes - a.totalMinutes;
+        });
+        
+        return { rankingData };
+    }
 }) 

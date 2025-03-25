@@ -16,13 +16,13 @@
 
 .text-container {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
   height: auto;
-  writing-mode: vertical-lr;
-  -webkit-writing-mode: vertical-lr;
-  -ms-writing-mode: tb-lr;
+  writing-mode: vertical-rl;
+  -webkit-writing-mode: vertical-rl;
+  -ms-writing-mode: tb-rl;
 }
 
 .character {
@@ -44,18 +44,18 @@
 .character::after {
   content: '';
   position: absolute;
-  left: -8rpx;
-  top: 50%;
-  width: 2rpx;
-  height: 0%;
+  left: 50%;
+  top: -8rpx;
+  width: 80%;
+  height: 2rpx;
   background-color: #8c8c8c;
-  transition: height 0.6s ease, top 0.6s ease;
-  transform: translateY(-50%);
+  transition: width 0.6s ease, left 0.6s ease;
+  transform: translateX(-50%);
   opacity: 0;
 }
 
 .character.visible::after {
-  height: 80%;
+  width: 80%;
   opacity: 0.6;
 }
 

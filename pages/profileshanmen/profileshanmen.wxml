@@ -1,11 +1,13 @@
 <!--pages/profileshanmen/profileshanmen.wxml-->
 <view class="container">
   <view class="header">
-    <view class="avatar-container">
+    <view class="avatar-container" bindtap="navigateToUserInfo">
       <image class="avatar" src="{{userInfo.avatarUrl || '/assets/picture/personalInfo.png'}}"></image>
     </view>
     <view class="user-info">
       <text class="nickname">{{userInfo.nickName || '禅修者'}}</text>
+      <text class="user-level">{{userLevel || '初入山门'}}</text>
+      <text class="avatar-tip">点击头像可修改个人信息</text>
     </view>
     <view class="home-btn" bindtap="navigateToHome">
       <text class="home-text">返回主页</text>
@@ -113,16 +115,18 @@
         <text class="rank-column">排名</text>
         <text class="name-column">用户</text>
         <text class="time-column">今日(分)</text>
+        <!--<text class="count-column">今日(次)</text> -->
         <text class="time-column">总时长(分)</text>
-        <text class="count-column">总次数</text>
+        <text class="level-column">段位</text>
       </view>
       
       <view class="ranking-item {{item.isCurrentUser ? 'current-user' : ''}}" wx:for="{{rankingList}}" wx:key="index">
         <text class="rank-column">{{index + 1}}</text>
         <text class="name-column">{{item.nickName || '禅修者'}}</text>
         <text class="time-column">{{item.todayMinutes}}</text>
+        <!--<text class="count-column">{{item.todayCount}}</text> -->
         <text class="time-column">{{item.totalMinutes}}</text>
-        <text class="count-column">{{item.totalCount}}</text>
+        <text class="level-column">{{item.userLevel}}</text>
       </view>
     </view>
   </view>
