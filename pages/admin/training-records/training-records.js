@@ -133,45 +133,81 @@ Page({
     });
     
     try {
-      // 构建查询条件
-      let query = trainlogCollection.orderBy('date', 'desc');
-      
-      // 日期筛选
-      if (this.data.startDate && this.data.endDate) {
-        const startDate = this.data.startDate;
-        const endDate = this.data.endDate;
+      // 如果有搜索关键字，先查询用户信息获取openId列表
+      let targetOpenIds = [];
+      if (this.data.searchKeyword) {
+        const keyword = this.data.searchKeyword;
+        const userResult = await usersCollection.where({
+          nickName: db.RegExp({
+            regexp: keyword,
+            options: 'i'
+          })
+        }).get();
         
-        query = query.where({
-          date: _.gte(startDate).and(_.lte(endDate))
-        });
+        if (userResult.data.length > 0) {
+          targetOpenIds = userResult.data.map(user => user.openId);
+          
+          // 更新用户缓存
+          const cache = { ...this.data.userInfoCache };
+          userResult.data.forEach(user => {
+            cache[user.openId] = user;
+          });
+          
+          this.setData({
+            userInfoCache: cache
+          });
+        } else {
+          // 没有匹配的用户，直接返回空记录
+          this.setData({
+            records: [],
+            totalRecords: 0,
+            totalPages: 1
+          });
+          wx.hideLoading();
+          return;
+        }
       }
       
-      // 先获取总记录数
-      const countResult = await query.count();
+      // 构建基本查询条件
+      let queryCondition = {};
+      
+      // 添加日期筛选条件
+      if (this.data.startDate && this.data.endDate) {
+        queryCondition.date = _.gte(this.data.startDate).and(_.lte(this.data.endDate));
+      }
+      
+      // 添加用户名筛选条件
+      if (targetOpenIds.length > 0) {
+        queryCondition.openId = _.in(targetOpenIds);
+      }
+      
+      // 计算总记录数
+      const countResult = await trainlogCollection.where(queryCondition).count();
       const total = countResult.total;
       
       // 计算总页数
-      const totalPages = Math.ceil(total / this.data.pageSize);
+      const totalPages = Math.ceil(total / this.data.pageSize) || 1;
       
       // 获取当前页的数据
       const skip = (this.data.currentPage - 1) * this.data.pageSize;
-      const recordsResult = await query.skip(skip).limit(this.data.pageSize).get();
+      const recordsResult = await trainlogCollection
+        .where(queryCondition)
+        .orderBy('date', 'desc')
+        .skip(skip)
+        .limit(this.data.pageSize)
+        .get();
       
       const records = recordsResult.data;
       
-      // 处理记录，添加用户信息和格式化日期
+      // 处理记录，添加用户信息
       const processedRecords = await this.processRecords(records);
       
       this.setData({
         records: processedRecords,
         totalRecords: total,
-        totalPages: totalPages || 1
+        totalPages: totalPages
       });
       
-      // 如果搜索关键字不为空，进行前端筛选
-      if (this.data.searchKeyword) {
-        this.filterRecordsByKeyword();
-      }
     } catch (error) {
       console.error('加载训练记录失败:', error);
       wx.showToast({
@@ -183,14 +219,11 @@ Page({
     }
   },
   
-  // 处理记录，添加用户信息和格式化日期
+  // 处理记录，添加用户信息
   processRecords: async function(records) {
     const processedRecords = [];
     
     for (const record of records) {
-      // 日期已经是格式化好的，直接使用
-      const formattedDate = record.date;
-      
       // 获取用户信息
       let userInfo = this.data.userInfoCache[record.openId];
       
@@ -217,30 +250,12 @@ Page({
       
       processedRecords.push({
         ...record,
-        date: formattedDate,
         nickName: userInfo ? userInfo.nickName : '未知用户',
         avatarUrl: userInfo ? userInfo.avatarUrl : ''
       });
     }
     
     return processedRecords;
-  },
-  
-  // 按关键字筛选记录（前端筛选）
-  filterRecordsByKeyword: function() {
-    if (!this.data.searchKeyword) return;
-    
-    const keyword = this.data.searchKeyword.toLowerCase();
-    const filteredRecords = this.data.records.filter(record => {
-      const nickName = (record.nickName || '').toLowerCase();
-      return nickName.includes(keyword);
-    });
-    
-    this.setData({
-      records: filteredRecords,
-      totalRecords: filteredRecords.length,
-      totalPages: Math.ceil(filteredRecords.length / this.data.pageSize) || 1
-    });
   },
 
   // 返回上一页

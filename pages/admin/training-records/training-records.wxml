@@ -1,24 +1,31 @@
 <!-- 训练记录查看页面 -->
 <view class="container">
   <view class="header">
-    <view class="back-btn" bindtap="navigateBack">
-      <text class="back-icon">←</text>
-      <text class="back-text">返回</text>
+    <view class="header-left">
+      <view class="back-btn" bindtap="navigateBack">
+        <text class="back-icon">←</text>
+        <text class="back-text">返回</text>
+      </view>
     </view>
-    <text class="title">训练记录</text>
+    <view class="header-center">
+      <text class="title">训练记录</text>
+    </view>
+    <view class="header-right"></view>
   </view>
 
   <!-- 筛选条件 -->
   <view class="filter-section">
     <view class="date-filter">
       <view class="filter-label">日期筛选：</view>
-      <picker mode="date" value="{{startDate}}" start="2020-01-01" end="{{currentDate}}" bindchange="onStartDateChange">
-        <view class="date-picker">{{startDate || '开始日期'}}</view>
-      </picker>
-      <text class="date-separator">至</text>
-      <picker mode="date" value="{{endDate}}" start="{{startDate}}" end="{{currentDate}}" bindchange="onEndDateChange">
-        <view class="date-picker">{{endDate || '结束日期'}}</view>
-      </picker>
+      <view class="date-picker-container">
+        <picker mode="date" value="{{startDate}}" start="2020-01-01" end="{{currentDate}}" bindchange="onStartDateChange">
+          <view class="date-picker">{{startDate || '开始日期'}}</view>
+        </picker>
+        <text class="date-separator">至</text>
+        <picker mode="date" value="{{endDate}}" start="{{startDate}}" end="{{currentDate}}" bindchange="onEndDateChange">
+          <view class="date-picker">{{endDate || '结束日期'}}</view>
+        </picker>
+      </view>
     </view>
     <view class="search-box">
       <input class="search-input" 
@@ -43,7 +50,7 @@
         <view class="record-item" wx:for="{{records}}" wx:key="_id">
           <view class="record-header">
             <view class="user-info">
-              <image class="user-avatar" src="{{item.avatarUrl || '/assets/images/default-avatar.png'}}" mode="aspectFill"></image>
+              <image class="user-avatar" src="{{item.avatarUrl || '/assets/picture/default-avatar.png'}}" mode="aspectFill"></image>
               <text class="user-name">{{item.nickName || '未命名用户'}}</text>
             </view>
             <text class="record-date">{{item.date}}</text>
@@ -52,21 +59,21 @@
             <view class="detail-row">
               <view class="detail-item">
                 <text class="detail-label">木鱼敲击：</text>
-                <text class="detail-value">{{item.muyuCounts || 0}}次</text>
+                <text class="detail-value highlight">{{item.muyuCounts || 0}}次</text>
               </view>
               <view class="detail-item">
                 <text class="detail-label">木鱼时长：</text>
-                <text class="detail-value">{{(item.muyuSeconds || 0) / 60 | int}}分钟</text>
+                <text class="detail-value highlight">{{item.muyuSeconds || 0}}秒</text>
               </view>
             </view>
             <view class="detail-row">
               <view class="detail-item">
                 <text class="detail-label">颂钵敲击：</text>
-                <text class="detail-value">{{item.songboCounts || 0}}次</text>
+                <text class="detail-value highlight">{{item.songboCounts || 0}}次</text>
               </view>
               <view class="detail-item">
                 <text class="detail-label">颂钵时长：</text>
-                <text class="detail-value">{{(item.songboSeconds || 0) / 60 | int}}分钟</text>
+                <text class="detail-value highlight">{{item.songboSeconds || 0}}秒</text>
               </view>
             </view>
           </view>

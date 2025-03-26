@@ -41,9 +41,8 @@
         <view class="user-info">
           <view class="user-name">{{item.nickName || '未命名用户'}}</view>
           <view class="user-stats">
-            <text>木鱼累积次数: {{item.accumulateMuyu || 0}}次</text>
-            <text>木鱼累积时长: {{item.accumulateMuyuTime || 0}}秒</text>
-            <text>颂钵累积次数: {{item.accumulateSongbo || 0}}次</text>
+            <text class="user-stat-item">木鱼累积: {{item.accumulateMuyu || 0}}次</text>
+            <text class="user-stat-item">颂钵累积: {{item.accumulateSongbo || 0}}次</text>
           </view>
         </view>
         <view class="user-admin-status">
@@ -81,28 +80,6 @@
     <view class="detail-stats">
       <view class="stat-group">
         <view class="stat-item">
-          <text class="stat-label">注册时间</text>
-          <text class="stat-value">{{selectedUser.registerDate || '未知'}}</text>
-        </view>
-        <view class="stat-item">
-          <text class="stat-label">最后登录</text>
-          <text class="stat-value">{{selectedUser.lastLoginDate || '未知'}}</text>
-        </view>
-      </view>
-      
-      <view class="stat-group">
-        <view class="stat-item">
-          <text class="stat-label">最后更新时间</text>
-          <text class="stat-value">{{selectedUser.lastUpdateTime || '未知'}}</text>
-        </view>
-        <view class="stat-item">
-          <text class="stat-label">总训练时长</text>
-          <text class="stat-value">{{(selectedUser.accumulateMuyuTime + selectedUser.accumulateSongboTime) || 0}}秒</text>
-        </view>
-      </view>
-      
-      <view class="stat-group">
-        <view class="stat-item">
           <text class="stat-label">木鱼累积次数</text>
           <text class="stat-value">{{selectedUser.accumulateMuyu || 0}}次</text>
         </view>
@@ -122,13 +99,23 @@
           <text class="stat-value">{{selectedUser.accumulateSongboTime || 0}}秒</text>
         </view>
       </view>
+      
+      <view class="stat-group">
+        <view class="stat-item">
+          <text class="stat-label">最后更新时间</text>
+          <text class="stat-value">{{selectedUser.lastUpdateTime || '未知'}}</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-label">数据库ID</text>
+          <text class="stat-value" style="word-break: break-all;">{{selectedUser._id || '未知'}}</text>
+        </view>
+      </view>
     </view>
     
     <view class="admin-actions">
       <view class="action-btn {{selectedUser.admin ? 'danger' : 'primary'}}" bindtap="toggleAdminStatus">
         {{selectedUser.admin ? '取消管理员' : '设为管理员'}}
       </view>
-      <view class="action-btn primary" bindtap="viewUserTraining">查看训练记录</view>
       <view class="action-btn danger" bindtap="resetUserData">重置数据</view>
     </view>
   </view>

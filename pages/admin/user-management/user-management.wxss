@@ -1,25 +1,27 @@
 /* 用户管理页面样式 */
 .container {
   min-height: 100vh;
-  background-color: #f5f5f5;
+  background-color: #f8f4fc;
   padding-bottom: 30rpx;
 }
 
 .header {
   width: 100%;
-  padding: 30rpx;
-  background-color: #8053A1;
+  padding: 40rpx 30rpx;
+  background: linear-gradient(135deg, #9969c7 0%, #6a4b96 100%);
   display: flex;
   justify-content: center;
   align-items: center;
   margin-bottom: 0rpx;
   position: relative;
+  box-shadow: 0 4rpx 10rpx rgba(0, 0, 0, 0.2);
 }
 
 .title {
   color: #fff;
-  font-size: 36rpx;
+  font-size: 38rpx;
   font-weight: bold;
+  letter-spacing: 2rpx;
 }
 
 /* 操作区样式 */
@@ -73,30 +75,32 @@
 /* 搜索框样式 */
 .search-box {
   width: 90%;
-  margin: 20rpx auto;
+  margin: 30rpx auto 20rpx;
   display: flex;
   background-color: #fff;
-  border-radius: 10rpx;
+  border-radius: 50rpx;
   overflow: hidden;
-  box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4rpx 10rpx rgba(0, 0, 0, 0.08);
+  border: 2rpx solid #e9e0f5;
 }
 
 .search-input {
   flex: 1;
   height: 80rpx;
-  padding: 0 20rpx;
+  padding: 0 30rpx;
   font-size: 28rpx;
 }
 
 .search-btn {
   width: 160rpx;
   height: 80rpx;
-  background-color: #8053A1;
+  background: linear-gradient(135deg, #9969c7 0%, #6a4b96 100%);
   color: #fff;
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 28rpx;
+  border-radius: 0 50rpx 50rpx 0;
 }
 
 /* 用户列表样式 */
@@ -109,19 +113,27 @@
   display: flex;
   align-items: center;
   background-color: #fff;
-  border-radius: 10rpx;
-  padding: 20rpx;
+  border-radius: 20rpx;
+  padding: 25rpx;
   margin-bottom: 20rpx;
-  box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4rpx 15rpx rgba(0, 0, 0, 0.06);
+  transition: transform 0.3s, box-shadow 0.3s;
+  border: 1rpx solid rgba(153, 105, 199, 0.1);
+}
+
+.user-item:active {
+  transform: scale(0.98);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
 }
 
 .user-avatar {
   width: 120rpx;
   height: 120rpx;
-  margin-right: 20rpx;
+  margin-right: 25rpx;
   border-radius: 50%;
   overflow: hidden;
-  border: 2rpx solid #8053A1;
+  border: 3rpx solid #9969c7;
+  box-shadow: 0 2rpx 10rpx rgba(153, 105, 199, 0.3);
 }
 
 .user-avatar image {
@@ -134,9 +146,10 @@
 }
 
 .user-name {
-  font-size: 32rpx;
+  font-size: 34rpx;
   font-weight: bold;
-  margin-bottom: 10rpx;
+  margin-bottom: 15rpx;
+  color: #333;
 }
 
 .user-stats {
@@ -144,10 +157,15 @@
   flex-direction: column;
 }
 
-.user-stats text {
+.user-stat-item {
   font-size: 24rpx;
   color: #666;
-  margin-bottom: 5rpx;
+  margin-bottom: 6rpx;
+  background-color: #f6f0ff;
+  padding: 6rpx 12rpx;
+  border-radius: 6rpx;
+  display: inline-block;
+  margin-right: 10rpx;
 }
 
 .user-admin-status {
@@ -158,11 +176,12 @@
 }
 
 .admin-tag {
-  background-color: #8053A1;
+  background: linear-gradient(135deg, #9969c7 0%, #6a4b96 100%);
   color: #fff;
   font-size: 22rpx;
-  padding: 4rpx 10rpx;
-  border-radius: 6rpx;
+  padding: 6rpx 14rpx;
+  border-radius: 30rpx;
+  box-shadow: 0 2rpx 6rpx rgba(153, 105, 199, 0.3);
 }
 
 .empty-state {
@@ -177,26 +196,37 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 30rpx;
+  margin-top: 40rpx;
+  margin-bottom: 20rpx;
 }
 
 .page-btn {
-  padding: 10rpx 30rpx;
-  background-color: #8053A1;
+  padding: 12rpx 30rpx;
+  background: linear-gradient(135deg, #9969c7 0%, #6a4b96 100%);
   color: #fff;
   font-size: 26rpx;
-  border-radius: 6rpx;
+  border-radius: 30rpx;
   margin: 0 20rpx;
+  box-shadow: 0 4rpx 8rpx rgba(153, 105, 199, 0.2);
+  transition: transform 0.2s;
+}
+
+.page-btn:active {
+  transform: scale(0.95);
 }
 
 .page-btn.disabled {
-  background-color: #ccc;
-  color: #999;
+  background: #e0dae8;
+  color: #a8a8a8;
+  box-shadow: none;
 }
 
 .page-info {
   font-size: 26rpx;
   color: #666;
+  background-color: #f6f0ff;
+  padding: 8rpx 20rpx;
+  border-radius: 30rpx;
 }
 
 /* 用户详情弹窗样式 */
@@ -215,21 +245,23 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(3px);
 }
 
 .modal-content {
   position: absolute;
   width: 90%;
-  max-height: 80%;
+  max-height: 85%;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   background-color: #fff;
-  border-radius: 20rpx;
+  border-radius: 25rpx;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 10rpx 30rpx rgba(0, 0, 0, 0.15);
 }
 
 .modal-header {
@@ -237,46 +269,60 @@
   justify-content: space-between;
   align-items: center;
   padding: 30rpx;
-  background-color: #8053A1;
+  background: linear-gradient(135deg, #9969c7 0%, #6a4b96 100%);
 }
 
 .modal-title {
   color: #fff;
-  font-size: 32rpx;
+  font-size: 34rpx;
   font-weight: bold;
+  letter-spacing: 1rpx;
 }
 
 .close-btn {
   color: #fff;
-  font-size: 40rpx;
+  font-size: 46rpx;
   line-height: 1;
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .user-profile {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 30rpx;
-  border-bottom: 1rpx solid #eee;
+  padding: 40rpx 30rpx;
+  border-bottom: 1rpx solid #f0e6f5;
+  background-color: #f8f4fc;
 }
 
 .detail-avatar {
-  width: 160rpx;
-  height: 160rpx;
+  width: 180rpx;
+  height: 180rpx;
   border-radius: 50%;
-  border: 4rpx solid #8053A1;
+  border: 4rpx solid #9969c7;
   margin-bottom: 20rpx;
+  box-shadow: 0 6rpx 15rpx rgba(153, 105, 199, 0.3);
 }
 
 .detail-name {
-  font-size: 34rpx;
+  font-size: 36rpx;
   font-weight: bold;
   margin-bottom: 10rpx;
+  color: #333;
 }
 
 .user-id {
   font-size: 24rpx;
   color: #999;
+  background-color: #f0e6f5;
+  padding: 6rpx 16rpx;
+  border-radius: 30rpx;
 }
 
 .detail-stats {
@@ -286,7 +332,11 @@
 
 .stat-group {
   display: flex;
-  margin-bottom: 20rpx;
+  margin-bottom: 25rpx;
+  background-color: #f8f4fc;
+  border-radius: 15rpx;
+  padding: 15rpx;
+  box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.03);
 }
 
 .stat-item {
@@ -294,24 +344,33 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 10rpx;
 }
 
 .stat-label {
   font-size: 24rpx;
   color: #666;
-  margin-bottom: 5rpx;
+  margin-bottom: 8rpx;
 }
 
 .stat-value {
   font-size: 28rpx;
   font-weight: bold;
   color: #333;
+  background-color: #fff;
+  padding: 6rpx 16rpx;
+  border-radius: 8rpx;
+  box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.03);
+  border: 1rpx solid #e9e0f5;
+  min-width: 100rpx;
+  text-align: center;
 }
 
 .admin-actions {
   display: flex;
   padding: 30rpx;
-  border-top: 1rpx solid #eee;
+  border-top: 1rpx solid #f0e6f5;
+  background-color: #f8f4fc;
 }
 
 .action-btn {
@@ -320,18 +379,24 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 10rpx;
+  border-radius: 40rpx;
   font-size: 28rpx;
   margin: 0 10rpx;
+  box-shadow: 0 4rpx 10rpx rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.action-btn:active {
+  transform: scale(0.95);
 }
 
 .action-btn.primary {
-  background-color: #8053A1;
+  background: linear-gradient(135deg, #9969c7 0%, #6a4b96 100%);
   color: #fff;
 }
 
 .action-btn.danger {
-  background-color: #ff6666;
+  background: linear-gradient(135deg, #ff7b7b 0%, #ff5252 100%);
   color: #fff;
 }
 
@@ -343,6 +408,9 @@
   align-items: center;
   color: #fff;
   font-size: 30rpx;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 8rpx 20rpx;
+  border-radius: 30rpx;
 }
 
 .back-icon {

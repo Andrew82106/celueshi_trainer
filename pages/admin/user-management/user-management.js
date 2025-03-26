@@ -43,7 +43,6 @@ Page({
   loadUsers: function() {
     const db = app.globalData.db;
     const _ = db.command;
-    const $ = _.aggregate;
     
     wx.showLoading({
       title: '加载中',
@@ -79,12 +78,9 @@ Page({
       .limit(this.data.pageSize)
       .get()
       .then(res => {
-        // 处理用户数据
-        const users = res.data;
-        
-        // 直接使用数据库中已有的累积数据
+        // 直接使用userinfo表中的数据
         this.setData({
-          users: users
+          users: res.data
         });
         
         wx.hideLoading();
@@ -507,77 +503,62 @@ Page({
         user.accumulateSongbo !== undefined && 
         user.accumulateSongboTime !== undefined;
       
-      // 获取用户已有的累积数据
-      let muyuTotalCount = user.accumulateMuyu || 0;
-      let songboTotalCount = user.accumulateSongbo || 0;
-      let muyuTotalSeconds = user.accumulateMuyuTime || 0;
-      let songboTotalSeconds = user.accumulateSongboTime || 0;
-      
-      // 获取用户的最后更新时间，如果没有则使用一个较早的日期
-      const lastUpdateTime = user.lastUpdateTime ? new Date(user.lastUpdateTime) : new Date('2000-01-01');
-      
-      // 查询该用户在最后更新时间之后的训练记录
-      // 根据trainlog集合的结构，使用date字段进行查询
+      // 定义查询条件 - 只按用户ID查询，不使用日期限制
       const query = {
         openId: userOpenId
       };
       
-      // 如果有最后更新时间，则添加日期过滤条件
-      if (user.lastUpdateTime) {
-        // 从lastUpdateTime提取日期部分 (YYYY-MM-DD格式)
-        const lastUpdateDateStr = lastUpdateTime.toISOString().split('T')[0];
-        query.date = db.command.gt(lastUpdateDateStr);
-      }
-      
-      // 使用分页查询获取训练记录
+      // 使用分页查询获取所有训练记录，不再根据lastUpdateTime过滤
       this.getAllTrainingRecords(db, query).then(records => {
-        // 计算新增累积数据
-        let newMuyuCount = 0;
-        let newSongboCount = 0;
-        let newMuyuSeconds = 0;
-        let newSongboSeconds = 0;
+        // 完全重新计算累积数据，而不是在原来基础上累加
+        let totalMuyuCount = 0;
+        let totalSongboCount = 0;
+        let totalMuyuSeconds = 0;
+        let totalSongboSeconds = 0;
         
         if (records && records.length > 0) {
-          console.log(`用户${userOpenId}找到${records.length}条最后更新后的训练记录:`, records[0]);
+          console.log(`用户${userOpenId}找到${records.length}条训练记录`);
           records.forEach(record => {
-            newMuyuCount += record.muyuCounts || 0;
-            newSongboCount += record.songboCounts || 0;
-            newMuyuSeconds += record.muyuSeconds || 0;
-            newSongboSeconds += record.songboSeconds || 0;
+            totalMuyuCount += record.muyuCounts || 0;
+            totalSongboCount += record.songboCounts || 0;
+            totalMuyuSeconds += record.muyuSeconds || 0;
+            totalSongboSeconds += record.songboSeconds || 0;
           });
           
-          console.log(`用户${userOpenId}新增累积数据:`, {
-            newMuyuCount,
-            newSongboCount,
-            newMuyuSeconds,
-            newSongboSeconds
+          console.log(`用户${userOpenId}累积数据统计结果:`, {
+            totalMuyuCount,
+            totalSongboCount,
+            totalMuyuSeconds,
+            totalSongboSeconds
           });
         } else {
-          console.log(`用户${userOpenId}没有找到最后更新后的训练记录`);
+          console.log(`用户${userOpenId}没有找到任何训练记录`);
         }
         
-        // 计算最终累积数据 = 原有累积数据 + 新增累积数据
-        const finalMuyuCount = muyuTotalCount + newMuyuCount;
-        const finalSongboCount = songboTotalCount + newSongboCount;
-        const finalMuyuSeconds = muyuTotalSeconds + newMuyuSeconds;
-        const finalSongboSeconds = songboTotalSeconds + newSongboSeconds;
-        
-        // 检查是否需要更新（有新记录或者原本缺少累积数据字段）
+        // 检查是否需要更新（有记录或者原本缺少累积数据字段）
         const needUpdate = !hasAccumulateData || records.length > 0;
         
-        if (needUpdate) {
+        // 检查与当前值是否一致
+        const isSameAsOld = 
+          user.accumulateMuyu === totalMuyuCount &&
+          user.accumulateMuyuTime === totalMuyuSeconds &&
+          user.accumulateSongbo === totalSongboCount &&
+          user.accumulateSongboTime === totalSongboSeconds;
+        
+        // 只有在需要更新且数据有变化的情况下才进行更新
+        if (needUpdate && !isSameAsOld) {
           console.log(`用户${userOpenId}需要更新`, {
             old: {
-              accumulateMuyu: muyuTotalCount,
-              accumulateMuyuTime: muyuTotalSeconds,
-              accumulateSongbo: songboTotalCount,
-              accumulateSongboTime: songboTotalSeconds
+              accumulateMuyu: user.accumulateMuyu || 0,
+              accumulateMuyuTime: user.accumulateMuyuTime || 0,
+              accumulateSongbo: user.accumulateSongbo || 0,
+              accumulateSongboTime: user.accumulateSongboTime || 0
             },
             new: {
-              accumulateMuyu: finalMuyuCount,
-              accumulateMuyuTime: finalMuyuSeconds,
-              accumulateSongbo: finalSongboCount,
-              accumulateSongboTime: finalSongboSeconds
+              accumulateMuyu: totalMuyuCount,
+              accumulateMuyuTime: totalMuyuSeconds,
+              accumulateSongbo: totalSongboCount,
+              accumulateSongboTime: totalSongboSeconds
             }
           });
           
@@ -587,10 +568,10 @@ Page({
           
           db.collection('userinfo').doc(userId).update({
             data: {
-              accumulateMuyu: finalMuyuCount,
-              accumulateMuyuTime: finalMuyuSeconds,
-              accumulateSongbo: finalSongboCount,
-              accumulateSongboTime: finalSongboSeconds,
+              accumulateMuyu: totalMuyuCount,
+              accumulateMuyuTime: totalMuyuSeconds,
+              accumulateSongbo: totalSongboCount,
+              accumulateSongboTime: totalSongboSeconds,
               lastUpdateTime: formattedDate
             }
           }).then(() => {

@@ -54,7 +54,13 @@
     <text class="section-title">开发记录</text>
 
     <view class="feature-item">
-    <text class="feature-title">版本0.2.6(当前)</text>
+    <text class="feature-title">版本0.3.0(当前)</text>
+      <text class="feature-desc">完善了山门管理后台，添加了更多背景资源，修补了部分bug</text>
+      <text class="feature-desc">>>Andrew 在 2025年 月 日上午 点 分 提交上传</text>
+    </view>
+
+    <view class="feature-item">
+    <text class="feature-title">版本0.2.6</text>
       <text class="feature-desc">修改了加速字段索引更新的问题</text>
       <text class="feature-desc">>>Andrew 在 2025年3月26日上午9点20分 提交上传</text>
     </view>
