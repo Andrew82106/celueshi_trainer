@@ -9,6 +9,9 @@
       <text class="user-level">{{userLevel || '初入山门'}}</text>
       <text class="avatar-tip">点击头像可修改个人信息</text>
     </view>
+    <view class="admin-btn" bindtap="navigateToAdmin" wx:if="{{userInfo.admin}}">
+      <text class="admin-text">管理</text>
+    </view>
     <view class="home-btn" bindtap="navigateToHome">
       <text class="home-text">返回主页</text>
     </view>
@@ -94,11 +97,21 @@
         <text wx:for="{{daysOfWeek}}" wx:key="index" class="day-label">{{item}}</text>
       </view>
       <view class="calendar-body">
-        <view wx:for="{{calendarDays}}" wx:key="date" class="calendar-day {{item.isToday ? 'today' : ''}}">
+        <view wx:for="{{calendarDays}}" wx:key="dateStr" 
+              class="calendar-day {{item.isToday ? 'today' : ''}} {{item.trainData ? 'has-data' : 'no-data'}}">
           <text class="day-number">{{item.day}}</text>
-          <view class="day-activities">
-            <view class="day-activity muyu" wx:if="{{item.muyuCount > 0}}">{{item.muyuCount}}</view>
-            <view class="day-activity songbo" wx:if="{{item.songboCount > 0}}">{{item.songboCount}}</view>
+          <view class="day-activities" wx:if="{{item.trainData}}">
+            <view class="activity-item" wx:if="{{item.trainData.muyuCount > 0}}">
+              <image class="activity-icon" src="/assets/picture/muyu.png" mode="aspectFit"></image>
+              <text class="activity-count">{{item.trainData.muyuCount}}</text>
+            </view>
+            <view class="activity-item" wx:if="{{item.trainData.songboCount > 0}}">
+              <image class="activity-icon" src="/assets/picture/songbo.png" mode="aspectFit"></image>
+              <text class="activity-count">{{item.trainData.songboCount}}</text>
+            </view>
+            <view class="activity-time" wx:if="{{item.trainData.muyuMinutes > 0 || item.trainData.songboMinutes > 0}}">
+              {{item.trainData.muyuMinutes + item.trainData.songboMinutes}}分钟
+            </view>
           </view>
         </view>
       </view>
@@ -110,7 +123,14 @@
       <text>时长排名</text>
     </view>
     
-    <view class="ranking-list">
+    <!-- 加载中动画 -->
+    <view class="loading-container" wx:if="{{isRankingLoading}}">
+      <view class="loading-spinner"></view>
+      <text class="loading-text">排名数据加载中...</text>
+    </view>
+    
+    <!-- 排名列表 -->
+    <view class="ranking-list" wx:if="{{!isRankingLoading}}">
       <view class="ranking-header">
         <text class="rank-column">排名</text>
         <text class="name-column">用户</text>
@@ -120,13 +140,22 @@
         <text class="level-column">段位</text>
       </view>
       
-      <view class="ranking-item {{item.isCurrentUser ? 'current-user' : ''}}" wx:for="{{rankingList}}" wx:key="index">
+      <view class="ranking-item {{item.isCurrentUser ? 'current-user' : ''}}" 
+            wx:for="{{rankingList}}" 
+            wx:key="index"
+            wx:if="{{isRankingExpanded || index < displayRankingLimit}}">
         <text class="rank-column">{{index + 1}}</text>
         <text class="name-column">{{item.nickName || '禅修者'}}</text>
         <text class="time-column">{{item.todayMinutes}}</text>
         <!--<text class="count-column">{{item.todayCount}}</text> -->
         <text class="time-column">{{item.totalMinutes}}</text>
         <text class="level-column">{{item.userLevel}}</text>
+      </view>
+      
+      <!-- 展开/收起按钮 -->
+      <view class="expand-button" wx:if="{{rankingList.length > displayRankingLimit && !isRankingLoading}}" bindtap="toggleRankingExpand">
+        <text>{{isRankingExpanded ? '收起' : '查看更多'}}</text>
+        <view class="expand-icon {{isRankingExpanded ? 'expanded' : ''}}"></view>
       </view>
     </view>
   </view>

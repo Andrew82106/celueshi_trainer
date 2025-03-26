@@ -19,7 +19,11 @@
         "pages/shanmen/shanmen",
         "pages/muyu/muyu",
         "pages/songbo/songbo",
-        "pages/profileshanmen/profileshanmen"
+        "pages/profileshanmen/profileshanmen",
+        "pages/admin/admin",
+        "pages/admin/user-management/user-management",
+        "pages/admin/user-training/user-training",
+        "pages/admin/training-records/training-records"
     ],
     "window": {
         "navigationBarTextStyle": "black",

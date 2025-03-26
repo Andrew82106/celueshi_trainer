@@ -104,4 +104,42 @@
 
 ---
 
+# 后端数据库结构
+
+后端数据库包含两个数据表：trainlog和userinfo表。本项目的数据首先需要备份到云端，之后才在本地进行备份。当发生冲突时以云端为准。
+
+需要注意，微信云后端数据库中每次查询数据量最多20条，因此需要编写分页查询的逻辑。
+
+## trainlog表
+
+保存用户训练数据，每一条数据包含如下字段：
+
+- "_id": 代表数据库中的ID
+- "_openid": 代表用户的openId
+- "date": 代表训练日期，格式为XXXX-XX-XX
+- "openId": 代表用户的openId
+- "muyuCounts": 代表用户木鱼次数
+- "songboCounts": 代表用户颂钵次数
+- "muyuSeconds": 代表用户木鱼时间
+- "songboSeconds": 代表用户颂钵时间
+
+这里的muyuCounts、songboCounts、muyuSeconds、songboSeconds，不一定会都有存在，有的用户只敲木鱼或者只敲颂钵。
+
+
+## userinfo表
+
+保存用户信息数据，每一条数据包含如下字段：
+
+- "_id": 代表数据库中的ID
+- "openId": 代表用户的openId
+- "nickName": 代表用户的昵称
+- "avatarUrl": 代表用户的头像
+- "accumulateMuyu": 代表用户累计木鱼次数
+- "accumulateMuyuTime": 代表用户累计木鱼时间
+- "accumulateSongbo": 代表用户累计颂钵次数
+- "accumulateSongboTime": 代表用户累计颂钵时间
+- "lastUpdateTime": 用于数据库索引加速，代表最后更新accumulateMuyu、accumulateMuyuTime、accumulateSongbo、accumulateSongboTime的时间戳
+
+上述字段中，accumulateMuyu、accumulateMuyuTime、accumulateSongbo、accumulateSongboTime、lastUpdateTime统称加速字段，因为其作用在于快速查询用户数据，而不需要每次都去数据库中查询。
+
 © 2023 山门知行 - 专注于认知能力训练的微信小程序

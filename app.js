@@ -50,7 +50,8 @@ App({
     this.globalData.userInfo = {
       nickName: '游客',
       isTourist: true,
-      isLogin: false
+      isLogin: false,
+      isAdmin: false
     };
     console.log("in app.js debug: 设置默认游客信息")
     
@@ -85,7 +86,6 @@ App({
               const userInfo = res.data[0];
               const nickname = userInfo.nickName || "未命名用户";
               const avatarUrl = userInfo.avatarUrl || "None";
-              
               // 更新全局数据
               this.globalData.userInfo.nickName = nickname;
               this.globalData.userInfo.avatarUrl = avatarUrl;
@@ -146,7 +146,8 @@ App({
       this.globalData.userInfo = {
         nickName: '游客',
         isTourist: true,
-        isLogin: false
+        isLogin: false,
+        isAdmin: false
       };
       console.log("in app.js debug: 设置默认游客信息");
       console.log(this.globalData.userInfo);

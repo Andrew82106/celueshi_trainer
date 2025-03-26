@@ -117,6 +117,26 @@
   transform: scale(0.95);
 }
 
+/* 随机背景按钮样式 */
+.random-bg-btn {
+  position: absolute;
+  right: 30rpx;
+  bottom: 30rpx;
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+.random-bg-icon {
+  width: 60rpx;
+  height: 60rpx;
+}
+
 /* 模态框样式 */
 .modal {
   position: fixed;
@@ -198,4 +218,10 @@
 .disabled-muyu {
   opacity: 0.5;
   filter: grayscale(50%);
+}
+
+/* 静音图标样式 */
+.muted-icon {
+  opacity: 0.5;
+  /* 可以添加更多样式来表示静音状态 */
 } 

@@ -1,0 +1,237 @@
+/* 训练记录查看页面样式 */
+.container {
+  min-height: 100vh;
+  background-color: #f6f6f6;
+  padding: 30rpx;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 头部区域 */
+.header {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 0;
+  margin-bottom: 30rpx;
+  position: relative;
+}
+
+.title {
+  color: #8053A1;
+  font-size: 36rpx;
+  font-weight: bold;
+  text-align: center;
+  flex: 1;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  left: 0;
+}
+
+.back-icon {
+  font-size: 36rpx;
+  color: #8053A1;
+  margin-right: 8rpx;
+}
+
+.back-text {
+  font-size: 28rpx;
+  color: #8053A1;
+}
+
+/* 筛选区域 */
+.filter-section {
+  background-color: white;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.date-filter {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+  flex-wrap: wrap;
+}
+
+.filter-label {
+  font-size: 28rpx;
+  color: #333;
+  margin-right: 20rpx;
+}
+
+.date-picker {
+  padding: 10rpx 20rpx;
+  background-color: #f8f8f8;
+  border-radius: 8rpx;
+  font-size: 26rpx;
+  color: #666;
+  border: 1rpx solid #e0e0e0;
+}
+
+.date-separator {
+  margin: 0 20rpx;
+  color: #999;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+}
+
+.search-input {
+  flex: 1;
+  padding: 15rpx 20rpx;
+  font-size: 26rpx;
+  border: 1rpx solid #e0e0e0;
+  border-radius: 8rpx;
+  margin-right: 20rpx;
+}
+
+.search-btn {
+  background-color: #8053A1;
+  color: white;
+  padding: 15rpx 30rpx;
+  border-radius: 8rpx;
+  font-size: 26rpx;
+}
+
+/* 记录列表区域 */
+.records-section {
+  background-color: white;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  margin-bottom: 30rpx;
+  flex: 1;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+  margin-bottom: 20rpx;
+}
+
+.section-title text {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.record-count {
+  font-size: 24rpx;
+  color: #999;
+  font-weight: normal;
+}
+
+.records-list {
+  max-height: 800rpx;
+  overflow-y: auto;
+}
+
+.record-item {
+  padding: 20rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+  margin-bottom: 20rpx;
+  border-radius: 8rpx;
+  background-color: #fafafa;
+}
+
+.record-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15rpx;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.user-avatar {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  margin-right: 15rpx;
+}
+
+.user-name {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: bold;
+}
+
+.record-date {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.record-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10rpx;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+}
+
+.detail-label {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.detail-value {
+  font-size: 24rpx;
+  color: #8053A1;
+  font-weight: bold;
+  margin-left: 10rpx;
+}
+
+.empty-state {
+  padding: 60rpx 0;
+  text-align: center;
+  color: #999;
+  font-size: 28rpx;
+}
+
+/* 分页控制 */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20rpx;
+}
+
+.page-btn {
+  padding: 10rpx 30rpx;
+  background-color: #8053A1;
+  color: white;
+  border-radius: 6rpx;
+  font-size: 24rpx;
+}
+
+.page-btn.disabled {
+  background-color: #d3c5e3;
+  color: #f0f0f0;
+}
+
+.page-info {
+  margin: 0 30rpx;
+  font-size: 24rpx;
+  color: #666;
+} 

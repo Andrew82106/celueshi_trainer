@@ -1,4 +1,6 @@
 const app = getApp();
+const { DAYS_OF_WEEK } = require('./constants/index');
+const { loadStatisticsData, loadRankingData_ } = require('./services/index');
 
 Page({
     /**
@@ -16,31 +18,51 @@ Page({
         songboStreakDays: 0,    // 颂钵连续天数
         songboTodayMinutes: 0,  // 今日颂钵训练时长（分钟）
         songboTotalMinutes: 0,  // 总颂钵训练时长（分钟）
-        daysOfWeek: ['日', '一', '二', '三', '四', '五', '六'],  // 星期标签
+        daysOfWeek: DAYS_OF_WEEK,
         calendarDays: [],       // 日历天数数据
         rankingList: [],        // 用户排名列表
         userLevel: '',          // 用户段位
+        isRankingLoading: true, // 排名数据是否正在加载
+        isRankingExpanded: false, // 排名列表是否展开
+        displayRankingLimit: 10  // 默认显示前10名
     },
 
     /**
      * 生命周期函数--监听页面加载
      */
     onLoad(options) {
-        console.log("in profileshanmen onLoad")
-        // 加载用户信息
+        console.log("in profileshanmen onLoad");
         if (app.globalData.userInfo) {
-            this.setData({
-                userInfo: app.globalData.userInfo
-            });
+            // 从数据库获取最新的用户信息
+            app.globalData.db.collection("userinfo")
+                .where({
+                    openId: app.globalData.userInfo.openId
+                })
+                .get()
+                .then(res => {
+                    if (res.data && res.data.length > 0) {
+                        const userInfo = res.data[0];
+                        // 保持原有的openId
+                        const originalOpenId = app.globalData.userInfo.openId;
+                        // 更新全局用户信息
+                        app.globalData.userInfo = {
+                            ...userInfo,
+                            openId: originalOpenId
+                        };
+                        // 更新页面数据
+                        this.setData({
+                            userInfo: app.globalData.userInfo
+                        });
+                        console.log("用户信息更新成功:", app.globalData.userInfo);
+                    }
+                })
+                .catch(err => {
+                    console.error("获取用户信息失败:", err);
+                });
         }
         
-        // 加载统计数据
         this.loadStatisticsData();
-        
-        // 生成日历数据
         this.generateCalendarData();
-        
-        // 加载排名数据
         this.loadRankingData();
     },
     
@@ -48,324 +70,105 @@ Page({
      * 加载统计数据
      */
     loadStatisticsData() {
-        // 获取今天的日期
-        const today = this.getTodayDateString();
-        const openId = app.globalData.userInfo.openId;
-        
-        console.log("加载统计数据 - 日期:", today);
-        console.log("加载统计数据 - 用户ID:", openId);
-        
-        // 先获取用户基本信息
-        app.globalData.db.collection("userinfo").where({
-            openId: openId
-        }).get().then(userRes => {
-            if (userRes.data && userRes.data.length > 0) {
-                console.log("获取用户信息成功:", userRes.data[0]);
-                // 更新全局用户信息(但保留原有openId)
-                const originalOpenId = app.globalData.userInfo.openId;
-                app.globalData.userInfo = {...userRes.data[0], openId: originalOpenId};
-            }
-            
-            // 获取所有训练记录
-            return app.globalData.db.collection("trainlog").where({
-                openId: openId
-            }).get();
-        }).then(trainRes => {
-            if (trainRes.data && trainRes.data.length > 0) {
-                console.log("获取训练记录成功, 共" + trainRes.data.length + "条记录");
-                
-                // 初始化记录
-                let muyuRecords = {};
-                let songboRecords = {};
-                let muyuTodayCount = 0;
-                let songboTodayCount = 0;
-                let muyuTotalCount = 0;
-                let songboTotalCount = 0;
-                let muyuTodaySeconds = 0;
-                let songboTodaySeconds = 0;
-                let muyuTotalSeconds = 0;
-                let songboTotalSeconds = 0;
-                
-                // 处理每条训练记录
-                trainRes.data.forEach(record => {
-                    if (!record) return; // 跳过无效记录
-                    
-                    // 累计总敲击次数
-                    muyuTotalCount += (record.muyuCounts || 0);
-                    songboTotalCount += (record.songboCounts || 0);
-                    
-                    // 累计总训练时长（秒）
-                    muyuTotalSeconds += (record.muyuSeconds || 0);
-                    songboTotalSeconds += (record.songboSeconds || 0);
-                    
-                    // 记录每日敲击次数
-                    if (record.date && record.muyuCounts && record.muyuCounts > 0) {
-                        muyuRecords[record.date] = record.muyuCounts;
-                    }
-                    
-                    if (record.date && record.songboCounts && record.songboCounts > 0) {
-                        songboRecords[record.date] = record.songboCounts;
-                    }
-                    
-                    // 记录今日敲击次数和训练时长
-                    if (record.date === today) {
-                        muyuTodayCount = record.muyuCounts || 0;
-                        songboTodayCount = record.songboCounts || 0;
-                        muyuTodaySeconds = record.muyuSeconds || 0;
-                        songboTodaySeconds = record.songboSeconds || 0;
-                    }
-                });
-                
-                console.log("木鱼记录:", muyuRecords);
-                console.log("颂钵记录:", songboRecords);
-                
-                // 计算连续打卡天数
-                const muyuStreakDays = this.calculateStreakDays(muyuRecords || {});
-                const songboStreakDays = this.calculateStreakDays(songboRecords || {});
-                
-                // 将秒数转换为分钟数（向上取整）
-                const muyuTodayMinutes = Math.ceil(muyuTodaySeconds / 60);
-                const songboTodayMinutes = Math.ceil(songboTodaySeconds / 60);
-                const muyuTotalMinutes = Math.ceil(muyuTotalSeconds / 60);
-                const songboTotalMinutes = Math.ceil(songboTotalSeconds / 60);
-                
-                // 计算用户段位
-                const userLevel = this.calculateUserLevel(muyuTotalMinutes + songboTotalMinutes);
-                app.globalData.userInfo.userLevel = userLevel;
-                
-                // 更新全局数据
-                app.globalData.muyuRecords = muyuRecords;
-                app.globalData.songboRecords = songboRecords;
-                app.globalData.muyuTodayCount = muyuTodayCount;
-                app.globalData.songboTodayCount = songboTodayCount;
-                app.globalData.muyuTotalCount = muyuTotalCount;
-                app.globalData.songboTotalCount = songboTotalCount;
-                app.globalData.muyuTodayMinutes = muyuTodayMinutes;
-                app.globalData.songboTodayMinutes = songboTodayMinutes;
-                app.globalData.muyuTotalMinutes = muyuTotalMinutes;
-                app.globalData.songboTotalMinutes = songboTotalMinutes;
-                
-                // 同时更新到用户信息中
-                app.globalData.userInfo.muyuTodayCount = muyuTodayCount;
-                app.globalData.userInfo.songboTodayCount = songboTodayCount;
-                app.globalData.userInfo.muyuTotalCount = muyuTotalCount;
-                app.globalData.userInfo.songboTotalCount = songboTotalCount;
-                app.globalData.userInfo.muyuRecords = muyuRecords;
-                app.globalData.userInfo.songboRecords = songboRecords;
-                app.globalData.userInfo.muyuTodayMinutes = muyuTodayMinutes;
-                app.globalData.userInfo.songboTodayMinutes = songboTodayMinutes;
-                app.globalData.userInfo.muyuTotalMinutes = muyuTotalMinutes;
-                app.globalData.userInfo.songboTotalMinutes = songboTotalMinutes;
-                app.globalData.userInfo.userLevel = userLevel;
-                
-                // 更新页面数据
-                this.setData({
-                    muyuTodayCount,
-                    muyuTotalCount,
-                    muyuStreakDays,
-                    songboTodayCount,
-                    songboTotalCount,
-                    songboStreakDays,
-                    muyuTodayMinutes,
-                    muyuTotalMinutes,
-                    songboTodayMinutes,
-                    songboTotalMinutes,
-                    userLevel
-                });
-                
-                console.log("统计数据加载完成", {
-                    muyuTodayCount,
-                    muyuTotalCount,
-                    muyuStreakDays,
-                    songboTodayCount, 
-                    songboTotalCount,
-                    songboStreakDays,
-                    muyuTodayMinutes,
-                    muyuTotalMinutes,
-                    songboTodayMinutes,
-                    songboTotalMinutes,
-                    userLevel
-                });
-            } else {
-                console.log("未找到训练记录，初始化为0");
-                // 没有找到记录，设置为0
-                this.setData({
-                    muyuTodayCount: 0,
-                    muyuTotalCount: 0,
-                    muyuStreakDays: 0,
-                    songboTodayCount: 0,
-                    songboTotalCount: 0,
-                    songboStreakDays: 0,
-                    muyuTodayMinutes: 0,
-                    muyuTotalMinutes: 0,
-                    songboTodayMinutes: 0,
-                    songboTotalMinutes: 0,
-                    userLevel: '初入山门'
-                });
-            }
-        }).catch(err => {
-            console.error("获取统计数据失败:", err);
-            wx.showToast({
-                title: '获取数据失败',
-                icon: 'none'
-            });
-            // 出错时设置为0
-            this.setData({
-                muyuTodayCount: 0,
-                muyuTotalCount: 0,
-                muyuStreakDays: 0,
-                songboTodayCount: 0,
-                songboTotalCount: 0,
-                songboStreakDays: 0,
-                muyuTodayMinutes: 0,
-                muyuTotalMinutes: 0,
-                songboTodayMinutes: 0,
-                songboTotalMinutes: 0,
-                userLevel: '初入山门'
-            });
+        loadStatisticsData().then(stats => {
+            this.setData(stats);
         });
-    },
-    
-    /**
-     * 计算连续打卡天数
-     */
-    calculateStreakDays(records) {
-        // 添加防御性检查，确保records存在且是对象
-        if (!records || typeof records !== 'object' || Object.keys(records).length === 0) {
-            console.log("无记录或记录为空，连续天数为0");
-            return 0;
-        }
-        
-        try {
-            // 获取所有日期并按降序排序
-            const dates = Object.keys(records)
-                .filter(date => records[date] && records[date] > 0)
-                .sort((a, b) => new Date(b) - new Date(a));
-            
-            if (dates.length === 0) {
-                return 0;
-            }
-            
-            // 检查最后一次记录是否是今天或昨天
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            
-            const yesterday = new Date(today);
-            yesterday.setDate(yesterday.getDate() - 1);
-            
-            const lastRecordDate = new Date(dates[0]);
-            lastRecordDate.setHours(0, 0, 0, 0);
-            
-            // 如果最后一次记录不是今天或昨天，则连续打卡中断
-            if (lastRecordDate.getTime() !== today.getTime() && 
-                lastRecordDate.getTime() !== yesterday.getTime()) {
-                return 0;
-            }
-            
-            // 计算连续天数
-            let streakDays = 1;
-            for (let i = 1; i < dates.length; i++) {
-                const currentDate = new Date(dates[i-1]);
-                const prevDate = new Date(dates[i]);
-                
-                // 计算日期差
-                const diffTime = currentDate.getTime() - prevDate.getTime();
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                
-                // 如果日期差是1天，则是连续的
-                if (diffDays === 1) {
-                    streakDays++;
-                } else {
-                    break;
-                }
-            }
-            
-            return streakDays;
-        } catch (error) {
-            console.error("计算连续打卡天数出错:", error);
-            return 0;
-        }
     },
     
     /**
      * 生成日历数据（最近两周）
      */
     generateCalendarData() {
-        try {
-            const today = new Date();
-            
-            // 确保从全局变量或存储中获取记录并进行防御性检查
-            let muyuRecords = app.globalData.muyuRecords || {};
-            if (!muyuRecords) muyuRecords = wx.getStorageSync('muyuRecords') || {};
-            
-            let songboRecords = app.globalData.songboRecords || {};
-            if (!songboRecords) songboRecords = wx.getStorageSync('songboRecords') || {};
-            
-            console.log("生成日历数据 - 木鱼记录:", muyuRecords);
-            console.log("生成日历数据 - 颂钵记录:", songboRecords);
-            
-            const calendarDays = [];
-            
-            // 生成最近14天的数据（包括今天）
-            for (let i = 13; i >= 0; i--) {
-                const date = new Date();
-                date.setDate(today.getDate() - i);
-                
-                const year = date.getFullYear();
-                const month = (date.getMonth() + 1).toString().padStart(2, '0');
-                const day = date.getDate().toString().padStart(2, '0');
-                const dateString = `${year}-${month}-${day}`;
-                
-                const muyuCount = muyuRecords && muyuRecords[dateString] ? muyuRecords[dateString] : 0;
-                const songboCount = songboRecords && songboRecords[dateString] ? songboRecords[dateString] : 0;
-                
-                calendarDays.push({
-                    date: dateString,
-                    day: day,
-                    isToday: i === 0,
-                    muyuCount: muyuCount,
-                    songboCount: songboCount
+        const today = new Date();
+        const calendarDays = [];
+        
+        // 计算两周前的日期
+        const twoWeeksAgo = new Date(today);
+        twoWeeksAgo.setDate(today.getDate() - 13); // 13天前（加上今天共14天）
+        
+        // 获取日期范围的字符串
+        const startDate = `${twoWeeksAgo.getFullYear()}-${String(twoWeeksAgo.getMonth() + 1).padStart(2, '0')}-${String(twoWeeksAgo.getDate()).padStart(2, '0')}`;
+        const endDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+        
+        // 从数据库获取最近两周的训练记录
+        const openId = app.globalData.userInfo.openId;
+        app.globalData.db.collection("trainlog")
+            .where({
+                openId: openId,
+                date: {
+                    $gte: startDate,
+                    $lte: endDate
+                }
+            })
+            .get()
+            .then(res => {
+                const trainRecords = {};
+                // 将训练记录转换为以日期为键的对象
+                res.data.forEach(record => {
+                    trainRecords[record.date] = {
+                        muyuCount: record.muyuCounts || 0,
+                        songboCount: record.songboCounts || 0,
+                        muyuMinutes: Math.ceil((record.muyuSeconds || 0) / 60),
+                        songboMinutes: Math.ceil((record.songboSeconds || 0) / 60)
+                    };
                 });
-            }
-            
-            this.setData({
-                calendarDays
+                
+                // 生成最近14天的数据（包括今天）
+                for (let i = 13; i >= 0; i--) {
+                    const currentDate = new Date(today);
+                    currentDate.setDate(today.getDate() - i);
+                    
+                    const dateStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
+                    
+                    calendarDays.push({
+                        date: currentDate,
+                        dateStr: dateStr,
+                        day: currentDate.getDate(),
+                        isToday: i === 0,
+                        trainData: trainRecords[dateStr] || null
+                    });
+                }
+                
+                this.setData({ calendarDays });
+            })
+            .catch(err => {
+                console.error("获取训练记录失败:", err);
+                // 如果获取失败，仍然显示日历，但没有训练数据
+                for (let i = 13; i >= 0; i--) {
+                    const currentDate = new Date(today);
+                    currentDate.setDate(today.getDate() - i);
+                    
+                    const dateStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
+                    
+                    calendarDays.push({
+                        date: currentDate,
+                        dateStr: dateStr,
+                        day: currentDate.getDate(),
+                        isToday: i === 0,
+                        trainData: null
+                    });
+                }
+                this.setData({ calendarDays });
             });
-        } catch (error) {
-            console.error("生成日历数据出错:", error);
-            // 出错时设置空数组
-            this.setData({
-                calendarDays: []
-            });
-        }
     },
     
-    /**
-     * 获取今天的日期字符串 (YYYY-MM-DD)
-     */
-    getTodayDateString() {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = (now.getMonth() + 1).toString().padStart(2, '0');
-        const day = now.getDate().toString().padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    },
-
     /**
      * 生命周期函数--监听页面初次渲染完成
      */
     onReady() {
-
+        // 页面首次渲染完成
     },
 
     /**
      * 生命周期函数--监听页面显示
      */
     onShow() {
-        // 页面显示时刷新数据
-        console.log("in profileshanmen onShow")
+        // 页面显示
+        // 更新加速字段和用户训练字段信息
+        this.updateAcceleratedFields();
+        // 加载统计数据
         this.loadStatisticsData();
-        this.generateCalendarData();
+        // 刷新时长排名
         this.loadRankingData();
     },
 
@@ -373,42 +176,48 @@ Page({
      * 生命周期函数--监听页面隐藏
      */
     onHide() {
-
+        // 页面隐藏
     },
 
     /**
      * 生命周期函数--监听页面卸载
      */
     onUnload() {
-
+        // 页面卸载
     },
 
     /**
      * 页面相关事件处理函数--监听用户下拉动作
      */
     onPullDownRefresh() {
-
+        // 下拉刷新
+        this.loadStatisticsData();
+        this.loadRankingData();
+        wx.stopPullDownRefresh();
     },
 
     /**
      * 页面上拉触底事件的处理函数
      */
     onReachBottom() {
-
+        // 上拉触底
     },
 
     /**
      * 用户点击右上角分享
      */
     onShareAppMessage() {
-
+        return {
+            title: '山门知行',
+            path: '/pages/index/index'
+        };
     },
 
     /**
      * 导航到主页
      */
     navigateToHome() {
-        wx.navigateTo({
+        wx.switchTab({
             url: '/pages/index/index'
         });
     },
@@ -418,7 +227,13 @@ Page({
      */
     navigateToUserInfo() {
         wx.navigateTo({
-            url: '/pages/login/login'
+            url: '/pages/userinfo/userinfo'
+        });
+    },
+
+    navigateToAdmin() {
+        wx.navigateTo({
+            url: '/pages/admin/admin'
         });
     },
 
@@ -427,145 +242,43 @@ Page({
      */
     loadRankingData() {
         console.log("开始加载排名数据");
+        // 设置加载状态为true
+        this.setData({
+            isRankingLoading: true
+        });
         
-        const db = app.globalData.db;
-        const _ = db.command;
-        const currentUserOpenId = app.globalData.userInfo.openId;
-        const today = this.getTodayDateString(); // 获取今天的日期
-        
-        // 预先定义usersMap，防止Promise错误时变量未定义
-        let usersMap = {};
-        let userStatsMap = {};
-        
-        // 获取所有用户信息
-        db.collection("userinfo").get().then(userRes => {
-            const users = userRes.data || [];
-            
-            // 创建用户信息映射表
-            users.forEach(user => {
-                if (user.openId) {
-                    usersMap[user.openId] = {
-                        openId: user.openId,
-                        nickName: user.nickName || '禅修者',
-                        avatarUrl: user.avatarUrl
-                    };
-                }
-                console.log("获取到用户信息:", user);
-            });
-            
-            console.log("获取到用户信息:", users.length, "个用户");
-            
-            // 从训练日志中聚合每个用户的总数据
-            return db.collection("trainlog").where({
-                // 查询条件，可以为空查询所有
-            }).get();
-        }).then(trainRes => {
-            const trainRecords = trainRes.data || [];
-            console.log("获取到训练记录:", trainRecords.length, "条记录");
-            
-            // 按用户ID聚合数据
-            trainRecords.forEach(record => {
-                if (!record.openId) return;
-                
-                if (!userStatsMap[record.openId]) {
-                    userStatsMap[record.openId] = {
-                        openId: record.openId,
-                        muyuTotalCount: 0,
-                        songboTotalCount: 0,
-                        muyuTotalSeconds: 0,
-                        songboTotalSeconds: 0,
-                        muyuTodayCount: 0,
-                        songboTodayCount: 0,
-                        muyuTodaySeconds: 0,
-                        songboTodaySeconds: 0
-                    };
-                }
-                
-                // 累加数据
-                userStatsMap[record.openId].muyuTotalCount += (record.muyuCounts || 0);
-                userStatsMap[record.openId].songboTotalCount += (record.songboCounts || 0);
-                userStatsMap[record.openId].muyuTotalSeconds += (record.muyuSeconds || 0);
-                userStatsMap[record.openId].songboTotalSeconds += (record.songboSeconds || 0);
-                
-                // 记录今日数据（只设置，不累加，因为今日只有一条记录）
-                if (record.date === today) {
-                    console.log(`今日记录 - 用户:${record.openId}, 木鱼:${record.muyuCounts}, 木鱼秒数:${record.muyuSeconds}, 颂钵:${record.songboCounts}, 颂钵秒数:${record.songboSeconds}`);
-                    userStatsMap[record.openId].muyuTodayCount = record.muyuCounts || 0;
-                    userStatsMap[record.openId].songboTodayCount = record.songboCounts || 0;
-                    userStatsMap[record.openId].muyuTodaySeconds = record.muyuSeconds || 0;
-                    userStatsMap[record.openId].songboTodaySeconds = record.songboSeconds || 0;
-                }
-            });
-            
-            // 如果当前用户ID存在，专门查询今日训练记录以确保获取最新数据
-            if (currentUserOpenId) {
-                // 直接从数据库查询今日记录
-                return db.collection("trainlog").where({
-                    openId: currentUserOpenId,
-                    date: today
-                }).get().then(todayRes => {
-                    if (todayRes.data && todayRes.data.length > 0) {
-                        const todayRecord = todayRes.data[0];
-                        console.log(`今日单独查询记录 - ID:${todayRecord._id}, 木鱼:${todayRecord.muyuCounts}, 木鱼秒数:${todayRecord.muyuSeconds}, 颂钵:${todayRecord.songboCounts}, 颂钵秒数:${todayRecord.songboSeconds}`);
-                        
-                        // 确保用户在userStatsMap中存在
-                        if (!userStatsMap[currentUserOpenId]) {
-                            userStatsMap[currentUserOpenId] = {
-                                openId: currentUserOpenId,
-                                muyuTotalCount: todayRecord.muyuCounts || 0,
-                                songboTotalCount: todayRecord.songboCounts || 0,
-                                muyuTotalSeconds: todayRecord.muyuSeconds || 0,
-                                songboTotalSeconds: todayRecord.songboSeconds || 0,
-                                muyuTodayCount: todayRecord.muyuCounts || 0,
-                                songboTodayCount: todayRecord.songboCounts || 0,
-                                muyuTodaySeconds: todayRecord.muyuSeconds || 0,
-                                songboTodaySeconds: todayRecord.songboSeconds || 0
-                            };
-                        } else {
-                            // 更新今日数据
-                            userStatsMap[currentUserOpenId].muyuTodayCount = todayRecord.muyuCounts || 0;
-                            userStatsMap[currentUserOpenId].songboTodayCount = todayRecord.songboCounts || 0;
-                            userStatsMap[currentUserOpenId].muyuTodaySeconds = todayRecord.muyuSeconds || 0;
-                            userStatsMap[currentUserOpenId].songboTodaySeconds = todayRecord.songboSeconds || 0;
-                        }
-                    }
-                    
-                    // 继续处理本地数据
-                    return this.processLocalData(userStatsMap, usersMap, currentUserOpenId, today, db);
+        loadRankingData_().then(rankingList => {
+            console.log(`获取排名数据成功，共 ${rankingList.length} 条记录`);
+            // 检查排名数据的字段
+            if (rankingList.length > 0) {
+                console.log("排名第一数据示例:", {
+                    nickName: rankingList[0].nickName,
+                    todayMinutes: rankingList[0].todayMinutes,
+                    totalMinutes: rankingList[0].totalMinutes,
+                    userLevel: rankingList[0].userLevel
                 });
             }
             
-            // 如果没有当前用户ID，直接处理本地数据
-            return this.processLocalData(userStatsMap, usersMap, currentUserOpenId, today, db);
-        }).then(result => {
-            // rankingData将由processLocalData方法返回
-            if (result && result.rankingData) {
-                // 更新页面数据
-                this.setData({
-                    rankingList: result.rankingData
-                });
-                
-                // 打印排行榜数据的关键信息
-                result.rankingData.forEach(user => {
-                    console.log(`用户排名信息 - ${user.nickName}: 今日(${user.todayMinutes}分钟/${user.todayCount}次), 累计(${user.totalMinutes}分钟/${user.totalCount}次)`);
-                });
-                
-                console.log("排名数据:", result.rankingData);
-                
-                console.log("排名数据加载完成，共", result.rankingData.length, "名用户");
-            }
+            // 更新数据并设置加载状态为false
+            this.setData({ 
+                rankingList,
+                isRankingLoading: false 
+            });
         }).catch(err => {
             console.error("获取排名数据失败:", err);
-            wx.showToast({
-                title: '获取排名失败',
-                icon: 'none',
-                duration: 2000
+            // 出错时也要设置加载状态为false
+            this.setData({ 
+                isRankingLoading: false 
             });
-            
-            // 出错时设置空排名列表
-            this.setData({
-                rankingList: []
-            });
+        });
+    },
+
+    /**
+     * 切换排名列表展开状态
+     */
+    toggleRankingExpand() {
+        this.setData({
+            isRankingExpanded: !this.data.isRankingExpanded
         });
     },
 
@@ -701,8 +414,9 @@ Page({
             const todayMinutes = Math.ceil(todaySeconds / 60);
             
             // 计算用户段位
-            const userLevel = this.calculateUserLevel(totalMinutes);
-            
+            // const userLevel = this.calculateUserLevel(totalMinutes);
+            // 用constants中的常量来计算用户段位
+            const userLevel = stats.userLevel;
             return {
                 openId,
                 nickName: user.nickName,
@@ -737,14 +451,106 @@ Page({
             if (b.todayMinutes !== a.todayMinutes) {
                 return b.todayMinutes - a.todayMinutes;
             }
-            // 如果今日时长相同，按今日敲击次数排序
-            if (b.todayCount !== a.todayCount) {
-                return b.todayCount - a.todayCount;
-            }
-            // 如果今日时长和敲击次数都相同，按总时长排序
+            // 如果今日时长相同，直接按总时长排序
             return b.totalMinutes - a.totalMinutes;
         });
         
         return { rankingData };
+    },
+
+    /**
+     * 获取今日日期字符串 (YYYY-MM-DD格式)
+     */
+    getTodayDateString() {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    },
+
+    /**
+     * 更新用户加速字段
+     */
+    updateAcceleratedFields() {
+        if (!app.globalData.userInfo || !app.globalData.userInfo.openId) {
+            console.log("用户未登录，无法更新加速字段");
+            return;
+        }
+
+        const db = app.globalData.db;
+        const openId = app.globalData.userInfo.openId;
+        const today = this.getTodayDateString();
+
+        // 先查询userinfo表，获取上次更新时间
+        db.collection("userinfo").where({
+            openId: openId
+        }).get().then(userRes => {
+            if (userRes.data && userRes.data.length > 0) {
+                const userInfo = userRes.data[0];
+                const lastUpdateTime = userInfo.lastUpdateTime || 0;
+                
+                // 获取今日零点的时间戳
+                const todayStart = new Date();
+                todayStart.setHours(0, 0, 0, 0);
+                const todayStartTimestamp = todayStart.getTime();
+                
+                // 如果上次更新时间在今天之前，则需要更新加速字段
+                if (lastUpdateTime < todayStartTimestamp) {
+                    console.log("上次更新时间早于今天，需要更新加速字段");
+                    
+                    // 获取用户今日的训练记录
+                    db.collection("trainlog").where({
+                        openId: openId,
+                        date: today
+                    }).get().then(res => {
+                        if (res.data && res.data.length > 0) {
+                            const record = res.data[0];
+                            const muyuCounts = record.muyuCounts || 0;
+                            const songboCounts = record.songboCounts || 0;
+                            const muyuSeconds = record.muyuSeconds || 0;
+                            const songboSeconds = record.songboSeconds || 0;
+                            
+                            // 更新userinfo表中的加速字段
+                            const _ = db.command;
+                            db.collection("userinfo").where({
+                                openId: openId
+                            }).update({
+                                data: {
+                                    accumulateMuyu: _.inc(muyuCounts),
+                                    accumulateMuyuTime: _.inc(muyuSeconds),
+                                    accumulateSongbo: _.inc(songboCounts),
+                                    accumulateSongboTime: _.inc(songboSeconds),
+                                    lastUpdateTime: new Date().getTime()
+                                }
+                            }).then(res => {
+                                console.log("更新用户加速字段成功:", res);
+                                // 更新完成后重新加载数据，确保界面显示最新数据
+                                this.loadStatisticsData();
+                                this.loadRankingData();
+                            }).catch(err => {
+                                console.error("更新用户加速字段失败:", err);
+                            });
+                        } else {
+                            console.log("今日没有训练记录，不需要更新加速字段");
+                            // 仍然更新lastUpdateTime，避免重复检查
+                            db.collection("userinfo").where({
+                                openId: openId
+                            }).update({
+                                data: {
+                                    lastUpdateTime: new Date().getTime()
+                                }
+                            });
+                        }
+                    }).catch(err => {
+                        console.error("获取今日训练记录失败:", err);
+                    });
+                } else {
+                    console.log("今日已更新过加速字段，无需重复更新");
+                }
+            }
+        }).catch(err => {
+            console.error("获取用户信息失败:", err);
+        });
     }
 }) 

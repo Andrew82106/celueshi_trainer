@@ -1,0 +1,71 @@
+<!-- 用户训练信息查看页面 -->
+<view class="container">
+  <view class="header">
+    <view class="back-btn" bindtap="navigateBack">
+      <text class="back-icon">←</text>
+      <text class="back-text">返回</text>
+    </view>
+    <text class="title">用户训练信息</text>
+  </view>
+
+  <!-- 用户基本信息 -->
+  <view class="user-card">
+    <view class="user-avatar">
+      <image src="{{userInfo.avatarUrl || '/assets/images/default-avatar.png'}}" mode="aspectFill"></image>
+    </view>
+    <view class="user-info">
+      <text class="user-name">{{userInfo.nickName || '未命名用户'}}</text>
+      <text class="user-id">ID: {{userInfo.openId}}</text>
+    </view>
+  </view>
+
+  <!-- 累积数据统计 -->
+  <view class="stats-section">
+    <view class="section-title">累积训练数据</view>
+    
+    <view class="stats-grid">
+      <view class="stat-item">
+        <text class="stat-value">{{userInfo.accumulateMuyu || 0}}</text>
+        <text class="stat-label">木鱼敲击次数</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-value">{{(userInfo.accumulateMuyuTime || 0) / 60 | int}}分钟</text>
+        <text class="stat-label">木鱼训练时长</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-value">{{userInfo.accumulateSongbo || 0}}</text>
+        <text class="stat-label">颂钵敲击次数</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-value">{{(userInfo.accumulateSongboTime || 0) / 60 | int}}分钟</text>
+        <text class="stat-label">颂钵训练时长</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 最近训练记录 -->
+  <view class="records-section">
+    <view class="section-title">最近训练记录</view>
+    
+    <view class="records-list">
+      <block wx:if="{{trainingRecords.length > 0}}">
+        <view class="record-item" wx:for="{{trainingRecords}}" wx:key="_id">
+          <view class="record-date">{{item.date}}</view>
+          <view class="record-details">
+            <view class="detail-item">
+              <text class="detail-label">木鱼:</text>
+              <text class="detail-value">{{item.muyuCounts || 0}}次 / {{(item.muyuSeconds || 0) / 60 | int}}分钟</text>
+            </view>
+            <view class="detail-item">
+              <text class="detail-label">颂钵:</text>
+              <text class="detail-value">{{item.songboCounts || 0}}次 / {{(item.songboSeconds || 0) / 60 | int}}分钟</text>
+            </view>
+          </view>
+        </view>
+      </block>
+      <view wx:else class="empty-state">
+        <text>暂无训练记录</text>
+      </view>
+    </view>
+  </view>
+</view> 

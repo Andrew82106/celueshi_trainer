@@ -1,7 +1,7 @@
 <!--pages/muyu/muyu.wxml-->
 <view class="container">
   <!-- 背景图片 -->
-  <image class="background-image" src="/assets/picture/trainingBackground.jpeg" mode="aspectFill"></image>
+  <image class="background-image" src="{{currentBackground}}" mode="aspectFill"></image>
   
   <!-- 设置按钮组 -->
   <view class="settings-container">
@@ -13,6 +13,12 @@
     <view class="settings-btn" bindtap="{{isAutoTapping ? 'stopAutoTap' : 'showSettingsModal'}}" wx:if="{{isTraining}}">
       <image src="/assets/picture/auto.png" mode="aspectFit" class="settings-icon"></image>
       <text>{{isAutoTapping ? '停止自动' : '自动敲击'}}</text>
+    </view>
+    
+    <!-- 静音按钮 -->
+    <view class="settings-btn" bindtap="toggleMute">
+      <image src="/assets/picture/voice.png" mode="aspectFit" class="settings-icon {{isMuted ? 'muted-icon' : ''}}"></image>
+      <text>{{isMuted ? '已静音' : '声音'}}</text>
     </view>
   </view>
   
@@ -27,6 +33,11 @@
   <!-- 木鱼图片 -->
   <view class="muyu-container" bindtap="tapMuyu">
     <image src="cloud://shanmen-2g47tf5h9b090d06.7368-shanmen-2g47tf5h9b090d06-1349502341/muyu.png" mode="aspectFit" class="muyu-image {{isAnimating ? 'tap-animation' : ''}} {{isTraining ? '' : 'disabled-muyu'}}"></image>
+  </view>
+  
+  <!-- 随机背景按钮 -->
+  <view class="random-bg-btn" bindtap="changeRandomBackground">
+    <image src="/assets/picture/randombackground.png" mode="aspectFit" class="random-bg-icon"></image>
   </view>
   
   <!-- 设置模态框 -->

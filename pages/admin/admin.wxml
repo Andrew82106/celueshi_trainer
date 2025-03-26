@@ -1,0 +1,39 @@
+<!--pages/admin/admin.wxml-->
+<view class="container">
+  <view class="header">
+    <view class="back-btn" bindtap="navigateBack">
+      <text class="back-icon">←</text>
+      <text class="back-text">返回</text>
+    </view>
+    <text class="title">管理后台</text>
+  </view>
+
+  <view class="admin-welcome">
+    <view class="welcome-title">欢迎，{{userInfo.nickName || '管理员'}}</view>
+    <view class="welcome-subtitle">选择功能模块</view>
+  </view>
+
+  <view class="menu-grid">
+    <!-- 用户管理按钮 -->
+    <view class="menu-card" bindtap="navigateToUserManagement">
+      <view class="card-icon-container">
+        <image class="card-icon" src="/assets/picture/auto.png" mode="aspectFit"></image>
+      </view>
+      <view class="card-title">用户管理</view>
+      <view class="card-desc">查看和管理用户信息</view>
+    </view>
+
+    <!-- 训练记录查看按钮 -->
+    <view class="menu-card" bindtap="navigateToTrainingRecords">
+      <view class="card-icon-container">
+        <image class="card-icon" src="/assets/picture/upload.png" mode="aspectFit"></image>
+      </view>
+      <view class="card-title">训练记录</view>
+      <view class="card-desc">查看所有用户训练记录</view>
+    </view>
+  </view>
+
+  <view class="footer">
+    <text class="footer-text">管理员专用</text>
+  </view>
+</view> 

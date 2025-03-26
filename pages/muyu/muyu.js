@@ -1,4 +1,5 @@
 const app = getApp();
+import { BACKGROUND_IMAGES } from '../profileshanmen/constants/index';
 
 Page({
     /**
@@ -18,7 +19,9 @@ Page({
         trainingSeconds: 0, // 训练时长（秒）
         trainingTimer: null, // 训练计时器
         autoTapDuration: 5, // 自动敲击持续时间（分钟）
-        autoTapEndTimer: null // 自动敲击结束计时器
+        autoTapEndTimer: null, // 自动敲击结束计时器
+        isMuted: false,     // 是否静音
+        currentBackground: BACKGROUND_IMAGES[0] // 当前背景图片
     },
 
     /**
@@ -390,6 +393,9 @@ Page({
                 }).then(res => {
                     console.log("更新训练记录成功:", res);
                     
+                    // 更新userinfo表中的加速字段
+                    this.updateUserInfoAcceleratedFields(finalCount, seconds);
+                    
                     // 更新后重新从数据库获取最新数据
                     this.loadTrainingDataFromDB();
                 }).catch(err => {
@@ -408,6 +414,9 @@ Page({
                 }).then(res => {
                     console.log("添加训练记录成功:", res);
                     
+                    // 更新userinfo表中的加速字段
+                    this.updateUserInfoAcceleratedFields(this.data.count, seconds);
+                    
                     // 添加后重新从数据库获取最新数据
                     this.loadTrainingDataFromDB();
                 }).catch(err => {
@@ -418,9 +427,37 @@ Page({
     },
     
     /**
+     * 更新userinfo表中的加速字段
+     */
+    updateUserInfoAcceleratedFields(counts, seconds) {
+        // 获取数据库操作命令对象
+        const _ = wx.cloud.database().command;
+        
+        // 更新userinfo表中的加速字段
+        app.globalData.db.collection("userinfo").where({
+            openId: app.globalData.userInfo.openId
+        }).update({
+            data: {
+                accumulateMuyu: _.inc(counts),
+                accumulateMuyuTime: _.inc(seconds),
+                accumulateSongbo: _.inc(0),         // 确保颂钵字段存在
+                accumulateSongboTime: _.inc(0),     // 确保颂钵时间字段存在
+                lastUpdateTime: new Date().getTime()
+            }
+        }).then(res => {
+            console.log("更新userinfo加速字段成功:", res);
+        }).catch(err => {
+            console.error("更新userinfo加速字段失败:", err);
+        });
+    },
+    
+    /**
      * 播放木鱼敲击音效
      */
     playSound() {
+        // 如果静音，则不播放音效
+        if (this.data.isMuted) return;
+        
         const innerAudioContext = wx.createInnerAudioContext();
         innerAudioContext.autoplay = true;
         
@@ -662,5 +699,41 @@ Page({
      */
     onShareAppMessage() {
 
+    },
+
+    /**
+     * 切换静音状态
+     */
+    toggleMute() {
+        this.setData({
+            isMuted: !this.data.isMuted
+        });
+        
+        wx.showToast({
+            title: this.data.isMuted ? '已静音' : '已开启声音',
+            icon: 'none',
+            duration: 1000
+        });
+    },
+
+    /**
+     * 切换随机背景图片
+     */
+    changeRandomBackground() {
+        // 获取当前背景索引
+        const currentIndex = BACKGROUND_IMAGES.indexOf(this.data.currentBackground);
+        // 计算下一个背景索引（循环访问）
+        const nextIndex = (currentIndex + 1) % BACKGROUND_IMAGES.length;
+        // 设置新背景
+        this.setData({
+            currentBackground: BACKGROUND_IMAGES[nextIndex]
+        });
+        
+        // 播放背景切换的轻微提示音（可选）
+       // if (!this.data.isMuted) {
+        //    const bgChangeAudio = wx.createInnerAudioContext();
+        //    bgChangeAudio.src = 'cloud://shanmen-2g47tf5h9b090d06.7368-shanmen-2g47tf5h9b090d06-1349502341/click.mp3';
+        //    bgChangeAudio.play();
+        //}
     }
 }) 

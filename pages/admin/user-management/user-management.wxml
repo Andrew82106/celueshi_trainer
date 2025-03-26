@@ -1,0 +1,135 @@
+<!-- 用户管理页面 -->
+<view class="container">
+  <view class="header">
+    <view class="back-btn" bindtap="navigateBack">
+      <text class="back-icon">←</text>
+      <text class="back-text">返回</text>
+    </view>
+    <text class="title">用户管理</text>
+  </view>
+  
+  <view class="action-header">
+    <view class="update-all-btn" bindtap="updateAllUsersData">
+      <text>更新所有用户累积数据</text>
+    </view>
+    <view class="update-all-btn" bindtap="checkUserDataConsistency">
+      <text>检查用户数据一致性</text>
+    </view>
+  </view>
+  
+  <view class="progress-bar" wx:if="{{isUpdatingAllUsers}}">
+    <view class="progress-inner" style="width: {{updateProgress}}%"></view>
+    <text class="progress-text">处理进度: {{updateProgress}}%</text>
+  </view>
+  
+  <view class="search-box">
+    <input class="search-input" 
+           placeholder="搜索用户名" 
+           bindinput="onSearchInput" 
+           value="{{searchKeyword}}"/>
+    <view class="search-btn" bindtap="onSearch">
+      <text>搜索</text>
+    </view>
+  </view>
+  
+  <view class="user-list">
+    <block wx:if="{{users.length > 0}}">
+      <view class="user-item" wx:for="{{users}}" wx:key="_id" bindtap="showUserDetail" data-user="{{item}}">
+        <view class="user-avatar">
+          <image src="{{item.avatarUrl || '/assets/picture/default-avatar.png'}}" mode="aspectFill"></image>
+        </view>
+        <view class="user-info">
+          <view class="user-name">{{item.nickName || '未命名用户'}}</view>
+          <view class="user-stats">
+            <text>木鱼累积次数: {{item.accumulateMuyu || 0}}次</text>
+            <text>木鱼累积时长: {{item.accumulateMuyuTime || 0}}秒</text>
+            <text>颂钵累积次数: {{item.accumulateSongbo || 0}}次</text>
+          </view>
+        </view>
+        <view class="user-admin-status">
+          <text class="{{item.admin ? 'admin-tag' : ''}}">{{item.admin ? '管理员' : ''}}</text>
+        </view>
+      </view>
+    </block>
+    <view wx:else class="empty-state">
+      <text>暂无用户数据</text>
+    </view>
+  </view>
+  
+  <view class="pagination">
+    <view class="page-btn {{currentPage <= 1 ? 'disabled' : ''}}" bindtap="prevPage">上一页</view>
+    <text class="page-info">第 {{currentPage}} / {{totalPages}} 页</text>
+    <view class="page-btn {{currentPage >= totalPages ? 'disabled' : ''}}" bindtap="nextPage">下一页</view>
+  </view>
+</view>
+
+<!-- 用户详情弹窗 -->
+<view class="user-detail-modal" wx:if="{{showUserDetail}}">
+  <view class="modal-mask" bindtap="hideUserDetail"></view>
+  <view class="modal-content">
+    <view class="modal-header">
+      <text class="modal-title">用户详情</text>
+      <view class="close-btn" bindtap="hideUserDetail">×</view>
+    </view>
+    
+    <view class="user-profile">
+      <image class="detail-avatar" src="{{selectedUser.avatarUrl || '/assets/picture/personalInfo.png'}}" mode="aspectFill"></image>
+      <text class="detail-name">{{selectedUser.nickName || '未命名用户'}}</text>
+      <view class="user-id">ID: {{selectedUser.openId}}</view>
+    </view>
+    
+    <view class="detail-stats">
+      <view class="stat-group">
+        <view class="stat-item">
+          <text class="stat-label">注册时间</text>
+          <text class="stat-value">{{selectedUser.registerDate || '未知'}}</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-label">最后登录</text>
+          <text class="stat-value">{{selectedUser.lastLoginDate || '未知'}}</text>
+        </view>
+      </view>
+      
+      <view class="stat-group">
+        <view class="stat-item">
+          <text class="stat-label">最后更新时间</text>
+          <text class="stat-value">{{selectedUser.lastUpdateTime || '未知'}}</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-label">总训练时长</text>
+          <text class="stat-value">{{(selectedUser.accumulateMuyuTime + selectedUser.accumulateSongboTime) || 0}}秒</text>
+        </view>
+      </view>
+      
+      <view class="stat-group">
+        <view class="stat-item">
+          <text class="stat-label">木鱼累积次数</text>
+          <text class="stat-value">{{selectedUser.accumulateMuyu || 0}}次</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-label">颂钵累积次数</text>
+          <text class="stat-value">{{selectedUser.accumulateSongbo || 0}}次</text>
+        </view>
+      </view>
+      
+      <view class="stat-group">
+        <view class="stat-item">
+          <text class="stat-label">木鱼累积时长</text>
+          <text class="stat-value">{{selectedUser.accumulateMuyuTime || 0}}秒</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-label">颂钵累积时长</text>
+          <text class="stat-value">{{selectedUser.accumulateSongboTime || 0}}秒</text>
+        </view>
+      </view>
+    </view>
+    
+    <view class="admin-actions">
+      <view class="action-btn {{selectedUser.admin ? 'danger' : 'primary'}}" bindtap="toggleAdminStatus">
+        {{selectedUser.admin ? '取消管理员' : '设为管理员'}}
+      </view>
+      <view class="action-btn primary" bindtap="viewUserTraining">查看训练记录</view>
+      <view class="action-btn danger" bindtap="resetUserData">重置数据</view>
+    </view>
+  </view>
+</view> 
