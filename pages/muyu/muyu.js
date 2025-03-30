@@ -21,7 +21,13 @@ Page({
         autoTapDuration: 5, // 自动敲击持续时间（分钟）
         autoTapEndTimer: null, // 自动敲击结束计时器
         isMuted: false,     // 是否静音
-        currentBackground: BACKGROUND_IMAGES[0] // 当前背景图片
+        currentBackground: BACKGROUND_IMAGES[0], // 当前背景图片
+        
+        // 离线训练上传相关数据
+        showUploadModal: false,      // 上传模态框显示状态
+        offlineTrainingMinutes: '',  // 离线训练时长（分钟）
+        offlineTapDuration: '',      // 单次敲击长度（秒）
+        calculatedTapCount: 0        // 计算得出的敲击次数
     },
 
     /**
@@ -735,5 +741,138 @@ Page({
         //    bgChangeAudio.src = 'cloud://shanmen-2g47tf5h9b090d06.7368-shanmen-2g47tf5h9b090d06-1349502341/click.mp3';
         //    bgChangeAudio.play();
         //}
+    },
+
+    /**
+     * 显示上传离线训练模态框
+     */
+    showUploadModal() {
+        this.setData({
+            showUploadModal: true,
+            offlineTrainingMinutes: '',
+            offlineTapDuration: '',
+            calculatedTapCount: 0
+        });
+    },
+    
+    /**
+     * 隐藏上传离线训练模态框
+     */
+    hideUploadModal() {
+        this.setData({
+            showUploadModal: false
+        });
+    },
+    
+    /**
+     * 训练时长输入事件处理
+     */
+    minutesInput(e) {
+        const minutes = e.detail.value;
+        this.setData({
+            offlineTrainingMinutes: minutes
+        });
+        
+        // 如果敲击长度也已输入，计算敲击次数
+        if (this.data.offlineTapDuration) {
+            this.calculateTapCount();
+        }
+    },
+    
+    /**
+     * 单次敲击长度输入事件处理
+     */
+    tapDurationInput(e) {
+        const duration = e.detail.value;
+        this.setData({
+            offlineTapDuration: duration
+        });
+        
+        // 如果训练时长也已输入，计算敲击次数
+        if (this.data.offlineTrainingMinutes) {
+            this.calculateTapCount();
+        }
+    },
+    
+    /**
+     * 计算敲击次数
+     */
+    calculateTapCount() {
+        const minutes = parseFloat(this.data.offlineTrainingMinutes);
+        const tapDuration = parseFloat(this.data.offlineTapDuration);
+        
+        if (minutes > 0 && tapDuration > 0) {
+            // 计算可能的敲击次数: 训练总秒数 / 每次敲击秒数
+            const totalSeconds = minutes * 60;
+            const tapCount = Math.floor(totalSeconds / tapDuration);
+            
+            this.setData({
+                calculatedTapCount: tapCount
+            });
+        }
+    },
+    
+    /**
+     * 上传离线训练数据
+     */
+    uploadOfflineTraining() {
+        const minutes = parseFloat(this.data.offlineTrainingMinutes);
+        const tapDuration = parseFloat(this.data.offlineTapDuration);
+        
+        // 验证输入数据
+        if (!minutes || minutes <= 0) {
+            wx.showToast({
+                title: '请输入有效的训练时长',
+                icon: 'none',
+                duration: 1500
+            });
+            return;
+        }
+        
+        if (!tapDuration || tapDuration <= 0) {
+            wx.showToast({
+                title: '请输入有效的敲击长度',
+                icon: 'none',
+                duration: 1500
+            });
+            return;
+        }
+        
+        const totalSeconds = minutes * 60;
+        const tapCount = Math.floor(totalSeconds / tapDuration);
+        
+        // 隐藏模态框
+        this.hideUploadModal();
+        
+        // 显示上传中提示
+        wx.showLoading({
+            title: '上传中...',
+            mask: true
+        });
+        
+        // 更新本地敲击计数
+        const newCount = this.data.count + tapCount;
+        const newTotalCount = this.data.totalCount + tapCount;
+        
+        this.setData({
+            count: newCount,
+            totalCount: newTotalCount
+        });
+        
+        // 保存到本地存储
+        this.saveCountToStorage(newCount);
+        
+        // 上传到服务器
+        this.uploadTrainingData(totalSeconds);
+        
+        // 隐藏加载提示并显示成功消息
+        setTimeout(() => {
+            wx.hideLoading();
+            wx.showToast({
+                title: '离线记录已上传',
+                icon: 'success',
+                duration: 2000
+            });
+        }, 1000);
     }
 }) 

@@ -42,13 +42,13 @@
             {
                 "pagePath": "pages/muyu/muyu",
                 "iconPath": "assets/picture/muyu.png",
-                "selectedIconPath": "assets/picture/muyuClick.png",
+                "selectedIconPath": "assets/picture/muyu.png",
                 "text": "木鱼"
             },
             {
                 "pagePath": "pages/songbo/songbo",
                 "iconPath": "assets/picture/songbo.png",
-                "selectedIconPath": "assets/picture/songboClick.png",
+                "selectedIconPath": "assets/picture/songbo.png",
                 "text": "颂钵"
             },
             {

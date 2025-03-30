@@ -20,6 +20,12 @@
       <image src="/assets/picture/voice.png" mode="aspectFit" class="settings-icon {{isMuted ? 'muted-icon' : ''}}"></image>
       <text>{{isMuted ? '已静音' : '声音'}}</text>
     </view>
+    
+    <!-- 上传离线训练按钮 -->
+    <view class="settings-btn" bindtap="showUploadModal">
+      <image src="/assets/picture/upload.png" mode="aspectFit" class="settings-icon"></image>
+      <text>上传记录</text>
+    </view>
   </view>
   
   <!-- 敲击计数 -->
@@ -55,6 +61,26 @@
       <view class="modal-footer">
         <button class="btn cancel" bindtap="hideSettingsModal">取消</button>
         <button class="btn confirm" bindtap="startAutoTap">确定</button>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 上传离线训练模态框 -->
+  <view class="modal" wx:if="{{showUploadModal}}">
+    <view class="modal-content">
+      <view class="modal-header">
+        <text class="modal-title">上传离线训练</text>
+      </view>
+      <view class="modal-body">
+        <text>训练时长（分钟）：</text>
+        <input type="number" class="input-field" placeholder="请输入训练时长" value="{{offlineTrainingMinutes}}" bindinput="minutesInput"/>
+        <text>单次敲击长度（秒）：</text>
+        <input type="digit" class="input-field" placeholder="请输入单次敲击长度" value="{{offlineTapDuration}}" bindinput="tapDurationInput"/>
+        <text wx:if="{{offlineTrainingMinutes > 0 && offlineTapDuration > 0}}">预计敲击次数：{{calculatedTapCount}}</text>
+      </view>
+      <view class="modal-footer">
+        <button class="btn cancel" bindtap="hideUploadModal">取消</button>
+        <button class="btn confirm" bindtap="uploadOfflineTraining">上传</button>
       </view>
     </view>
   </view>

@@ -54,7 +54,13 @@
     <text class="section-title">开发记录</text>
 
     <view class="feature-item">
-    <text class="feature-title">版本0.2.10(当前)</text>
+    <text class="feature-title">版本0.3.1(当前)</text>
+      <text class="feature-desc">添加了离线训练记录上传按钮，修改了部分UI</text>
+      <text class="feature-desc">>>Andrew 在 2025年3月30日下午2点40分 提交上传</text>
+    </view>
+
+    <view class="feature-item">
+    <text class="feature-title">版本0.2.10</text>
       <text class="feature-desc">修改了内观写作版块的细节，同时优化了数据读取逻辑，添加了是否公开按钮，添加了删除记录按钮</text>
       <text class="feature-desc">>>Andrew 在 2025年3月30日下午2点20分 提交上传</text>
     </view>
