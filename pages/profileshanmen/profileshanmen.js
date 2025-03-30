@@ -217,7 +217,7 @@ Page({
      * 导航到主页
      */
     navigateToHome() {
-        wx.switchTab({
+        wx.redirectTo({
             url: '/pages/index/index'
         });
     },
@@ -226,8 +226,8 @@ Page({
      * 导航到用户信息修改页面
      */
     navigateToUserInfo() {
-        wx.navigateTo({
-            url: '/pages/userinfo/userinfo'
+        wx.redirectTo({
+            url: '/pages/login/login'
         });
     },
 

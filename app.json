@@ -19,6 +19,10 @@
         "pages/shanmen/shanmen",
         "pages/muyu/muyu",
         "pages/songbo/songbo",
+        "pages/meditation-writing/meditation-writing",
+        "pages/meditation-writing/edit/edit",
+        "pages/meditation-writing/records/records",
+        "pages/meditation-writing/community/community",
         "pages/profileshanmen/profileshanmen",
         "pages/admin/admin",
         "pages/admin/user-management/user-management",
@@ -46,6 +50,12 @@
                 "iconPath": "assets/picture/songbo.png",
                 "selectedIconPath": "assets/picture/songboClick.png",
                 "text": "颂钵"
+            },
+            {
+                "pagePath": "pages/meditation-writing/meditation-writing",
+                "iconPath": "assets/picture/writingButton.png",
+                "selectedIconPath": "assets/picture/writingButton.png",
+                "text": "内观写作"
             },
             {
                 "pagePath": "pages/profileshanmen/profileshanmen",

@@ -1,0 +1,384 @@
+/* pages/meditation-writing/community/community.wxss */
+.container {
+  position: relative;
+  width: 100vw;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+.background-image {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  filter: brightness(0.7);
+  top: 0;
+  left: 0;
+}
+
+.header {
+  width: 100%;
+  padding: 120rpx 30rpx 30rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+  z-index: 10;
+}
+
+.page-title {
+  font-size: 40rpx;
+  color: #fff;
+  font-weight: 500;
+}
+
+.placeholder {
+  width: 80rpx;
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  padding: 12rpx 24rpx;
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 40rpx;
+  color: #fff;
+}
+
+.back-arrow {
+  font-size: 36rpx;
+  margin-right: 6rpx;
+}
+
+.back-text {
+  font-size: 28rpx;
+}
+
+.tab-bar {
+  width: 94%;
+  display: flex;
+  justify-content: space-around;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 20rpx;
+  border-radius: 18rpx;
+  margin: 20rpx 0 30rpx;
+  box-shadow: 0 4rpx 10rpx rgba(0, 0, 0, 0.1);
+}
+
+.tab-item {
+  padding: 12rpx 40rpx;
+  border-radius: 40rpx;
+  font-size: 28rpx;
+  color: #555;
+  background-color: rgba(159, 128, 83, 0.1);
+  transition: all 0.3s;
+}
+
+.tab-item.active {
+  background-color: #9F8053;
+  color: #fff;
+  box-shadow: 0 2rpx 8rpx rgba(159, 128, 83, 0.3);
+}
+
+/* 外层滚动容器 */
+.scroll-container {
+  width: 94%;
+  height: calc(100vh - 310rpx);
+  margin-bottom: 20rpx;
+  border-radius: 18rpx;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 内部滚动视图 */
+.records-container {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* 记录列表 */
+.record-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 10rpx 0 100rpx 0;
+  box-sizing: border-box;
+}
+
+.record-item {
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 18rpx;
+  padding: 30rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 30rpx; /* 每条记录的底部边距 */
+}
+
+.record-item:last-child {
+  margin-bottom: 40rpx; /* 最后一条记录的底部边距 */
+}
+
+.record-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 15rpx;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.record-user-info {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 500;
+  display: flex;
+  flex-direction: column;
+}
+
+.user-level {
+  font-size: 24rpx;
+  color: #9F8053;
+  margin-top: 6rpx;
+}
+
+.record-meta {
+  display: flex;
+  gap: 15rpx;
+}
+
+.record-date, .record-count {
+  background-color: rgba(159, 128, 83, 0.1);
+  padding: 6rpx 20rpx;
+  border-radius: 20rpx;
+  font-size: 26rpx;
+  color: #333;
+}
+
+.record-content {
+  font-size: 30rpx;
+  line-height: 1.8;
+  color: #333;
+  padding: 10rpx;
+  background-color: rgba(159, 128, 83, 0.05);
+  border-radius: 12rpx;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.record-content text {
+  display: block;
+  width: 100%;
+}
+
+.record-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 10rpx;
+}
+
+.like-button {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  background-color: rgba(159, 128, 83, 0.1);
+  padding: 8rpx 24rpx;
+  border-radius: 30rpx;
+  color: #333;
+}
+
+.like-button.liked {
+  background-color: rgba(255, 105, 105, 0.1);
+}
+
+.like-icon {
+  color: #9F8053;
+  font-size: 28rpx;
+}
+
+.like-button.liked .like-icon {
+  color: #ff6969;
+}
+
+.like-count {
+  font-size: 24rpx;
+  color: #333;
+}
+
+.like-button.liked .like-count {
+  color: #ff6969;
+}
+
+.load-more {
+  text-align: center;
+  padding: 20rpx;
+  color: #9F8053;
+  font-size: 28rpx;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 40rpx;
+  margin: 20rpx auto 40rpx;
+  width: 60%;
+}
+
+.empty-records {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 40rpx;
+  padding: 100rpx 0;
+  color: #555;
+  font-size: 30rpx;
+}
+
+/* 弹窗样式 */
+.record-detail-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.modal-content {
+  position: relative;
+  width: 90%;
+  max-height: 80vh;
+  background-color: #fff;
+  border-radius: 20rpx;
+  overflow: hidden;
+  box-shadow: 0 10rpx 30rpx rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  padding: 30rpx;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 15rpx;
+  flex-shrink: 0;
+}
+
+.modal-user-info {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 500;
+  padding: 6rpx 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-meta {
+  display: flex;
+  gap: 15rpx;
+}
+
+.modal-date, .modal-count {
+  background-color: rgba(159, 128, 83, 0.1);
+  padding: 6rpx 20rpx;
+  border-radius: 20rpx;
+  font-size: 26rpx;
+  color: #333;
+}
+
+.modal-body {
+  padding: 30rpx;
+  flex: 1;
+  height: auto;
+  max-height: 55vh;
+  font-size: 30rpx;
+  line-height: 1.8;
+  color: #333;
+  box-sizing: border-box;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.modal-body text {
+  display: block;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.modal-footer {
+  padding: 20rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
+.modal-like-button {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  background-color: rgba(159, 128, 83, 0.1);
+  padding: 8rpx 24rpx;
+  border-radius: 30rpx;
+}
+
+.modal-like-button.liked {
+  background-color: rgba(255, 105, 105, 0.1);
+}
+
+.modal-like-button .like-icon {
+  color: #9F8053;
+  font-size: 28rpx;
+}
+
+.modal-like-button.liked .like-icon {
+  color: #ff6969;
+}
+
+.modal-like-button .like-count {
+  font-size: 24rpx;
+  color: #333;
+}
+
+.modal-like-button.liked .like-count {
+  color: #ff6969;
+}
+
+.modal-btn {
+  padding: 15rpx 60rpx;
+  background-color: #9F8053;
+  color: white;
+  border-radius: 40rpx;
+  font-size: 30rpx;
+  box-shadow: 0 4rpx 10rpx rgba(159, 128, 83, 0.3);
+}
+
+/* 底部安全区域 */
+.safe-area-bottom {
+  height: env(safe-area-inset-bottom);
+  min-height: 40rpx;
+  width: 100%;
+} 

@@ -736,10 +736,10 @@ Page({
         });
         
         // 播放背景切换的轻微提示音（可选）
-        if (!this.data.isMuted) {
-            const bgChangeAudio = wx.createInnerAudioContext();
-            bgChangeAudio.src = 'cloud://shanmen-2g47tf5h9b090d06.7368-shanmen-2g47tf5h9b090d06-1349502341/click.mp3';
-            bgChangeAudio.play();
-        }
+        // if (!this.data.isMuted) {
+        //    const bgChangeAudio = wx.createInnerAudioContext();
+        //    bgChangeAudio.src = 'cloud://shanmen-2g47tf5h9b090d06.7368-shanmen-2g47tf5h9b090d06-1349502341/click.mp3';
+        //    bgChangeAudio.play();
+        //}
     }
 }) 

@@ -20,13 +20,13 @@ export const LEVEL_REQUIREMENTS = {
     [USER_LEVELS.INITIAL]: 0,
     [USER_LEVELS.BEGINNER]: 10,
     [USER_LEVELS.INTERMEDIATE]: 60,
-    [USER_LEVELS.ADVANCED]: 150,
-    [USER_LEVELS.MASTER]: 300,
-    [USER_LEVELS.GRANDMASTER]: 460,
-    [USER_LEVELS.IMMORTAL]: 660,
-    [USER_LEVELS.IMMORTAL_MASTER]: 900,
-    [USER_LEVELS.IMMORTAL_GRANDMASTER]: 1200,
-    [USER_LEVELS.IMMORTAL_IMMORTAL]: 1500
+    [USER_LEVELS.ADVANCED]: 120,
+    [USER_LEVELS.MASTER]: 500,
+    [USER_LEVELS.GRANDMASTER]: 1000,
+    [USER_LEVELS.IMMORTAL]: 3690,
+    [USER_LEVELS.IMMORTAL_MASTER]: 5960,
+    [USER_LEVELS.IMMORTAL_GRANDMASTER]: 8960,
+    [USER_LEVELS.IMMORTAL_IMMORTAL]: 12000
 };
 
 // 星期标签
@@ -37,5 +37,7 @@ export const BACKGROUND_IMAGES = [
     '/assets/picture/trainingBackground.jpeg',
     'cloud://shanmen-2g47tf5h9b090d06.7368-shanmen-2g47tf5h9b090d06-1349502341/trainingBackground1.jpeg',
     'cloud://shanmen-2g47tf5h9b090d06.7368-shanmen-2g47tf5h9b090d06-1349502341/trainingBackground2.jpeg',
-    'cloud://shanmen-2g47tf5h9b090d06.7368-shanmen-2g47tf5h9b090d06-1349502341/trainingBackground3.jpeg'
+    'cloud://shanmen-2g47tf5h9b090d06.7368-shanmen-2g47tf5h9b090d06-1349502341/trainingBackground3.jpeg',
+    "cloud://shanmen-2g47tf5h9b090d06.7368-shanmen-2g47tf5h9b090d06-1349502341/trainingBackground4.jpeg",
+    "cloud://shanmen-2g47tf5h9b090d06.7368-shanmen-2g47tf5h9b090d06-1349502341/trainingBackground5.jpeg"
 ]; 

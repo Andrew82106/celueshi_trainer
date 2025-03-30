@@ -1,0 +1,364 @@
+/* 样式文件 */
+
+/* pages/meditation-writing/records/records.wxss */
+page {
+  background-color: #000000;
+  min-height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+.container {
+  position: relative;
+  width: 100vw;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+.background-image {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  filter: brightness(0.7);
+  top: 0;
+  left: 0;
+}
+
+.header {
+  width: 100%;
+  padding: 120rpx 30rpx 30rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+  z-index: 10;
+}
+
+.page-title {
+  font-size: 40rpx;
+  color: #fff;
+  font-weight: 500;
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  padding: 12rpx 24rpx;
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 40rpx;
+  color: #fff;
+}
+
+.back-arrow {
+  font-size: 36rpx;
+  margin-right: 6rpx;
+}
+
+.back-text {
+  font-size: 28rpx;
+}
+
+.filter-bar {
+  width: 94%;
+  display: flex;
+  justify-content: space-around;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 20rpx;
+  border-radius: 18rpx;
+  margin: 20rpx 0 30rpx;
+  box-shadow: 0 4rpx 10rpx rgba(0, 0, 0, 0.1);
+}
+
+.filter-item {
+  padding: 12rpx 40rpx;
+  border-radius: 40rpx;
+  font-size: 28rpx;
+  color: #555;
+  background-color: rgba(159, 128, 83, 0.1);
+  transition: all 0.3s;
+}
+
+.filter-item.active {
+  background-color: #9F8053;
+  color: #fff;
+  box-shadow: 0 2rpx 8rpx rgba(159, 128, 83, 0.3);
+}
+
+.records-scroll-container {
+  width: 100%;
+  height: calc(100vh - 320rpx);
+  padding: 0 3%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.records-container {
+  display: flex;
+  flex-direction: column;
+  gap: 30rpx;
+  padding-bottom: 120rpx;
+}
+
+.record-item {
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 18rpx;
+  padding: 30rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.record-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  padding-bottom: 15rpx;
+}
+
+.record-date {
+  background-color: rgba(159, 128, 83, 0.1);
+  padding: 8rpx 20rpx;
+  border-radius: 20rpx;
+  font-size: 26rpx;
+  color: #333;
+}
+
+.record-counts {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8rpx;
+}
+
+.record-count, .record-insight-count {
+  background-color: rgba(159, 128, 83, 0.1);
+  padding: 8rpx 20rpx;
+  border-radius: 20rpx;
+  font-size: 26rpx;
+  font-weight: 500;
+  color: #333;
+}
+
+.record-insight-count {
+  background-color: rgba(159, 128, 83, 0.05);
+}
+
+.record-content {
+  font-size: 30rpx;
+  line-height: 1.8;
+  color: #333;
+  padding: 10rpx;
+  background-color: rgba(159, 128, 83, 0.05);
+  border-radius: 12rpx;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.record-content text {
+  display: block;
+  width: 100%;
+}
+
+.load-more {
+  text-align: center;
+  padding: 20rpx;
+  color: #9F8053;
+  font-size: 28rpx;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 40rpx;
+  margin: 20rpx auto;
+  width: 60%;
+}
+
+.empty-records {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 40rpx;
+  padding: 100rpx 0;
+  color: #555;
+}
+
+.start-writing-btn {
+  background-color: #9F8053;
+  color: white;
+  padding: 20rpx 60rpx;
+  border-radius: 40rpx;
+  font-size: 32rpx;
+  box-shadow: 0 6rpx 12rpx rgba(159, 128, 83, 0.3);
+}
+
+/* 弹窗样式 */
+.record-detail-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.modal-content {
+  position: relative;
+  width: 90%;
+  max-height: 76vh;
+  background-color: #fff;
+  border-radius: 20rpx;
+  overflow: hidden;
+  box-shadow: 0 10rpx 30rpx rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+}
+
+.modal-header {
+  padding: 30rpx;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+
+.modal-date {
+  background-color: rgba(159, 128, 83, 0.1);
+  padding: 8rpx 20rpx;
+  border-radius: 20rpx;
+  font-size: 26rpx;
+  color: #333;
+}
+
+.modal-counts {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8rpx;
+}
+
+.modal-count, .modal-insight-count {
+  background-color: rgba(159, 128, 83, 0.1);
+  padding: 8rpx 20rpx;
+  border-radius: 20rpx;
+  font-size: 26rpx;
+  font-weight: 500;
+  color: #333;
+}
+
+.modal-insight-count {
+  background-color: rgba(159, 128, 83, 0.05);
+}
+
+.modal-body {
+  padding: 30rpx;
+  flex: 1;
+  max-height: 45vh;
+  height: auto;
+  font-size: 30rpx;
+  line-height: 1.8;
+  color: #333;
+  box-sizing: border-box;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.modal-body text {
+  display: block;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.modal-footer {
+  padding: 20rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+  background-color: #fff;
+}
+
+.modal-btn {
+  padding: 15rpx 60rpx;
+  background-color: #9F8053;
+  color: white;
+  border-radius: 40rpx;
+  font-size: 30rpx;
+  box-shadow: 0 4rpx 10rpx rgba(159, 128, 83, 0.3);
+}
+
+/* 记录操作区域 */
+.record-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10rpx;
+  padding-top: 10rpx;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* 可见性切换按钮 */
+.visibility-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6rpx 20rpx;
+  border-radius: 30rpx;
+  font-size: 24rpx;
+  cursor: pointer;
+  margin-right: 20rpx;
+}
+
+.visibility-toggle.visible {
+  background-color: rgba(159, 128, 83, 0.2);
+  color: #9F8053;
+}
+
+.visibility-toggle.hidden {
+  background-color: rgba(150, 150, 150, 0.2);
+  color: #888;
+}
+
+/* 删除按钮 */
+.delete-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6rpx 20rpx;
+  border-radius: 30rpx;
+  font-size: 24rpx;
+  cursor: pointer;
+  background-color: rgba(230, 67, 64, 0.1);
+  color: #E64340;
+}
+
+/* 模态框中的操作区域 */
+.modal-actions {
+  display: flex;
+}
+
+/* 模态框中的可见性切换按钮 */
+.modal-visibility-toggle {
+  margin-right: 20rpx;
+}

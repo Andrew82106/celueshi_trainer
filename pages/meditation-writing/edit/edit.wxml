@@ -1,0 +1,103 @@
+<!--pages/meditation-writing/edit/edit.wxml-->
+<view class="container">
+  <!-- 背景图片 -->
+  <image class="background-image" src="/assets/picture/trainingBackground.jpeg" mode="aspectFill"></image>
+  
+  <!-- 顶部导航区 -->
+  <view class="header">
+    <view class="back-button" bindtap="goBack">
+      <text class="back-arrow">←</text>
+      <text class="back-text">返回</text>
+    </view>
+    <view class="page-title">
+      <text>内观写作</text>
+    </view>
+    <view class="placeholder"></view>
+  </view>
+  
+  <!-- 内容区域 -->
+  <scroll-view scroll-y="true" class="content-area">
+    <!-- 写作计时器 -->
+    <view class="timer-container" wx:if="{{showTimer}}">
+      <text class="timer-text">{{timerText}}</text>
+      <view class="timer-controls">
+        <view class="timer-button {{isTimerRunning ? 'pause' : 'start'}}" bindtap="toggleTimer">
+          <text>{{isTimerRunning ? '暂停' : '开始'}}</text>
+        </view>
+        <view class="timer-button reset" bindtap="resetTimer">
+          <text>重置</text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 内观写作字数输入 -->
+    <view class="meditation-count-container">
+      <view class="meditation-count-title">
+        <text>内观写作字数</text>
+        <text class="meditation-count-hint">（内观写作内容不会上传互联网）</text>
+      </view>
+      <view class="meditation-count-input-area">
+        <input 
+          type="number" 
+          class="meditation-count-input" 
+          placeholder="请输入内观写作的字数" 
+          bindinput="onMeditationCountChange"
+          value="{{meditationCount}}"
+        />
+        <text class="meditation-count-unit">字</text>
+      </view>
+    </view>
+    
+    <!-- 写作引导 -->
+    <view class="writing-guide">
+      <text class="guide-title">写作提示</text>
+      <text class="guide-text">{{currentPrompt}}</text>
+      <view class="refresh-button" bindtap="refreshPrompt">
+        <text>换一个</text>
+      </view>
+    </view>
+    
+    <!-- 感想输入区域 -->
+    <view class="writing-area">
+      <view class="writing-area-title">
+        <text>感想输入</text>
+      </view>
+      <textarea 
+        class="writing-input" 
+        placeholder="在此输入您对内观写作的感想..." 
+        bindinput="onInputChange"
+        value="{{content}}"
+        maxlength="-1"
+        auto-height="true"
+        show-confirm-bar="{{false}}"
+        cursor-spacing="20"
+      ></textarea>
+      
+      <view class="word-count">
+        <text>{{characterCount}} 字</text>
+      </view>
+      
+      <!-- 可见性设置 -->
+      <view class="visibility-setting" bindtap="toggleVisibility">
+        <view class="visibility-text-container">
+          <text class="visibility-text">在社区中可见</text>
+          <text class="visibility-description">{{visible ? '开启后，此感想将在社区中对其他用户可见' : '关闭后，此感想仅自己可见，不会在社区中展示'}}</text>
+        </view>
+        <view class="visibility-switch {{visible ? 'on' : 'off'}}">
+          <view class="switch-slider"></view>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 底部按钮 -->
+    <view class="button-area">
+      <view class="toggle-timer-button" bindtap="toggleTimerDisplay">
+        <text>{{showTimer ? '隐藏计时器' : '显示计时器'}}</text>
+      </view>
+      
+      <view class="submit-button {{(!meditationCount || content.length < 10) ? 'disabled' : ''}}" bindtap="submitWriting">
+        <text>提交感想</text>
+      </view>
+    </view>
+  </scroll-view>
+</view> 

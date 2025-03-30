@@ -54,9 +54,27 @@
     <text class="section-title">开发记录</text>
 
     <view class="feature-item">
-    <text class="feature-title">版本0.3.0(当前)</text>
+    <text class="feature-title">版本0.2.10(当前)</text>
+      <text class="feature-desc">修改了内观写作版块的细节，同时优化了数据读取逻辑，添加了是否公开按钮，添加了删除记录按钮</text>
+      <text class="feature-desc">>>Andrew 在 2025年3月30日下午2点20分 提交上传</text>
+    </view>
+
+    <view class="feature-item">
+    <text class="feature-title">版本0.2.9</text>
+      <text class="feature-desc">调整了段位机制，开发了内观写作版块</text>
+      <text class="feature-desc">>>Andrew 在 2025年3月29日下午9点15分 提交上传</text>
+    </view>
+
+    <view class="feature-item">
+    <text class="feature-title">版本0.2.8</text>
+      <text class="feature-desc">修改了一些bug，添加了部分背景图</text>
+      <text class="feature-desc">>>Andrew 在 2025年3月26日下午21点06分 提交上传</text>
+    </view>
+
+    <view class="feature-item">
+    <text class="feature-title">版本0.2.7</text>
       <text class="feature-desc">完善了山门管理后台，添加了更多背景资源，修补了部分bug</text>
-      <text class="feature-desc">>>Andrew 在 2025年 月 日上午 点 分 提交上传</text>
+      <text class="feature-desc">>>Andrew 在 2025年3月26日下午16点06分 提交上传</text>
     </view>
 
     <view class="feature-item">
