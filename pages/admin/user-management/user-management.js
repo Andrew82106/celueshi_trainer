@@ -1,4 +1,5 @@
 const app = getApp();
+const { calculateUserLevel } = require('../../profileshanmen/utils/index');
 
 Page({
   data: {
@@ -562,6 +563,13 @@ Page({
             }
           });
           
+          // 计算用户段位
+          const totalSeconds = totalMuyuSeconds + totalSongboSeconds;
+          const totalMinutes = Math.ceil(totalSeconds / 60);
+          
+          // 计算用户段位
+          const userLevel = calculateUserLevel(totalMinutes);
+          
           // 更新用户数据
           const now = new Date();
           const formattedDate = now.toISOString();
@@ -572,6 +580,7 @@ Page({
               accumulateMuyuTime: totalMuyuSeconds,
               accumulateSongbo: totalSongboCount,
               accumulateSongboTime: totalSongboSeconds,
+              level: userLevel, // 更新用户段位
               lastUpdateTime: formattedDate
             }
           }).then(() => {
@@ -729,7 +738,7 @@ Page({
     });
   },
   
-  // 分页获取所有用户信息
+  // 分页获取所有用户
   getAllUsers: async function(db) {
     const MAX_LIMIT = 100; // 微信云开发单次查询最大100条记录
     let users = [];
@@ -739,6 +748,11 @@ Page({
       const countResult = await db.collection('userinfo').count();
       const total = countResult.total;
       console.log(`用户总数：${total}`);
+      
+      // 如果没有用户，直接返回空数组
+      if (total === 0) {
+        return [];
+      }
       
       // 计算需要分几次获取
       const batchTimes = Math.ceil(total / MAX_LIMIT);
@@ -762,10 +776,10 @@ Page({
         users = users.concat(res.data);
       });
       
-      console.log(`成功获取全部${users.length}个用户信息`);
+      console.log(`成功获取${users.length}个用户信息`);
       return users;
     } catch (err) {
-      console.error('获取所有用户信息失败:', err);
+      console.error(`获取用户信息失败:`, err);
       return [];
     }
   },
@@ -810,5 +824,218 @@ Page({
       console.error('获取所有训练记录失败:', err);
       return [];
     }
+  },
+
+  // 更新所有用户的段位
+  updateAllUsersLevel: function() {
+    const db = app.globalData.db;
+    
+    wx.showModal({
+      title: '更新所有用户段位',
+      content: '此操作将根据每个用户的累积训练时间计算并更新所有用户的段位。确定继续吗？',
+      success: (res) => {
+        if (res.confirm) {
+          this.performUpdateAllUsersLevel();
+        }
+      }
+    });
+  },
+  
+  // 执行批量更新所有用户段位
+  performUpdateAllUsersLevel: function() {
+    const db = app.globalData.db;
+    
+    wx.showLoading({
+      title: '准备更新段位...',
+    });
+    
+    this.setData({
+      isUpdatingAllUsers: true,
+      updateProgress: 0
+    });
+    
+    // 先获取所有用户
+    db.collection('userinfo').count().then(res => {
+      const totalUsers = res.total;
+      this.setData({
+        totalUsersToUpdate: totalUsers
+      });
+      
+      // 由于云函数一次最多获取20条记录，需要分批获取
+      const batchTimes = Math.ceil(totalUsers / 20);
+      let userProcessed = 0;
+      
+      // 创建批次处理任务
+      const tasks = [];
+      for (let i = 0; i < batchTimes; i++) {
+        const promise = db.collection('userinfo')
+          .skip(i * 20)
+          .limit(20)
+          .get();
+        tasks.push(promise);
+      }
+      
+      // 串行处理每个批次
+      this.processLevelBatchTasks(tasks, 0, []);
+    }).catch(err => {
+      console.error('获取用户总数失败:', err);
+      wx.hideLoading();
+      wx.showToast({
+        title: '更新失败',
+        icon: 'none'
+      });
+      this.setData({
+        isUpdatingAllUsers: false
+      });
+    });
+  },
+  
+  // 串行处理批次任务(段位更新专用)
+  processLevelBatchTasks: function(tasks, index, allUsers) {
+    if (index >= tasks.length) {
+      // 所有批次已获取，开始处理用户数据
+      wx.hideLoading();
+      this.processAllUsersLevel(allUsers);
+      return;
+    }
+    
+    wx.showLoading({
+      title: `获取用户 ${index+1}/${tasks.length}`,
+    });
+    
+    tasks[index].then(res => {
+      const users = res.data;
+      allUsers = allUsers.concat(users);
+      
+      // 处理下一批次
+      this.processLevelBatchTasks(tasks, index + 1, allUsers);
+    }).catch(err => {
+      console.error('获取用户批次失败:', err);
+      wx.hideLoading();
+      wx.showToast({
+        title: '获取用户失败',
+        icon: 'none'
+      });
+      this.setData({
+        isUpdatingAllUsers: false
+      });
+    });
+  },
+  
+  // 处理所有用户的段位更新
+  processAllUsersLevel: function(users) {
+    const db = app.globalData.db;
+    const totalUsers = users.length;
+    let processedCount = 0;
+    
+    // 创建进度显示
+    const progressModal = wx.showToast({
+      title: `处理中: 0/${totalUsers}`,
+      icon: 'loading',
+      duration: 1000000 // 设置超长时间
+    });
+    
+    // 串行处理每个用户，避免并发请求过多
+    this.processNextUserLevel(users, 0, totalUsers, processedCount, {
+      updated: 0,
+      noChange: 0,
+      error: 0
+    });
+  },
+  
+  // 递归处理下一个用户段位
+  processNextUserLevel: function(users, index, totalUsers, processedCount, stats) {
+    if (index >= totalUsers) {
+      // 所有用户处理完毕
+      wx.hideToast();
+      this.setData({
+        isUpdatingAllUsers: false,
+        updateProgress: 100
+      });
+      
+      wx.showModal({
+        title: '段位更新完成',
+        content: `共处理 ${totalUsers} 个用户:\n更新: ${stats.updated} 个\n无变化: ${stats.noChange} 个\n失败: ${stats.error} 个`,
+        showCancel: false,
+        success: (res) => {
+          // 刷新当前用户列表
+          this.loadUsers();
+        }
+      });
+      return;
+    }
+    
+    // 更新进度
+    processedCount++;
+    const progress = Math.floor((processedCount / totalUsers) * 100);
+    this.setData({
+      updateProgress: progress
+    });
+    
+    // 显示进度
+    wx.showToast({
+      title: `处理中: ${processedCount}/${totalUsers}`,
+      icon: 'loading',
+      duration: 1000000
+    });
+    
+    const user = users[index];
+    this.updateUserLevel(user).then(result => {
+      // 更新统计
+      stats[result.status]++;
+      
+      // 处理下一个用户
+      setTimeout(() => {
+        this.processNextUserLevel(users, index + 1, totalUsers, processedCount, stats);
+      }, 100);  // 适当延迟，避免请求过快
+    }).catch(err => {
+      console.error('更新用户段位失败:', err);
+      stats.error++;
+      
+      // 处理下一个用户
+      setTimeout(() => {
+        this.processNextUserLevel(users, index + 1, totalUsers, processedCount, stats);
+      }, 100);
+    });
+  },
+  
+  // 更新单个用户的段位
+  updateUserLevel: function(user) {
+    return new Promise((resolve, reject) => {
+      const db = app.globalData.db;
+      const userId = user._id;
+      
+      // 计算总分钟数
+      const accumulateMuyuTime = user.accumulateMuyuTime || 0;
+      const accumulateSongboTime = user.accumulateSongboTime || 0;
+      const totalSeconds = accumulateMuyuTime + accumulateSongboTime;
+      const totalMinutes = Math.ceil(totalSeconds / 60);
+      
+      // 计算用户段位
+      const userLevel = calculateUserLevel(totalMinutes);
+      
+      // 检查是否需要更新
+      if (user.level === userLevel) {
+        // 段位未变化，不需要更新
+        resolve({
+          status: 'noChange'
+        });
+        return;
+      }
+      
+      // 更新用户段位
+      db.collection('userinfo').doc(userId).update({
+        data: {
+          level: userLevel
+        }
+      }).then(() => {
+        resolve({
+          status: 'updated'
+        });
+      }).catch(err => {
+        console.error('更新用户段位失败:', err);
+        reject(err);
+      });
+    });
   },
 }) 

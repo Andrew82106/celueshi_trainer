@@ -12,6 +12,9 @@
     <view class="update-all-btn" bindtap="updateAllUsersData">
       <text>更新所有用户累积数据</text>
     </view>
+    <view class="update-all-btn" bindtap="updateAllUsersLevel">
+      <text>更新所有用户段位</text>
+    </view>
     <view class="update-all-btn" bindtap="checkUserDataConsistency">
       <text>检查用户数据一致性</text>
     </view>
@@ -105,6 +108,13 @@
           <text class="stat-label">最后更新时间</text>
           <text class="stat-value">{{selectedUser.lastUpdateTime || '未知'}}</text>
         </view>
+        <view class="stat-item">
+          <text class="stat-label">用户段位</text>
+          <text class="stat-value">{{selectedUser.level || '初入山门'}}</text>
+        </view>
+      </view>
+      
+      <view class="stat-group">
         <view class="stat-item">
           <text class="stat-label">数据库ID</text>
           <text class="stat-value" style="word-break: break-all;">{{selectedUser._id || '未知'}}</text>

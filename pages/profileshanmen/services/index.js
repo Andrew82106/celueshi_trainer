@@ -86,7 +86,8 @@ function processTrainingRecords(records, today) {
     const muyuTotalMinutes = Math.ceil(muyuTotalSeconds / 60);
     const songboTotalMinutes = Math.ceil(songboTotalSeconds / 60);
     
-    const userLevel = calculateUserLevel(muyuTotalMinutes + songboTotalMinutes);
+    // 从用户信息中获取段位，不再计算
+    const userLevel = app.globalData.userInfo.level || '初入山门';
     
     // 更新全局数据
     updateGlobalData({
@@ -460,8 +461,8 @@ function processUserRankingData(usersMap, todayTrainMap, currentUserOpenId) {
         const totalSeconds = accumulateMuyuTime + accumulateSongboTime;
         const totalMinutes = Math.ceil(totalSeconds / 60);
         
-        // 使用util中的函数计算用户段位
-        const userLevel = calculateUserLevel(totalMinutes);
+        // 直接从用户信息中读取level字段，如果没有则使用默认值
+        const userLevel = user.level || '初入山门';
         
         // 添加所有用户到排行榜，不限制条件
         rankingData.push({

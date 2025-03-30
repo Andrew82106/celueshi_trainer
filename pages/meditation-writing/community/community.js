@@ -12,6 +12,21 @@ Page({
     userLikes: {} // 存储用户已点赞的记录ID
   },
   
+  // 格式化字符数量(k,w)
+  formatCharCount(count) {
+    if (!count) return '0字';
+    
+    if (count >= 10000) {
+      // 万级别，保留两位小数
+      return (count / 10000).toFixed(2) + 'w字';
+    } else if (count >= 1000) {
+      // 千级别，保留两位小数
+      return (count / 1000).toFixed(2) + 'k字';
+    } else {
+      return count + '字';
+    }
+  },
+  
   onLoad: function(options) {
     // 加载本地存储的点赞记录
     this.loadLocalUserLikes();
@@ -117,8 +132,10 @@ Page({
             userRes.data.forEach(user => {
               userMap[user.openId] = {
                 nickName: user.nickName || '禅修者',
-                // 计算用户段位
-                userLevel: this.calculateUserLevel(Math.ceil((user.accumulateMuyuTime + user.accumulateSongboTime) / 60))
+                // 直接从用户信息中读取段位，不再计算
+                userLevel: user.level || '初入山门',
+                // 添加累积字符数量，格式化显示
+                charCount: this.formatCharCount(user.accumulateCount)
               };
             });
             
@@ -130,7 +147,11 @@ Page({
               }
               
               // 获取用户信息
-              const userInfo = userMap[record.openId] || { nickName: '禅修者', userLevel: '初入山门' };
+              const userInfo = userMap[record.openId] || { 
+                nickName: '禅修者', 
+                userLevel: '初入山门',
+                charCount: '0字'
+              };
               
               // 判断当前用户是否已点赞该记录
               const liked = this.data.userLikes[record._id] === true;
@@ -140,6 +161,7 @@ Page({
                 preview: preview,
                 nickName: userInfo.nickName,
                 userLevel: userInfo.userLevel,
+                charCount: userInfo.charCount,
                 likes: record.like || 0,
                 liked: liked
               };
@@ -172,31 +194,6 @@ Page({
           icon: 'none'
         });
       });
-  },
-  
-  // 计算用户段位
-  calculateUserLevel(totalMinutes) {
-    if (totalMinutes >= 1500) {
-      return "山门9段";
-    } else if (totalMinutes >= 1200) {
-      return "山门8段";
-    } else if (totalMinutes >= 900) {
-      return "山门7段";
-    } else if (totalMinutes >= 600) {
-      return "山门6段";
-    } else if (totalMinutes >= 300) {
-      return "山门5段";
-    } else if (totalMinutes >= 200) {
-      return "山门4段";
-    } else if (totalMinutes >= 120) {
-      return "山门3段";
-    } else if (totalMinutes >= 60) {
-      return "山门2段";
-    } else if (totalMinutes >= 10) {
-      return "山门1段";
-    } else {
-      return "初入山门";
-    }
   },
   
   // 加载更多记录

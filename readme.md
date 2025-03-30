@@ -162,6 +162,7 @@
 - "openId": 代表用户的openId
 - "nickName": 代表用户的昵称
 - "avatarUrl": 代表用户的头像
+- "level": 代表用户的段位
 - "accumulateMuyu": 代表用户累计木鱼次数
 - "accumulateMuyuTime": 代表用户累计木鱼时间
 - "accumulateSongbo": 代表用户累计颂钵次数

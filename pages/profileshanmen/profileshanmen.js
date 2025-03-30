@@ -1,6 +1,7 @@
 const app = getApp();
 const { DAYS_OF_WEEK } = require('./constants/index');
 const { loadStatisticsData, loadRankingData_ } = require('./services/index');
+const { updateUserLevel } = require('./utils/index');
 
 Page({
     /**
@@ -525,9 +526,17 @@ Page({
                                 }
                             }).then(res => {
                                 console.log("更新用户加速字段成功:", res);
-                                // 更新完成后重新加载数据，确保界面显示最新数据
-                                this.loadStatisticsData();
-                                this.loadRankingData();
+                                // 引入updateUserLevel函数
+                                const { updateUserLevel } = require('./utils/index');
+                                // 更新用户段位
+                                updateUserLevel(openId, db).then(updateRes => {
+                                    console.log("个人中心页面更新用户段位成功:", updateRes);
+                                    // 更新完成后重新加载数据，确保界面显示最新数据
+                                    this.loadStatisticsData();
+                                    this.loadRankingData();
+                                }).catch(err => {
+                                    console.error("个人中心页面更新用户段位失败:", err);
+                                });
                             }).catch(err => {
                                 console.error("更新用户加速字段失败:", err);
                             });

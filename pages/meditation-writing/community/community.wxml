@@ -38,10 +38,11 @@
               <view class="record-user-info">
                 <text>{{item.nickName || '禅修者'}}</text>
                 <text class="user-level">{{item.userLevel || '初入山门'}}</text>
+                <text class="user-char-count">累积写作{{item.charCount}}</text>
               </view>
               <view class="record-meta">
                 <text class="record-date">{{item.date}}</text>
-                <text class="record-count">{{item.count}} 字</text>
+                <text class="record-count">{{item.count}}</text>
               </view>
             </view>
             <view class="record-content">
@@ -80,6 +81,7 @@
         <view class="modal-user-info">
           <text>{{currentRecord.nickName || '禅修者'}}</text>
           <text class="user-level">{{currentRecord.userLevel || '初入山门'}}</text>
+          <text class="user-char-count">{{currentRecord.charCount}}</text>
         </view>
         <view class="modal-meta">
           <text class="modal-date">{{currentRecord.date}}</text>

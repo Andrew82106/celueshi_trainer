@@ -459,6 +459,14 @@ Page({
             }
         }).then(res => {
             console.log("更新userinfo加速字段成功:", res);
+            // 引入updateUserLevel函数
+            const { updateUserLevel } = require('../profileshanmen/utils/index');
+            // 更新用户段位
+            updateUserLevel(app.globalData.userInfo.openId, app.globalData.db).then(updateRes => {
+                console.log("颂钵页面更新用户段位成功:", updateRes);
+            }).catch(err => {
+                console.error("颂钵页面更新用户段位失败:", err);
+            });
         }).catch(err => {
             console.error("更新userinfo加速字段失败:", err);
         });

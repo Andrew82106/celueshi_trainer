@@ -93,4 +93,46 @@ export function calculateUserLevel(totalMinutes) {
     } else {
         return USER_LEVELS.INITIAL;
     }
+}
+
+/**
+ * 更新用户level字段
+ * @param {string} openId - 用户openId
+ * @param {Object} db - 数据库实例
+ */
+export function updateUserLevel(openId, db) {
+    // 查询用户累计训练时间
+    return db.collection("userinfo").where({
+        openId: openId
+    }).get().then(res => {
+        if (res.data && res.data.length > 0) {
+            const userInfo = res.data[0];
+            // 计算总分钟数
+            const accumulateMuyuTime = userInfo.accumulateMuyuTime || 0;
+            const accumulateSongboTime = userInfo.accumulateSongboTime || 0;
+            const totalSeconds = accumulateMuyuTime + accumulateSongboTime;
+            const totalMinutes = Math.ceil(totalSeconds / 60);
+            
+            // 计算用户段位
+            const userLevel = calculateUserLevel(totalMinutes);
+            
+            // 更新用户段位
+            return db.collection("userinfo").where({
+                openId: openId
+            }).update({
+                data: {
+                    level: userLevel
+                }
+            }).then(updateRes => {
+                console.log("更新用户段位成功:", updateRes);
+                return updateRes;
+            }).catch(err => {
+                console.error("更新用户段位失败:", err);
+                throw err;
+            });
+        }
+    }).catch(err => {
+        console.error("查询用户信息失败:", err);
+        throw err;
+    });
 } 

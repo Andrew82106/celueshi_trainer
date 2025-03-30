@@ -117,7 +117,13 @@ App({
                 data: {
                   openId: openId,
                   nickName: nickname,
-                  avatarUrl: avatarUrl
+                  avatarUrl: avatarUrl,
+                  level: '初入山门',
+                  accumulateMuyu: 0,
+                  accumulateMuyuTime: 0,
+                  accumulateSongbo: 0,
+                  accumulateSongboTime: 0,
+                  lastUpdateTime: new Date().getTime()
                 }
               }).then(addRes => {
                 console.log("in app.js debug: 创建用户信息成功");
