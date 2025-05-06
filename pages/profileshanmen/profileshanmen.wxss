@@ -110,6 +110,29 @@
   color: #666;
   margin-bottom: 20rpx;
   padding-left: 10rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.online-status-tip {
+  font-size: 20rpx;
+  color: #999;
+}
+
+/* 刷新在线状态按钮 */
+.refresh-online-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10rpx auto 20rpx;
+  padding: 10rpx 20rpx;
+  width: 200rpx;
+  background-color: #E6C33C;
+  color: white;
+  font-size: 24rpx;
+  border-radius: 30rpx;
+  box-shadow: 0 2rpx 5rpx rgba(0, 0, 0, 0.1);
 }
 
 .stat-cards {
@@ -348,6 +371,25 @@
   font-weight: bold;
 }
 
+/* 在线用户样式 */
+.online-user {
+  color: #E6C33C; /* 金色 */
+  font-weight: bold;
+  animation: floatGold 2s infinite alternate ease-in-out;
+}
+
+/* 浮动金色动画 */
+@keyframes floatGold {
+  0% {
+    color: #E6C33C;
+    text-shadow: 0 0 1px rgba(230, 195, 60, 0.3);
+  }
+  100% {
+    color: #FFD700;
+    text-shadow: 0 0 3px rgba(255, 215, 0, 0.6);
+  }
+}
+
 /* 加载动画样式 */
 .loading-container {
   display: flex;
@@ -402,4 +444,4 @@
 
 .expand-icon.expanded {
   transform: rotate(180deg);
-} 
+}

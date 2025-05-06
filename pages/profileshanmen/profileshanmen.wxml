@@ -121,6 +121,12 @@
   <view class="ranking-section">
     <view class="section-title">
       <text>时长排名</text>
+      <text class="online-status-tip">金色名字表示用户当前在线(1分钟内活跃)</text>
+    </view>
+    
+    <!-- 刷新在线状态按钮 -->
+    <view class="refresh-online-button" bindtap="refreshOnlineStatus">
+      <text>刷新在线状态</text>
     </view>
     
     <!-- 加载中动画 -->
@@ -145,7 +151,7 @@
             wx:key="index"
             wx:if="{{isRankingExpanded || index < displayRankingLimit}}">
         <text class="rank-column">{{index + 1}}</text>
-        <text class="name-column">{{item.nickName || '禅修者'}}</text>
+        <text class="name-column {{item.isOnline ? 'online-user' : ''}}">{{item.nickName || '禅修者'}}</text>
         <text class="time-column">{{item.todayMinutes}}</text>
         <!--<text class="count-column">{{item.todayCount}}</text> -->
         <text class="time-column">{{item.totalMinutes}}</text>

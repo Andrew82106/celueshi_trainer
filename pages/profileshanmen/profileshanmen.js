@@ -256,9 +256,20 @@ Page({
                     nickName: rankingList[0].nickName,
                     todayMinutes: rankingList[0].todayMinutes,
                     totalMinutes: rankingList[0].totalMinutes,
-                    userLevel: rankingList[0].userLevel
+                    userLevel: rankingList[0].userLevel,
+                    isOnline: rankingList[0].isOnline
                 });
             }
+            
+            // 统计在线用户数量
+            let onlineCount = 0;
+            rankingList.forEach(user => {
+                if (user.isOnline) {
+                    onlineCount++;
+                    console.log(`[在线状态] 在线用户: ${user.nickName}`);
+                }
+            });
+            console.log(`[在线状态] 排行榜中有 ${onlineCount} 个在线用户`);
             
             // 更新数据并设置加载状态为false
             this.setData({ 
@@ -560,6 +571,26 @@ Page({
             }
         }).catch(err => {
             console.error("获取用户信息失败:", err);
+        });
+    },
+
+    /**
+     * 手动刷新在线状态
+     */
+    refreshOnlineStatus() {
+        console.log("[在线状态] 手动刷新在线状态");
+        
+        // 确保自己处于在线状态
+        if (app.globalData.userInfo && app.globalData.userInfo.openId) {
+            app.updateUserOnlineStatus(app.globalData.userInfo.openId, true);
+        }
+        
+        // 刷新排行榜
+        this.loadRankingData();
+        
+        wx.showToast({
+            title: '已刷新在线状态',
+            icon: 'success'
         });
     }
 }) 

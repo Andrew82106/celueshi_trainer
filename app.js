@@ -14,7 +14,13 @@ App({
     // 颂钵统计数据
     songboRecords: {},     // 颂钵按日期记录的数据 
     songboTodayCount: 0,   // 今日颂钵敲击次数
-    songboTotalCount: 0    // 总颂钵敲击次数
+    songboTotalCount: 0,    // 总颂钵敲击次数
+
+    // 用户在线状态相关
+    heartbeatTimer: null,  // 心跳定时器
+    heartbeatInterval: 60000, // 心跳间隔（毫秒），默认1分钟
+    offlineTimeout: 300000, // 离线超时时间（毫秒），默认5分钟
+    isOnline: false        // 当前用户在线状态
   },
 
   onLaunch() {
@@ -133,6 +139,9 @@ App({
                 console.log(err);
               });
             }
+
+            // 初始化用户在线状态
+            this.initUserOnlineStatus(openId);
           }).catch(err => {
             console.log("in app.js debug: 查询用户信息失败");
             console.log(err);
@@ -158,7 +167,147 @@ App({
       console.log("in app.js debug: 设置默认游客信息");
       console.log(this.globalData.userInfo);
     }
+
+    // 监听小程序切前台事件
+    wx.onAppShow(this.onAppShow.bind(this));
     
+    // 监听小程序切后台事件
+    wx.onAppHide(this.onAppHide.bind(this));
+  },
+
+  // 小程序切到前台时
+  onAppShow() {
+    if (this.globalData.userInfo && !this.globalData.userInfo.isTourist && this.globalData.userInfo.openId) {
+      // 更新在线状态
+      this.updateUserOnlineStatus(this.globalData.userInfo.openId, true);
+      // 启动心跳
+      this.startHeartbeat();
+    }
+  },
+
+  // 小程序切到后台时
+  onAppHide() {
+    if (this.globalData.userInfo && !this.globalData.userInfo.isTourist && this.globalData.userInfo.openId) {
+      // 更新为离线状态
+      this.updateUserOnlineStatus(this.globalData.userInfo.openId, false);
+      // 停止心跳
+      this.stopHeartbeat();
+    }
+  },
+
+  // 初始化用户在线状态
+  initUserOnlineStatus(openId) {
+    if (!openId) return;
+    
+    const db = this.globalData.db;
+    console.log(`[在线状态] 开始初始化用户${openId}的在线状态`);
+    
+    // 查询用户是否已有在线状态记录
+    db.collection('userOnlineStatus').where({
+      openId: openId
+    }).get().then(res => {
+      if (res.data && res.data.length > 0) {
+        // 已有记录，更新状态为在线
+        console.log(`[在线状态] 用户${openId}已有在线状态记录，更新为在线状态`);
+        db.collection('userOnlineStatus').where({
+          openId: openId
+        }).update({
+          data: {
+            isOnline: true,
+            lastActiveTime: Date.now()
+          }
+        }).then(() => {
+          console.log(`[在线状态] 更新用户${openId}在线状态成功`);
+          // 设置当前用户为在线状态
+          this.globalData.isOnline = true;
+          // 启动心跳
+          this.startHeartbeat();
+        }).catch(err => {
+          console.error(`[在线状态] 更新用户${openId}在线状态失败:`, err);
+        });
+      } else {
+        // 无记录，创建新记录
+        console.log(`[在线状态] 用户${openId}没有在线状态记录，创建新记录`);
+        db.collection('userOnlineStatus').add({
+          data: {
+            openId: openId,
+            isOnline: true,
+            lastActiveTime: Date.now()
+          }
+        }).then(() => {
+          console.log(`[在线状态] 创建用户${openId}在线状态成功`);
+          // 设置当前用户为在线状态
+          this.globalData.isOnline = true;
+          // 启动心跳
+          this.startHeartbeat();
+        }).catch(err => {
+          console.error(`[在线状态] 创建用户${openId}在线状态失败:`, err);
+        });
+      }
+    }).catch(err => {
+      console.error('[在线状态] 初始化用户在线状态失败:', err);
+    });
+  },
+
+  // 更新用户在线状态
+  updateUserOnlineStatus(openId, isOnline) {
+    if (!openId) return;
+    
+    const db = this.globalData.db;
+    const currentTime = Date.now();
+    console.log(`[在线状态] 更新用户${openId}的在线状态为: ${isOnline ? '在线' : '离线'}, 时间戳: ${currentTime}`);
+    
+    // 检查集合是否存在，如果不存在则先创建记录
+    db.collection('userOnlineStatus').where({
+      openId: openId
+    }).get().then(res => {
+      if (res.data && res.data.length > 0) {
+        // 已有记录，直接更新
+        return db.collection('userOnlineStatus').where({
+          openId: openId
+        }).update({
+          data: {
+            isOnline: isOnline,
+            lastActiveTime: currentTime
+          }
+        });
+      } else {
+        // 无记录，创建新记录
+        return db.collection('userOnlineStatus').add({
+          data: {
+            openId: openId,
+            isOnline: isOnline,
+            lastActiveTime: currentTime
+          }
+        });
+      }
+    }).then(() => {
+      this.globalData.isOnline = isOnline;
+      console.log(`[在线状态] 用户${openId}的在线状态已更新为: ${isOnline ? '在线' : '离线'}`);
+    }).catch(err => {
+      console.error('[在线状态] 更新用户在线状态失败:', err);
+    });
+  },
+
+  // 启动心跳
+  startHeartbeat() {
+    // 先清除之前的定时器
+    this.stopHeartbeat();
+    
+    // 设置新的定时器
+    this.globalData.heartbeatTimer = setInterval(() => {
+      if (this.globalData.userInfo && !this.globalData.userInfo.isTourist && this.globalData.userInfo.openId) {
+        this.updateUserOnlineStatus(this.globalData.userInfo.openId, true);
+      }
+    }, this.globalData.heartbeatInterval);
+  },
+
+  // 停止心跳
+  stopHeartbeat() {
+    if (this.globalData.heartbeatTimer) {
+      clearInterval(this.globalData.heartbeatTimer);
+      this.globalData.heartbeatTimer = null;
+    }
   },
 
   checkLogin() {

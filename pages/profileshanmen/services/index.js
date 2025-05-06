@@ -158,16 +158,19 @@ export function loadRankingData_() {
     console.log("加载排名数据 - 当前用户ID:", currentUserOpenId);
     console.log("加载排名数据 - 今日日期:", today);
     
-    // 使用Promise.all同时获取用户信息和今日训练数据
+    // 使用Promise.all同时获取用户信息、今日训练数据和用户在线状态数据
     return Promise.all([
         // 获取所有用户信息（使用分页查询）
         getAllUserInfo(db),
         // 获取今日训练数据（使用分页查询）
-        getAllTrainingData(db, today)
-    ]).then(([usersData, trainData]) => {
+        getAllTrainingData(db, today),
+        // 获取用户在线状态数据
+        getAllUserOnlineStatus(db)
+    ]).then(([usersData, trainData, onlineStatusData]) => {
         console.log("加载排名数据 - 获取用户信息成功");
         console.log(`加载排名数据 - 用户信息: 获取到${usersData.length}个用户`);
         console.log(`加载排名数据 - 训练记录: 获取到${trainData.length}条记录`);
+        console.log(`加载排名数据 - 在线状态: 获取到${onlineStatusData.length}条记录`);
         
         // 将用户数据转换为Map，以openId为键
         const usersMap = new Map();
@@ -217,13 +220,59 @@ export function loadRankingData_() {
             console.log(`今日(${today})没有训练记录`);
         }
         
+        // 将在线状态数据转换为Map，以openId为键
+        const onlineStatusMap = new Map();
+        if (onlineStatusData && onlineStatusData.length > 0) {
+            console.log(`[在线状态] 获取到${onlineStatusData.length}条用户在线状态记录`);
+            console.log(`[在线状态] 详细记录:`, JSON.stringify(onlineStatusData));
+            
+            onlineStatusData.forEach(status => {
+                if (status.openId) {
+                    // 判断用户是否在线（最后活跃时间在1分钟内）
+                    const now = Date.now();
+                    const lastActive = status.lastActiveTime;
+                    const timeDiff = now - lastActive;
+                    const timeout = app.globalData.offlineTimeout;
+                    const isActive = timeDiff < timeout;
+                    
+                    console.log(`[在线状态] 用户${status.openId} - 判定详情:
+                    - 当前时间: ${now}
+                    - 最后活跃: ${lastActive}
+                    - 时间差: ${timeDiff}ms
+                    - 超时时间: ${timeout}ms
+                    - 状态标记: ${status.isOnline ? '在线' : '离线'}
+                    - 活跃判定: ${isActive ? '在线' : '超时'}
+                    - 最终判定: ${(status.isOnline && isActive) ? '在线' : '离线'}`);
+                    
+                    onlineStatusMap.set(status.openId, {
+                        isOnline: status.isOnline && isActive, // 只有状态为在线且活跃时间在超时范围内才算真正在线
+                        lastActiveTime: status.lastActiveTime
+                    });
+                }
+            });
+            
+            // 统计在线用户数
+            let onlineCount = 0;
+            let onlineUsers = [];
+            onlineStatusMap.forEach((status, openId) => {
+                if (status.isOnline) {
+                    onlineCount++;
+                    onlineUsers.push(openId);
+                }
+            });
+            console.log(`[在线状态] 当前共有${onlineCount}个用户在线`);
+            console.log(`[在线状态] 在线用户ID: ${JSON.stringify(onlineUsers)}`);
+        } else {
+            console.log(`[在线状态] 没有获取到用户在线状态记录`);
+        }
+        
         // 检查当前用户的本地数据
         if (currentUserOpenId) {
             updateCurrentUserTodayData(currentUserOpenId, todayTrainMap, today, db);
         }
         
         // 处理排名数据
-        const rankingList = processUserRankingData(usersMap, todayTrainMap, currentUserOpenId);
+        const rankingList = processUserRankingData(usersMap, todayTrainMap, currentUserOpenId, onlineStatusMap);
         console.log(`排行榜生成完成，共${rankingList.length}个用户`);
         return rankingList;
     }).catch(err => {
@@ -433,10 +482,10 @@ function updateCurrentUserTodayData(currentUserOpenId, todayTrainMap, today, db)
 /**
  * 处理用户排名数据
  */
-function processUserRankingData(usersMap, todayTrainMap, currentUserOpenId) {
+function processUserRankingData(usersMap, todayTrainMap, currentUserOpenId, onlineStatusMap) {
     const rankingData = [];
     
-    // 遍历所有用户
+    // 处理每个用户的数据
     usersMap.forEach((user, openId) => {
         // 获取累积数据
         const accumulateMuyu = user.accumulateMuyu || 0;
@@ -464,6 +513,9 @@ function processUserRankingData(usersMap, todayTrainMap, currentUserOpenId) {
         // 直接从用户信息中读取level字段，如果没有则使用默认值
         const userLevel = user.level || '初入山门';
         
+        // 获取用户在线状态
+        const onlineStatus = onlineStatusMap.get(openId) || { isOnline: false };
+        
         // 添加所有用户到排行榜，不限制条件
         rankingData.push({
             openId,
@@ -482,7 +534,8 @@ function processUserRankingData(usersMap, todayTrainMap, currentUserOpenId) {
             totalMinutes,
             todayMinutes,
             userLevel,
-            isCurrentUser: openId === currentUserOpenId
+            isCurrentUser: openId === currentUserOpenId,
+            isOnline: onlineStatus.isOnline // 添加在线状态
         });
     });
     
@@ -508,4 +561,56 @@ function processUserRankingData(usersMap, todayTrainMap, currentUserOpenId) {
     });
     
     return rankingData;
+}
+
+/**
+ * 获取所有用户在线状态数据
+ */
+function getAllUserOnlineStatus(db) {
+    return new Promise((resolve, reject) => {
+        // 设置查询批次大小
+        const batchSize = 100;
+        let lastId = null;
+        let allData = [];
+        
+        // 递归函数，用于分批获取数据
+        function fetchBatch() {
+            let query = db.collection('userOnlineStatus').limit(batchSize);
+            
+            // 如果有上一批次的最后一个ID，则从该ID之后开始查询
+            if (lastId) {
+                query = query.where({
+                    _id: db.command.gt(lastId)
+                });
+            }
+            
+            query.orderBy('_id', 'asc').get().then(res => {
+                const data = res.data;
+                
+                if (data && data.length > 0) {
+                    // 合并数据
+                    allData = allData.concat(data);
+                    
+                    // 如果返回的数据量等于批次大小，说明可能还有更多数据
+                    if (data.length === batchSize) {
+                        // 记录最后一个ID，继续获取下一批次
+                        lastId = data[data.length - 1]._id;
+                        fetchBatch();
+                    } else {
+                        // 数据获取完毕
+                        resolve(allData);
+                    }
+                } else {
+                    // 没有数据
+                    resolve(allData);
+                }
+            }).catch(err => {
+                console.error('获取用户在线状态数据失败:', err);
+                reject(err);
+            });
+        }
+        
+        // 开始获取第一批数据
+        fetchBatch();
+    });
 }
