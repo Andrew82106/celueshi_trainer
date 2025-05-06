@@ -120,8 +120,24 @@
   
   <view class="ranking-section">
     <view class="section-title">
-      <text>时长排名</text>
+      <text>{{currentRankingType === 'day' ? '日榜' : currentRankingType === 'week' ? '周榜' : currentRankingType === 'month' ? '月榜' : '总榜'}}</text>
       <text class="online-status-tip">金色名字表示用户当前在线(1分钟内活跃)</text>
+    </view>
+    
+    <!-- 榜单切换按钮 -->
+    <view class="ranking-tabs">
+      <view class="ranking-tab {{currentRankingType === 'day' ? 'active' : ''}}" bindtap="switchRankingType" data-type="day">
+        <text>日榜</text>
+      </view>
+      <view class="ranking-tab {{currentRankingType === 'week' ? 'active' : ''}}" bindtap="switchRankingType" data-type="week">
+        <text>周榜</text>
+      </view>
+      <view class="ranking-tab {{currentRankingType === 'month' ? 'active' : ''}}" bindtap="switchRankingType" data-type="month">
+        <text>月榜</text>
+      </view>
+      <view class="ranking-tab {{currentRankingType === 'total' ? 'active' : ''}}" bindtap="switchRankingType" data-type="total">
+        <text>总榜</text>
+      </view>
     </view>
     
     <!-- 刷新在线状态按钮 -->
@@ -140,9 +156,18 @@
       <view class="ranking-header">
         <text class="rank-column">排名</text>
         <text class="name-column">用户</text>
-        <text class="time-column">今日(分)</text>
-        <!--<text class="count-column">今日(次)</text> -->
-        <text class="time-column">总时长(分)</text>
+        <text class="time-column">
+          <block wx:if="{{currentRankingType === 'day'}}">今日(分)</block>
+          <block wx:elif="{{currentRankingType === 'week'}}">7天(分)</block>
+          <block wx:elif="{{currentRankingType === 'month'}}">30天(分)</block>
+          <block wx:else>总时长(分)</block>
+        </text>
+        <text class="count-column">
+          <block wx:if="{{currentRankingType === 'day'}}">今日(次)</block>
+          <block wx:elif="{{currentRankingType === 'week'}}">7天(次)</block>
+          <block wx:elif="{{currentRankingType === 'month'}}">30天(次)</block>
+          <block wx:else>总次数(次)</block>
+        </text>
         <text class="level-column">段位</text>
       </view>
       
@@ -152,9 +177,18 @@
             wx:if="{{isRankingExpanded || index < displayRankingLimit}}">
         <text class="rank-column">{{index + 1}}</text>
         <text class="name-column {{item.isOnline ? 'online-user' : ''}}">{{item.nickName || '禅修者'}}</text>
-        <text class="time-column">{{item.todayMinutes}}</text>
-        <!--<text class="count-column">{{item.todayCount}}</text> -->
-        <text class="time-column">{{item.totalMinutes}}</text>
+        <text class="time-column">
+          <block wx:if="{{currentRankingType === 'day'}}">{{item.todayMinutes}}</block>
+          <block wx:elif="{{currentRankingType === 'week'}}">{{item.weekMinutes}}</block>
+          <block wx:elif="{{currentRankingType === 'month'}}">{{item.monthMinutes}}</block>
+          <block wx:else>{{item.totalMinutes}}</block>
+        </text>
+        <text class="count-column">
+          <block wx:if="{{currentRankingType === 'day'}}">{{item.todayCount}}</block>
+          <block wx:elif="{{currentRankingType === 'week'}}">{{item.weekCount}}</block>
+          <block wx:elif="{{currentRankingType === 'month'}}">{{item.monthCount}}</block>
+          <block wx:else>{{item.totalCount}}</block>
+        </text>
         <text class="level-column">{{item.userLevel}}</text>
       </view>
       

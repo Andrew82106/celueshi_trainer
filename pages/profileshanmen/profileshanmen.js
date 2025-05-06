@@ -1,6 +1,6 @@
 const app = getApp();
 const { DAYS_OF_WEEK } = require('./constants/index');
-const { loadStatisticsData, loadRankingData_ } = require('./services/index');
+const { loadStatisticsData, loadRankingData_, loadRankingDataByDateRange } = require('./services/index');
 const { updateUserLevel } = require('./utils/index');
 
 Page({
@@ -25,7 +25,12 @@ Page({
         userLevel: '',          // 用户段位
         isRankingLoading: true, // 排名数据是否正在加载
         isRankingExpanded: false, // 排名列表是否展开
-        displayRankingLimit: 10  // 默认显示前10名
+        displayRankingLimit: 10, // 默认显示前10名
+        currentRankingType: 'day', // 当前排行榜类型：day(日榜)、week(周榜)、month(月榜)、total(总榜)
+        dayRankingList: [],     // 日榜数据
+        weekRankingList: [],    // 周榜数据
+        monthRankingList: [],   // 月榜数据
+        totalRankingList: []    // 总榜数据
     },
 
     /**
@@ -248,22 +253,91 @@ Page({
             isRankingLoading: true
         });
         
-        loadRankingData_().then(rankingList => {
-            console.log(`获取排名数据成功，共 ${rankingList.length} 条记录`);
-            // 检查排名数据的字段
-            if (rankingList.length > 0) {
-                console.log("排名第一数据示例:", {
-                    nickName: rankingList[0].nickName,
-                    todayMinutes: rankingList[0].todayMinutes,
-                    totalMinutes: rankingList[0].totalMinutes,
-                    userLevel: rankingList[0].userLevel,
-                    isOnline: rankingList[0].isOnline
-                });
+        // 获取当前日期
+        const now = new Date();
+        
+        // 计算日期范围
+        const todayDate = this.getTodayDateString(); // 今天，格式：YYYY-MM-DD
+        
+        // 计算一周前的日期
+        const oneWeekAgo = new Date(now);
+        oneWeekAgo.setDate(now.getDate() - 7);
+        const weekStartDate = this.formatDate(oneWeekAgo); // 一周前，格式：YYYY-MM-DD
+        
+        // 计算一个月前的日期
+        const oneMonthAgo = new Date(now);
+        oneMonthAgo.setMonth(now.getMonth() - 1);
+        const monthStartDate = this.formatDate(oneMonthAgo); // 一个月前，格式：YYYY-MM-DD
+        
+        console.log(`日期范围 - 今日: ${todayDate}, 周开始: ${weekStartDate}, 月开始: ${monthStartDate}`);
+        
+        // 获取数据库实例
+        const db = app.globalData.db;
+        
+        // 使用Promise.all同时请求四种不同时间范围的数据
+        Promise.all([
+            // 日榜 - 今日数据
+            loadRankingDataByDateRange(db, todayDate, todayDate),
+            // 周榜 - 过去7天数据
+            loadRankingDataByDateRange(db, weekStartDate, todayDate),
+            // 月榜 - 过去30天数据
+            loadRankingDataByDateRange(db, monthStartDate, todayDate),
+            // 总榜 - 使用原有的加载函数
+            loadRankingData_()
+        ]).then(([dayData, weekData, monthData, totalData]) => {
+            console.log(`获取排名数据成功 - 日榜: ${dayData.length}条, 周榜: ${weekData.length}条, 月榜: ${monthData.length}条, 总榜: ${totalData.length}条`);
+            
+            // 转换日榜数据格式，使其与原有代码兼容
+            const dayRankingList = dayData.map(item => ({
+                ...item,
+                todayMinutes: item.rangeMinutes,
+                todayCount: item.rangeCount
+            }));
+            
+            // 转换周榜数据格式，使其与原有代码兼容
+            const weekRankingList = weekData.map(item => ({
+                ...item,
+                weekMinutes: item.rangeMinutes,
+                weekCount: item.rangeCount
+            }));
+            
+            // 转换月榜数据格式，使其与原有代码兼容
+            const monthRankingList = monthData.map(item => ({
+                ...item,
+                monthMinutes: item.rangeMinutes,
+                monthCount: item.rangeCount
+            }));
+            
+            // 总榜数据
+            const totalRankingList = totalData;
+            
+            // 对总榜进行排序，按总时长（木鱼+颂钵时长总和）排序
+            totalRankingList.sort((a, b) => {
+                return b.totalMinutes - a.totalMinutes;
+            });
+            
+            // 根据当前选中的榜单类型选择要显示的数据
+            let currentList = [];
+            switch(this.data.currentRankingType) {
+                case 'day':
+                    currentList = dayRankingList;
+                    break;
+                case 'week':
+                    currentList = weekRankingList;
+                    break;
+                case 'month':
+                    currentList = monthRankingList;
+                    break;
+                case 'total':
+                    currentList = totalRankingList;
+                    break;
+                default:
+                    currentList = dayRankingList;
             }
             
             // 统计在线用户数量
             let onlineCount = 0;
-            rankingList.forEach(user => {
+            currentList.forEach(user => {
                 if (user.isOnline) {
                     onlineCount++;
                     console.log(`[在线状态] 在线用户: ${user.nickName}`);
@@ -273,7 +347,11 @@ Page({
             
             // 更新数据并设置加载状态为false
             this.setData({ 
-                rankingList,
+                rankingList: currentList,
+                dayRankingList,
+                weekRankingList,
+                monthRankingList,
+                totalRankingList,
                 isRankingLoading: false 
             });
         }).catch(err => {
@@ -291,6 +369,39 @@ Page({
     toggleRankingExpand() {
         this.setData({
             isRankingExpanded: !this.data.isRankingExpanded
+        });
+    },
+    
+    /**
+     * 切换榜单类型
+     */
+    switchRankingType(e) {
+        const type = e.currentTarget.dataset.type;
+        if (type === this.data.currentRankingType) return; // 如果点击的是当前选中的类型，不做任何操作
+        
+        console.log(`切换榜单类型: ${type}`);
+        
+        let rankingList = [];
+        // 根据类型选择对应的榜单数据
+        switch(type) {
+            case 'day':
+                rankingList = this.data.dayRankingList;
+                break;
+            case 'week':
+                rankingList = this.data.weekRankingList;
+                break;
+            case 'month':
+                rankingList = this.data.monthRankingList;
+                break;
+            case 'total':
+                rankingList = this.data.totalRankingList;
+                break;
+        }
+        
+        // 更新数据
+        this.setData({
+            currentRankingType: type,
+            rankingList
         });
     },
 
@@ -592,5 +703,15 @@ Page({
             title: '已刷新在线状态',
             icon: 'success'
         });
+    },
+
+    /**
+     * 格式化日期为 YYYY-MM-DD 格式
+     */
+    formatDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
     }
 }) 

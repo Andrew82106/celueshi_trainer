@@ -54,13 +54,19 @@
     <text class="section-title">开发记录</text>
 
     <view class="feature-item">
-    <text class="feature-title">版本0.3.2(当前)</text>
+    <text class="feature-title">版本0.3.3(当前)</text>
+      <text class="feature-desc">根据用户反馈修改了山门训练的入口页面,添加了日榜、周榜、月榜</text>
+      <text class="feature-desc">>>Andrew 在 2025年5月6日下午16点06分 提交上传</text>
+    </view>
+
+    <view class="feature-item">
+    <text class="feature-title">版本0.3.2</text>
       <text class="feature-desc">添加了用户在线状态显示，添加了用户在线状态刷新按钮</text>
       <text class="feature-desc">>>Andrew 在 2025年5月6日下午16点06分 提交上传</text>
     </view>
 
     <view class="feature-item">
-    <text class="feature-title">版本0.3.1(当前)</text>
+    <text class="feature-title">版本0.3.1</text>
       <text class="feature-desc">添加了离线训练记录上传按钮，修改了部分UI</text>
       <text class="feature-desc">>>Andrew 在 2025年3月30日下午2点40分 提交上传</text>
     </view>

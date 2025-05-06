@@ -1,14 +1,14 @@
 <!--pages/shanmen/shanmen.wxml-->
 <view class="container">
   <view class="text-container">
-    <text class="character" style="animation-delay: 0.2s;">山</text>
-    <text class="character" style="animation-delay: 0.4s;">门</text>
-    <text class="character" style="animation-delay: 0.6s;">已</text>
-    <text class="character" style="animation-delay: 0.8s;">开</text>
+    <text class="character" style="animation-delay: 0.2s;">日</text>
+    <text class="character" style="animation-delay: 0.4s;">积</text>
+    <text class="character" style="animation-delay: 0.6s;">月</text>
+    <text class="character" style="animation-delay: 0.8s;">累</text>
     <text class="character" style="animation-delay: 1.0s;">·</text>
-    <text class="character" style="animation-delay: 1.2s;">步</text>
-    <text class="character" style="animation-delay: 1.4s;">履</text>
-    <text class="character" style="animation-delay: 1.6s;">光</text>
-    <text class="character" style="animation-delay: 1.8s;">明</text>
+    <text class="character" style="animation-delay: 1.2s;">水</text>
+    <text class="character" style="animation-delay: 1.4s;">滴</text>
+    <text class="character" style="animation-delay: 1.6s;">石</text>
+    <text class="character" style="animation-delay: 1.8s;">穿</text>
   </view>
 </view>

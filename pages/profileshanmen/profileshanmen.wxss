@@ -319,6 +319,45 @@
   box-sizing: border-box;
 }
 
+/* 榜单切换按钮样式 */
+.ranking-tabs {
+  display: flex;
+  justify-content: space-between;
+  margin: 20rpx 0;
+  border-radius: 10rpx;
+  overflow: hidden;
+  background-color: #f9f9f9;
+  border: 1rpx solid #eee;
+  box-shadow: 0 2rpx 5rpx rgba(0, 0, 0, 0.05);
+}
+
+.ranking-tab {
+  flex: 1;
+  text-align: center;
+  padding: 16rpx 0;
+  font-size: 28rpx;
+  color: #666;
+  transition: all 0.3s;
+  position: relative;
+}
+
+.ranking-tab.active {
+  background-color: #9F8053;
+  color: #fff;
+  font-weight: bold;
+}
+
+.ranking-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40rpx;
+  height: 4rpx;
+  background-color: #E6C33C;
+}
+
 .ranking-list {
   width: 100%;
   margin-top: 20rpx;
@@ -343,7 +382,7 @@
 }
 
 .name-column {
-  width: 35%;
+  width: 30%;
   text-align: left;
   white-space: nowrap;
   overflow: hidden;
@@ -351,17 +390,17 @@
 }
 
 .time-column {
-  width: 18%;
+  width: 20%;
   text-align: center;
 }
 
 .count-column {
-  width: 18%;
+  width: 20%;
   text-align: center;
 }
 
 .level-column {
-  width: 18%;
+  width: 20%;
   text-align: center;
   color: #9F8053;
 }

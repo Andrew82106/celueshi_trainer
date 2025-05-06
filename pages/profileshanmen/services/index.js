@@ -614,3 +614,216 @@ function getAllUserOnlineStatus(db) {
         fetchBatch();
     });
 }
+
+/**
+ * 获取指定日期范围内的训练数据
+ * @param {Object} db - 数据库实例
+ * @param {String} startDate - 开始日期，格式：YYYY-MM-DD
+ * @param {String} endDate - 结束日期，格式：YYYY-MM-DD
+ * @returns {Promise<Array>} - 包含该日期范围内所有训练数据的数组
+ */
+async function getTrainingDataByDateRange(db, startDate, endDate) {
+    const MAX_LIMIT = 20; // 微信云开发单次查询最大20条记录
+    let records = [];
+    
+    try {
+        // 先获取符合条件的记录总数
+        const countResult = await db.collection('trainlog')
+            .where({
+                date: db.command.gte(startDate).and(db.command.lte(endDate))
+            })
+            .count();
+        
+        const total = countResult.total;
+        console.log(`日期范围[${startDate}~${endDate}]内的训练记录总数：${total}`);
+        
+        // 计算需要分几次获取
+        const batchTimes = Math.ceil(total / MAX_LIMIT);
+        console.log(`需要分${batchTimes}次获取训练数据`);
+        
+        // 分批次获取数据
+        const tasks = [];
+        for (let i = 0; i < batchTimes; i++) {
+            const promise = db.collection('trainlog')
+                .where({
+                    date: db.command.gte(startDate).and(db.command.lte(endDate))
+                })
+                .skip(i * MAX_LIMIT)
+                .limit(MAX_LIMIT)
+                .get();
+            tasks.push(promise);
+        }
+        
+        // 等待所有请求完成
+        const results = await Promise.all(tasks);
+        
+        // 合并结果
+        results.forEach(res => {
+            records = records.concat(res.data);
+        });
+        
+        console.log(`成功获取日期范围[${startDate}~${endDate}]内共${records.length}条训练记录`);
+        return records;
+    } catch (err) {
+        console.error(`获取日期范围[${startDate}~${endDate}]内的训练数据失败:`, err);
+        return [];
+    }
+}
+
+/**
+ * 按用户ID分组，计算指定时间范围内的训练数据
+ * @param {Array} records - 训练记录数组
+ * @returns {Map} - 以用户ID为键，训练数据汇总为值的Map
+ */
+function groupTrainingDataByUser(records) {
+    const userTrainingMap = new Map();
+    
+    if (!records || records.length === 0) {
+        return userTrainingMap;
+    }
+    
+    records.forEach(record => {
+        if (!record.openId) return;
+        
+        const existingData = userTrainingMap.get(record.openId);
+        if (existingData) {
+            // 更新现有用户的数据
+            existingData.muyuCounts += (record.muyuCounts || 0);
+            existingData.songboCounts += (record.songboCounts || 0);
+            existingData.muyuSeconds += (record.muyuSeconds || 0);
+            existingData.songboSeconds += (record.songboSeconds || 0);
+            userTrainingMap.set(record.openId, existingData);
+        } else {
+            // 添加新用户的数据
+            userTrainingMap.set(record.openId, {
+                muyuCounts: record.muyuCounts || 0,
+                songboCounts: record.songboCounts || 0,
+                muyuSeconds: record.muyuSeconds || 0,
+                songboSeconds: record.songboSeconds || 0
+            });
+        }
+    });
+    
+    return userTrainingMap;
+}
+
+/**
+ * 加载指定日期范围内的排名数据
+ * @param {Object} db - 数据库实例
+ * @param {String} startDate - 开始日期，格式：YYYY-MM-DD
+ * @param {String} endDate - 结束日期，格式：YYYY-MM-DD
+ * @returns {Promise<Array>} - 排行榜数据数组
+ */
+export async function loadRankingDataByDateRange(db, startDate, endDate) {
+    try {
+        // 获取所有用户信息
+        const usersData = await getAllUserInfo(db);
+        
+        // 获取指定日期范围内的训练数据
+        const trainData = await getTrainingDataByDateRange(db, startDate, endDate);
+        
+        // 获取用户在线状态
+        const onlineStatusData = await getAllUserOnlineStatus(db);
+        
+        console.log(`加载[${startDate}~${endDate}]排名数据 - 获取用户信息成功`);
+        console.log(`加载[${startDate}~${endDate}]排名数据 - 用户信息: 获取到${usersData.length}个用户`);
+        console.log(`加载[${startDate}~${endDate}]排名数据 - 训练记录: 获取到${trainData.length}条记录`);
+        console.log(`加载[${startDate}~${endDate}]排名数据 - 在线状态: 获取到${onlineStatusData.length}条记录`);
+        
+        // 将用户数据转换为Map，以openId为键
+        const usersMap = new Map();
+        if (usersData && usersData.length > 0) {
+            usersData.forEach(user => {
+                if (user.openId) {
+                    usersMap.set(user.openId, user);
+                }
+            });
+        }
+        
+        // 按用户ID分组，计算指定时间范围内的训练数据
+        const userTrainingMap = groupTrainingDataByUser(trainData);
+        
+        // 将在线状态数据转换为Map，以openId为键
+        const onlineStatusMap = new Map();
+        if (onlineStatusData && onlineStatusData.length > 0) {
+            onlineStatusData.forEach(status => {
+                if (status.openId) {
+                    const now = Date.now();
+                    const lastActive = status.lastActiveTime;
+                    const timeDiff = now - lastActive;
+                    const timeout = 60000; // 1分钟超时
+                    const isActive = timeDiff < timeout;
+                    
+                    onlineStatusMap.set(status.openId, {
+                        isOnline: status.isOnline && isActive,
+                        lastActiveTime: status.lastActiveTime
+                    });
+                }
+            });
+        }
+        
+        // 生成排行榜数据
+        const rankingData = [];
+        
+        usersMap.forEach((user, openId) => {
+            // 获取用户累积数据
+            const accumulateMuyu = user.accumulateMuyu || 0;
+            const accumulateMuyuTime = user.accumulateMuyuTime || 0;
+            const accumulateSongbo = user.accumulateSongbo || 0;
+            const accumulateSongboTime = user.accumulateSongboTime || 0;
+            
+            // 获取指定时间范围内的数据
+            const rangeData = userTrainingMap.get(openId) || {
+                muyuCounts: 0,
+                songboCounts: 0,
+                muyuSeconds: 0,
+                songboSeconds: 0
+            };
+            
+            // 计算指定时间范围内的总次数和总时长（分钟）
+            const rangeCount = rangeData.muyuCounts + rangeData.songboCounts;
+            const rangeSeconds = rangeData.muyuSeconds + rangeData.songboSeconds;
+            const rangeMinutes = Math.ceil(rangeSeconds / 60);
+            
+            // 计算累积总时长（分钟）
+            const totalSeconds = accumulateMuyuTime + accumulateSongboTime;
+            const totalMinutes = Math.ceil(totalSeconds / 60);
+            
+            // 获取用户段位
+            const userLevel = user.level || '初入山门';
+            
+            // 获取用户在线状态
+            const onlineStatus = onlineStatusMap.get(openId) || { isOnline: false };
+            
+            // 添加到排行榜
+            rankingData.push({
+                openId,
+                nickName: user.nickName || '禅修者',
+                avatarUrl: user.avatarUrl || '',
+                rangeMuyuCount: rangeData.muyuCounts,
+                rangeSongboCount: rangeData.songboCounts,
+                rangeMuyuMinutes: Math.ceil(rangeData.muyuSeconds / 60),
+                rangeSongboMinutes: Math.ceil(rangeData.songboSeconds / 60),
+                rangeCount,
+                rangeMinutes,
+                muyuTotalCount: accumulateMuyu,
+                songboTotalCount: accumulateSongbo,
+                totalCount: accumulateMuyu + accumulateSongbo,
+                totalMinutes,
+                userLevel,
+                isOnline: onlineStatus.isOnline
+            });
+        });
+        
+        // 按指定时间范围内的时长排序（降序）
+        rankingData.sort((a, b) => {
+            return b.rangeMinutes - a.rangeMinutes;
+        });
+        
+        return rankingData;
+        
+    } catch (err) {
+        console.error(`加载[${startDate}~${endDate}]排名数据失败:`, err);
+        return [];
+    }
+}
