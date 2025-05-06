@@ -8,7 +8,8 @@ Page({
     theme: wx.getSystemInfoSync().theme,
     userInfo: null,
     nickName: '',
-    isLoading: false
+    isLoading: false,
+    cloudAvatarUrl: ''
   },
   
   onLoad() {
@@ -34,6 +35,7 @@ Page({
         userInfo: userInfo,
         avatarUrl: userInfo.avatarUrl || defaultAvatarUrl,
         nickName: userInfo.nickName || '',
+        cloudAvatarUrl: userInfo.avatarUrl || ''
       });
     }
 
@@ -51,6 +53,38 @@ Page({
     console.log("选择的头像:", avatarUrl);
     this.setData({
       avatarUrl,
+      isLoading: true
+    });
+    
+    const openId = this.data.userInfo.openId || 'unknown';
+    const cloudPath = `avatars/${openId}_${new Date().getTime()}.jpg`;
+    
+    wx.cloud.uploadFile({
+      cloudPath: cloudPath,
+      filePath: avatarUrl,
+      success: res => {
+        console.log("头像上传成功:", res);
+        const fileID = res.fileID;
+        this.setData({
+          cloudAvatarUrl: fileID,
+          isLoading: false
+        });
+        
+        wx.showToast({
+          title: '头像上传成功',
+          icon: 'success'
+        });
+      },
+      fail: err => {
+        console.error("头像上传失败:", err);
+        this.setData({
+          isLoading: false
+        });
+        wx.showToast({
+          title: '头像上传失败',
+          icon: 'none'
+        });
+      }
     });
   },
   
@@ -65,8 +99,8 @@ Page({
   onSubmit(e) {
     if (this.data.isLoading) return;
     
-    const { nickName, avatarUrl } = this.data;
-    console.log("提交的昵称和头像:", nickName, avatarUrl);
+    const { nickName, cloudAvatarUrl, avatarUrl } = this.data;
+    console.log("提交的昵称和头像:", nickName, cloudAvatarUrl || avatarUrl);
     
     if (!nickName || nickName.length < 2 || nickName.length > 10) {
       wx.showToast({
@@ -78,33 +112,29 @@ Page({
     
     this.setData({ isLoading: true });
     
-    // 获取当前存储的用户信息
     const baseUserInfo = this.data.userInfo || {};
     
-    // 更新用户信息
+    const finalAvatarUrl = cloudAvatarUrl || avatarUrl;
+    
     const userInfo = {
       ...baseUserInfo,
       nickName: nickName,
-      avatarUrl: avatarUrl,
+      avatarUrl: finalAvatarUrl,
       isLogin: true,
       isTourist: false
     };
     
-    // 更新全局和本地存储
     app.globalData.userInfo = userInfo;
     wx.setStorageSync('userInfo', userInfo);
 
-    // 将用户信息更新到数据库
-    // 先检查是否存在该用户
     app.globalData.db.collection("userinfo").where({
       openId: userInfo.openId
     }).get().then(res => {
       if (res.data.length > 0) {
-        // 存在该用户，更新用户信息
         app.globalData.db.collection("userinfo").doc(res.data[0]._id).update({
           data: {
             nickName: nickName,
-            avatarUrl: avatarUrl
+            avatarUrl: finalAvatarUrl
           }
         }).then(updateRes => {
           console.log("登录页面更新用户信息成功:", updateRes);
@@ -112,7 +142,6 @@ Page({
             title: '信息更新成功',
             icon: 'success'
           });
-          // 更新成功后跳转到首页
           setTimeout(() => {
             wx.reLaunch({ url: '/pages/index/index' });
           }, 1500);
@@ -125,12 +154,11 @@ Page({
           });
         });
       } else {
-        // 不存在该用户，创建新用户
         app.globalData.db.collection("userinfo").add({
           data: {
             openId: userInfo.openId,
             nickName: nickName,
-            avatarUrl: avatarUrl
+            avatarUrl: finalAvatarUrl
           }
         }).then(addRes => {
           console.log("登录页面创建用户信息成功:", addRes);
@@ -138,7 +166,6 @@ Page({
             title: '账号创建成功',
             icon: 'success'
           });
-          // 创建成功后跳转到首页
           setTimeout(() => {
             wx.reLaunch({ url: '/pages/index/index' });
           }, 1500);

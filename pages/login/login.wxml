@@ -1,16 +1,22 @@
 <navigation-bar title="登录" back="{{true}}"></navigation-bar>
 <view class="container">
   <view class="welcome-section">
-    <button class="avatar-wrapper" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar" >
-    <image class="avatar" src="{{avatarUrl}}"></image>
-  </button> 
+    <button class="avatar-wrapper" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar" disabled="{{isLoading}}">
+      <image class="avatar" src="{{avatarUrl}}"></image>
+      <view class="avatar-loading" wx:if="{{isLoading}}">
+        <text>上传中...</text>
+      </view>
+    </button> 
   </view>
 
     <view class="login-section">
-        <input type="nickname" class="login-input" placeholder="请输入昵称" value="{{nickName}}" bindinput="onInput"/>
+        <input type="nickname" class="login-input" placeholder="请输入昵称" value="{{nickName}}" bindinput="onInput" disabled="{{isLoading}}"/>
         <text class="login-tip">昵称长度为2-10个字符</text>
       </view>
-      <button class="login-btn primary-btn" bindtap="onSubmit">登录</button>
+      <button class="login-btn primary-btn" bindtap="onSubmit" disabled="{{isLoading}}">
+        <text wx:if="{{!isLoading}}">登录</text>
+        <text wx:else>处理中...</text>
+      </button>
 
   
   

@@ -606,7 +606,7 @@ Page({
   
   // 分页获取所有训练记录
   getAllTrainingRecords: async function(db, query) {
-    const MAX_LIMIT = 100; // 微信云开发单次查询最大100条记录
+    const MAX_LIMIT = 20; // 微信云开发单次查询最大20条记录
     let records = [];
     
     try {
@@ -740,7 +740,7 @@ Page({
   
   // 分页获取所有用户
   getAllUsers: async function(db) {
-    const MAX_LIMIT = 100; // 微信云开发单次查询最大100条记录
+    const MAX_LIMIT = 20; // 微信云开发单次查询最大20条记录
     let users = [];
     
     try {
@@ -786,7 +786,7 @@ Page({
   
   // 分页获取所有训练记录
   getAllTrainLogs: async function(db) {
-    const MAX_LIMIT = 100; // 微信云开发单次查询最大100条记录
+    const MAX_LIMIT = 20; // 微信云开发单次查询最大20条记录
     let records = [];
     
     try {
