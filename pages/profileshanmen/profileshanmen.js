@@ -30,7 +30,10 @@ Page({
         dayRankingList: [],     // 日榜数据
         weekRankingList: [],    // 周榜数据
         monthRankingList: [],   // 月榜数据
-        totalRankingList: []    // 总榜数据
+        totalRankingList: [],   // 总榜数据
+        onlineUserCount: 0,     // 当前在线用户数量
+        isRankingVisible: false, // 排行榜是否可见
+        isDayRankingExpanded: false // 日榜是否展开
     },
 
     /**
@@ -69,93 +72,78 @@ Page({
         
         this.loadStatisticsData();
         this.generateCalendarData();
-        this.loadRankingData();
+        // 不再自动加载排行榜数据
     },
     
     /**
-     * 加载统计数据
+     * 加载统计数据（Promise风格）
      */
     loadStatisticsData() {
-        loadStatisticsData().then(stats => {
-            this.setData(stats);
+        return new Promise((resolve, reject) => {
+            const result = require('./services/index').loadStatisticsData();
+            result.then(stats => {
+                this.setData(stats, resolve);
+            }).catch(err => {
+                reject(err);
+            });
         });
     },
     
     /**
-     * 生成日历数据（最近两周）
+     * 生成日历数据（Promise风格）
      */
     generateCalendarData() {
-        const today = new Date();
-        const calendarDays = [];
-        
-        // 计算两周前的日期
-        const twoWeeksAgo = new Date(today);
-        twoWeeksAgo.setDate(today.getDate() - 13); // 13天前（加上今天共14天）
-        
-        // 获取日期范围的字符串
-        const startDate = `${twoWeeksAgo.getFullYear()}-${String(twoWeeksAgo.getMonth() + 1).padStart(2, '0')}-${String(twoWeeksAgo.getDate()).padStart(2, '0')}`;
-        const endDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-        
-        // 从数据库获取最近两周的训练记录
-        const openId = app.globalData.userInfo.openId;
-        app.globalData.db.collection("trainlog")
-            .where({
-                openId: openId,
-                date: {
-                    $gte: startDate,
-                    $lte: endDate
-                }
-            })
-            .get()
-            .then(res => {
-                const trainRecords = {};
-                // 将训练记录转换为以日期为键的对象
-                res.data.forEach(record => {
-                    trainRecords[record.date] = {
-                        muyuCount: record.muyuCounts || 0,
-                        songboCount: record.songboCounts || 0,
-                        muyuMinutes: Math.ceil((record.muyuSeconds || 0) / 60),
-                        songboMinutes: Math.ceil((record.songboSeconds || 0) / 60)
-                    };
+        return new Promise((resolve, reject) => {
+            const today = new Date();
+            const calendarDays = [];
+            const twoWeeksAgo = new Date(today);
+            twoWeeksAgo.setDate(today.getDate() - 13);
+            const startDate = `${twoWeeksAgo.getFullYear()}-${String(twoWeeksAgo.getMonth() + 1).padStart(2, '0')}-${String(twoWeeksAgo.getDate()).padStart(2, '0')}`;
+            const endDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+            const openId = app.globalData.userInfo.openId;
+            app.globalData.db.collection("trainlog")
+                .where({ openId: openId, date: { $gte: startDate, $lte: endDate } })
+                .get()
+                .then(res => {
+                    const trainRecords = {};
+                    res.data.forEach(record => {
+                        trainRecords[record.date] = {
+                            muyuCount: record.muyuCounts || 0,
+                            songboCount: record.songboCounts || 0,
+                            muyuMinutes: Math.ceil((record.muyuSeconds || 0) / 60),
+                            songboMinutes: Math.ceil((record.songboSeconds || 0) / 60)
+                        };
+                    });
+                    for (let i = 13; i >= 0; i--) {
+                        const currentDate = new Date(today);
+                        currentDate.setDate(today.getDate() - i);
+                        const dateStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
+                        calendarDays.push({
+                            date: currentDate,
+                            dateStr: dateStr,
+                            day: currentDate.getDate(),
+                            isToday: i === 0,
+                            trainData: trainRecords[dateStr] || null
+                        });
+                    }
+                    this.setData({ calendarDays }, resolve);
+                })
+                .catch(err => {
+                    for (let i = 13; i >= 0; i--) {
+                        const currentDate = new Date(today);
+                        currentDate.setDate(today.getDate() - i);
+                        const dateStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
+                        calendarDays.push({
+                            date: currentDate,
+                            dateStr: dateStr,
+                            day: currentDate.getDate(),
+                            isToday: i === 0,
+                            trainData: null
+                        });
+                    }
+                    this.setData({ calendarDays }, resolve);
                 });
-                
-                // 生成最近14天的数据（包括今天）
-                for (let i = 13; i >= 0; i--) {
-                    const currentDate = new Date(today);
-                    currentDate.setDate(today.getDate() - i);
-                    
-                    const dateStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
-                    
-                    calendarDays.push({
-                        date: currentDate,
-                        dateStr: dateStr,
-                        day: currentDate.getDate(),
-                        isToday: i === 0,
-                        trainData: trainRecords[dateStr] || null
-                    });
-                }
-                
-                this.setData({ calendarDays });
-            })
-            .catch(err => {
-                console.error("获取训练记录失败:", err);
-                // 如果获取失败，仍然显示日历，但没有训练数据
-                for (let i = 13; i >= 0; i--) {
-                    const currentDate = new Date(today);
-                    currentDate.setDate(today.getDate() - i);
-                    
-                    const dateStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
-                    
-                    calendarDays.push({
-                        date: currentDate,
-                        dateStr: dateStr,
-                        day: currentDate.getDate(),
-                        isToday: i === 0,
-                        trainData: null
-                    });
-                }
-                this.setData({ calendarDays });
-            });
+        });
     },
     
     /**
@@ -174,6 +162,8 @@ Page({
         this.updateAcceleratedFields();
         // 加载统计数据
         this.loadStatisticsData();
+        // 生成日历数据（近期记录）
+        this.generateCalendarData();
         // 刷新时长排名
         this.loadRankingData();
     },
@@ -198,6 +188,7 @@ Page({
     onPullDownRefresh() {
         // 下拉刷新
         this.loadStatisticsData();
+        this.generateCalendarData();
         this.loadRankingData();
         wx.stopPullDownRefresh();
     },
@@ -214,7 +205,7 @@ Page({
      */
     onShareAppMessage() {
         return {
-            title: '山门知行',
+            title: '知行训练',
             path: '/pages/index/index'
         };
     },
@@ -244,118 +235,69 @@ Page({
     },
 
     /**
-     * 加载用户排名数据
+     * 导航到排行榜页面
      */
-    loadRankingData() {
-        console.log("开始加载排名数据");
+    navigateToRanklist() {
+        wx.navigateTo({
+            url: '/pages/ranklistshanmen/ranklistshanmen'
+        });
+    },
+
+    /**
+     * 加载用户排名数据（仅日榜）
+     */
+    loadRankingData(shouldRender = true) {
+        console.log("[排序调试] 开始加载排名数据");
         // 设置加载状态为true
         this.setData({
             isRankingLoading: true
         });
         
         // 获取当前日期
-        const now = new Date();
-        
-        // 计算日期范围
         const todayDate = this.getTodayDateString(); // 今天，格式：YYYY-MM-DD
-        
-        // 计算一周前的日期
-        const oneWeekAgo = new Date(now);
-        oneWeekAgo.setDate(now.getDate() - 7);
-        const weekStartDate = this.formatDate(oneWeekAgo); // 一周前，格式：YYYY-MM-DD
-        
-        // 计算一个月前的日期
-        const oneMonthAgo = new Date(now);
-        oneMonthAgo.setMonth(now.getMonth() - 1);
-        const monthStartDate = this.formatDate(oneMonthAgo); // 一个月前，格式：YYYY-MM-DD
-        
-        console.log(`日期范围 - 今日: ${todayDate}, 周开始: ${weekStartDate}, 月开始: ${monthStartDate}`);
         
         // 获取数据库实例
         const db = app.globalData.db;
         
-        // 使用Promise.all同时请求四种不同时间范围的数据
-        Promise.all([
-            // 日榜 - 今日数据
-            loadRankingDataByDateRange(db, todayDate, todayDate),
-            // 周榜 - 过去7天数据
-            loadRankingDataByDateRange(db, weekStartDate, todayDate),
-            // 月榜 - 过去30天数据
-            loadRankingDataByDateRange(db, monthStartDate, todayDate),
-            // 总榜 - 使用原有的加载函数
-            loadRankingData_()
-        ]).then(([dayData, weekData, monthData, totalData]) => {
-            console.log(`获取排名数据成功 - 日榜: ${dayData.length}条, 周榜: ${weekData.length}条, 月榜: ${monthData.length}条, 总榜: ${totalData.length}条`);
+        // 只加载日榜数据
+        loadRankingDataByDateRange(db, todayDate, todayDate).then((dayData) => {
+            console.log(`[排序调试] 获取日榜数据成功: ${dayData.length}条`);
             
-            // 转换日榜数据格式，使其与原有代码兼容
+            // 转换日榜数据格式
             const dayRankingList = dayData.map(item => ({
                 ...item,
                 todayMinutes: item.rangeMinutes,
                 todayCount: item.rangeCount
             }));
             
-            // 转换周榜数据格式，使其与原有代码兼容
-            const weekRankingList = weekData.map(item => ({
-                ...item,
-                weekMinutes: item.rangeMinutes,
-                weekCount: item.rangeCount
-            }));
-            
-            // 转换月榜数据格式，使其与原有代码兼容
-            const monthRankingList = monthData.map(item => ({
-                ...item,
-                monthMinutes: item.rangeMinutes,
-                monthCount: item.rangeCount
-            }));
-            
-            // 总榜数据
-            const totalRankingList = totalData;
-            
-            // 对总榜进行排序，按总时长（木鱼+颂钵时长总和）排序
-            totalRankingList.sort((a, b) => {
-                return b.totalMinutes - a.totalMinutes;
+            // 确保日榜按照今日时长降序排序
+            dayRankingList.sort((a, b) => {
+                return b.todayMinutes - a.todayMinutes;
             });
             
-            // 根据当前选中的榜单类型选择要显示的数据
-            let currentList = [];
-            switch(this.data.currentRankingType) {
-                case 'day':
-                    currentList = dayRankingList;
-                    break;
-                case 'week':
-                    currentList = weekRankingList;
-                    break;
-                case 'month':
-                    currentList = monthRankingList;
-                    break;
-                case 'total':
-                    currentList = totalRankingList;
-                    break;
-                default:
-                    currentList = dayRankingList;
-            }
+            // 过滤掉时长为0且不在线的用户
+            const filteredDayRankingList = dayRankingList.filter(user => {
+                return user.todayMinutes > 0 || user.isOnline;
+            });
+            
+            console.log(`[排序调试] 过滤后的日榜数据: ${filteredDayRankingList.length}条`);
             
             // 统计在线用户数量
             let onlineCount = 0;
-            currentList.forEach(user => {
+            filteredDayRankingList.forEach(user => {
                 if (user.isOnline) {
                     onlineCount++;
-                    console.log(`[在线状态] 在线用户: ${user.nickName}`);
                 }
             });
-            console.log(`[在线状态] 排行榜中有 ${onlineCount} 个在线用户`);
             
             // 更新数据并设置加载状态为false
             this.setData({ 
-                rankingList: currentList,
-                dayRankingList,
-                weekRankingList,
-                monthRankingList,
-                totalRankingList,
-                isRankingLoading: false 
+                dayRankingList: filteredDayRankingList,
+                isRankingLoading: false,
+                onlineUserCount: onlineCount
             });
         }).catch(err => {
-            console.error("获取排名数据失败:", err);
+            console.error("[排序调试] 获取排名数据失败:", err);
             // 出错时也要设置加载状态为false
             this.setData({ 
                 isRankingLoading: false 
@@ -379,13 +321,16 @@ Page({
         const type = e.currentTarget.dataset.type;
         if (type === this.data.currentRankingType) return; // 如果点击的是当前选中的类型，不做任何操作
         
-        console.log(`切换榜单类型: ${type}`);
+        console.log(`[排序调试] 切换榜单类型: ${type}`);
         
         let rankingList = [];
         // 根据类型选择对应的榜单数据
         switch(type) {
             case 'day':
-                rankingList = this.data.dayRankingList;
+                rankingList = [...this.data.dayRankingList];
+                // 再次确保日榜按照今日时长排序
+                rankingList.sort((a, b) => b.todayMinutes - a.todayMinutes);
+                console.log("[排序调试] 切换到日榜，重新排序完成");
                 break;
             case 'week':
                 rankingList = this.data.weekRankingList;
@@ -396,6 +341,16 @@ Page({
             case 'total':
                 rankingList = this.data.totalRankingList;
                 break;
+        }
+        
+        // 输出要显示的排行榜前几名
+        if (rankingList.length > 0) {
+            console.log("[排序调试] 切换后的排行榜TOP3:", rankingList.slice(0, 3).map(item => ({
+                nickName: item.nickName,
+                minutes: type === 'day' ? item.todayMinutes : 
+                         type === 'week' ? item.weekMinutes :
+                         type === 'month' ? item.monthMinutes : item.totalMinutes
+            })));
         }
         
         // 更新数据
@@ -409,27 +364,10 @@ Page({
      * 计算用户段位
      */
     calculateUserLevel(totalMinutes) {
-        if (totalMinutes >= 1500) {
-            return "山门9段";
-        } else if (totalMinutes >= 1200) {
-            return "山门8段";
-        } else if (totalMinutes >= 900) {
-            return "山门7段";
-        } else if (totalMinutes >= 600) {
-            return "山门6段";
-        } else if (totalMinutes >= 300) {
-            return "山门5段";
-        } else if (totalMinutes >= 200) {
-            return "山门4段";
-        } else if (totalMinutes >= 120) {
-            return "山门3段";
-        } else if (totalMinutes >= 60) {
-            return "山门2段";
-        } else if (totalMinutes >= 10) {
-            return "山门1段";
-        } else {
-            return "初入山门";
-        }
+        // 使用utils中的函数计算段位，确保与系统其他部分保持一致
+        const { calculateUserLevel } = require('./utils/index');
+        console.log(`[计算用户段位] 总时长: ${totalMinutes}`);
+        return calculateUserLevel(totalMinutes);
     },
 
     /**
@@ -537,9 +475,10 @@ Page({
             const todayMinutes = Math.ceil(todaySeconds / 60);
             
             // 计算用户段位
-            // const userLevel = this.calculateUserLevel(totalMinutes);
-            // 用constants中的常量来计算用户段位
-            const userLevel = stats.userLevel;
+            const userLevel = this.calculateUserLevel(totalMinutes);
+            
+            console.log(`[更新累积数据] 计算出的段位: ${userLevel}`);
+            
             return {
                 openId,
                 nickName: user.nickName,
@@ -596,97 +535,138 @@ Page({
      * 更新用户加速字段
      */
     updateAcceleratedFields() {
-        if (!app.globalData.userInfo || !app.globalData.userInfo.openId) {
-            console.log("用户未登录，无法更新加速字段");
-            return;
-        }
-
+        console.log("[更新加速字段] 开始更新用户训练数据");
         const db = app.globalData.db;
         const openId = app.globalData.userInfo.openId;
-        const today = this.getTodayDateString();
-
-        // 先查询userinfo表，获取上次更新时间
+        
+        if (!openId) {
+            console.error("[更新加速字段] 未获取到用户openId");
+            return;
+        }
+        
+        console.log(`[更新加速字段] 用户openId: ${openId}`);
+        
+        // 获取用户信息
         db.collection("userinfo").where({
             openId: openId
         }).get().then(userRes => {
+            console.log("[更新加速字段] 用户信息查询结果:", userRes);
+            
             if (userRes.data && userRes.data.length > 0) {
                 const userInfo = userRes.data[0];
-                const lastUpdateTime = userInfo.lastUpdateTime || 0;
+                const userId = userInfo._id;
+                console.log(`[更新加速字段] 找到用户信息, userId: ${userId}`);
                 
-                // 获取今日零点的时间戳
-                const todayStart = new Date();
-                todayStart.setHours(0, 0, 0, 0);
-                const todayStartTimestamp = todayStart.getTime();
-                
-                // 如果上次更新时间在今天之前，则需要更新加速字段
-                if (lastUpdateTime < todayStartTimestamp) {
-                    console.log("上次更新时间早于今天，需要更新加速字段");
+                // 获取用户的所有训练记录
+                db.collection("trainlog").where({
+                    openId: openId
+                }).get().then(recordsRes => {
+                    console.log(`[更新加速字段] 获取到${recordsRes.data.length}条训练记录`);
                     
-                    // 获取用户今日的训练记录
-                    db.collection("trainlog").where({
-                        openId: openId,
-                        date: today
-                    }).get().then(res => {
-                        if (res.data && res.data.length > 0) {
-                            const record = res.data[0];
+                    // 完全重新计算累积数据
+                    let totalMuyuCount = 0;
+                    let totalSongboCount = 0;
+                    let totalMuyuSeconds = 0;
+                    let totalSongboSeconds = 0;
+                    
+                    if (recordsRes.data && recordsRes.data.length > 0) {
+                        console.log(`[更新加速字段] 开始计算用户${openId}的累积数据`);
+                        recordsRes.data.forEach((record, index) => {
                             const muyuCounts = record.muyuCounts || 0;
                             const songboCounts = record.songboCounts || 0;
                             const muyuSeconds = record.muyuSeconds || 0;
                             const songboSeconds = record.songboSeconds || 0;
                             
-                            // 更新userinfo表中的加速字段
-                            const _ = db.command;
-                            db.collection("userinfo").where({
-                                openId: openId
-                            }).update({
-                                data: {
-                                    accumulateMuyu: _.inc(muyuCounts),
-                                    accumulateMuyuTime: _.inc(muyuSeconds),
-                                    accumulateSongbo: _.inc(songboCounts),
-                                    accumulateSongboTime: _.inc(songboSeconds),
-                                    lastUpdateTime: new Date().getTime()
-                                }
-                            }).then(res => {
-                                console.log("更新用户加速字段成功:", res);
-                                // 引入updateUserLevel函数
-                                const { updateUserLevel } = require('./utils/index');
-                                // 更新用户段位
-                                updateUserLevel(openId, db).then(updateRes => {
-                                    console.log("个人中心页面更新用户段位成功:", updateRes);
-                                    // 更新完成后重新加载数据，确保界面显示最新数据
-                                    this.loadStatisticsData();
-                                    this.loadRankingData();
-                                }).catch(err => {
-                                    console.error("个人中心页面更新用户段位失败:", err);
-                                });
-                            }).catch(err => {
-                                console.error("更新用户加速字段失败:", err);
-                            });
-                        } else {
-                            console.log("今日没有训练记录，不需要更新加速字段");
-                            // 仍然更新lastUpdateTime，避免重复检查
-                            db.collection("userinfo").where({
-                                openId: openId
-                            }).update({
-                                data: {
-                                    lastUpdateTime: new Date().getTime()
-                                }
-                            });
-                        }
-                    }).catch(err => {
-                        console.error("获取今日训练记录失败:", err);
+                            totalMuyuCount += muyuCounts;
+                            totalSongboCount += songboCounts;
+                            totalMuyuSeconds += muyuSeconds;
+                            totalSongboSeconds += songboSeconds;
+                            
+                            // 只打印前5条记录的详细信息
+                            if (index < 5) {
+                                console.log(`[更新加速字段] 记录[${index}]: 木鱼=${muyuCounts}次/${muyuSeconds}秒, 颂钵=${songboCounts}次/${songboSeconds}秒`);
+                            }
+                            if (index === 5 && recordsRes.data.length > 10) {
+                                console.log(`[更新加速字段] ...省略${recordsRes.data.length - 10}条记录...`);
+                            }
+                        });
+                        
+                        console.log(`[更新加速字段] 用户${openId}累积数据统计结果:`, {
+                            totalMuyuCount,
+                            totalSongboCount,
+                            totalMuyuSeconds,
+                            totalSongboSeconds
+                        });
+                    } else {
+                        console.log(`[更新加速字段] 用户${openId}没有找到任何训练记录`);
+                    }
+                    
+                    // 计算用户段位
+                    const totalSeconds = totalMuyuSeconds + totalSongboSeconds;
+                    const totalMinutes = Math.ceil(totalSeconds / 60);
+                    
+                    // 调试输出段位计算相关信息
+                    const { calculateUserLevel } = require('./utils/index');
+                    const { USER_LEVELS, LEVEL_REQUIREMENTS } = require('./constants/index');
+                    console.log('[更新加速字段] 段位计算相关信息:', {
+                        USER_LEVELS,
+                        LEVEL_REQUIREMENTS,
+                        totalMinutes
                     });
-                } else {
-                    console.log("今日已更新过加速字段，无需重复更新");
-                }
+                    
+                    // 计算段位
+                    const userLevel = calculateUserLevel(totalMinutes);
+                    console.log(`[更新加速字段] 计算出的段位: ${userLevel}`);
+                    
+                    // 更新用户数据
+                    const now = new Date();
+                    const formattedDate = now.toISOString();
+                    
+                    console.log(`[更新加速字段] 开始更新用户数据到数据库, userId: ${userId}`);
+                    console.log(`[更新加速字段] 数据对比:`, {
+                        更新前: {
+                            accumulateMuyu: userInfo.accumulateMuyu || 0,
+                            accumulateMuyuTime: userInfo.accumulateMuyuTime || 0,
+                            accumulateSongbo: userInfo.accumulateSongbo || 0,
+                            accumulateSongboTime: userInfo.accumulateSongboTime || 0,
+                            level: userInfo.level || '未定段'
+                        },
+                        更新后: {
+                            accumulateMuyu: totalMuyuCount,
+                            accumulateMuyuTime: totalMuyuSeconds,
+                            accumulateSongbo: totalSongboCount,
+                            accumulateSongboTime: totalSongboSeconds,
+                            level: userLevel
+                        }
+                    });
+                    
+                    db.collection('userinfo').doc(userId).update({
+                        data: {
+                            accumulateMuyu: totalMuyuCount,
+                            accumulateMuyuTime: totalMuyuSeconds,
+                            accumulateSongbo: totalSongboCount,
+                            accumulateSongboTime: totalSongboSeconds,
+                            level: userLevel,
+                            lastUpdateTime: formattedDate
+                        }
+                    }).then((updateRes) => {
+                        console.log("[更新加速字段] 更新用户累积数据和段位成功:", updateRes);
+                    }).catch(err => {
+                        console.error('[更新加速字段] 更新用户累积数据失败:', err);
+                    });
+                }).catch(err => {
+                    console.error('[更新加速字段] 获取用户训练记录失败:', err);
+                });
+            } else {
+                console.error('[更新加速字段] 未找到用户信息');
             }
         }).catch(err => {
-            console.error("获取用户信息失败:", err);
+            console.error('[更新加速字段] 获取用户信息失败:', err);
         });
     },
 
     /**
-     * 手动刷新在线状态
+     * 刷新在线状态
      */
     refreshOnlineStatus() {
         console.log("[在线状态] 手动刷新在线状态");
@@ -706,6 +686,24 @@ Page({
     },
 
     /**
+     * 切换排行榜显示状态
+     */
+    toggleRankingVisibility() {
+        const willBeVisible = !this.data.isRankingVisible;
+        console.log("[排序调试] 切换排行榜显示状态:", willBeVisible ? "显示" : "隐藏");
+        
+        if (willBeVisible) {
+            // 如果要显示排行榜，刷新数据
+            this.loadRankingData(true);
+        } else {
+            // 如果要隐藏排行榜，直接设置状态
+            this.setData({
+                isRankingVisible: false
+            });
+        }
+    },
+
+    /**
      * 格式化日期为 YYYY-MM-DD 格式
      */
     formatDate(date) {
@@ -713,5 +711,259 @@ Page({
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
+    },
+
+    /**
+     * 刷新所有数据
+     */
+    refreshAllData() {
+        console.log("===== [刷新数据] 开始刷新所有数据 =====");
+        wx.showLoading({
+            title: '正在刷新...',
+        });
+        // 更新用户的累积数据和段位
+        console.log("[刷新数据] 开始调用updateUserAccumulateData()");
+        this.updateUserAccumulateData().then(() => {
+            console.log("[刷新数据] updateUserAccumulateData成功完成");
+            Promise.all([
+                this.loadStatisticsData(),
+                this.generateCalendarData(),
+                this.loadRankingData()
+            ]).then(() => {
+                console.log("[刷新数据] 所有数据刷新完成");
+                wx.hideLoading();
+                wx.showToast({
+                    title: '数据已刷新',
+                    icon: 'success',
+                    duration: 1500
+                });
+            }).catch(err => {
+                console.error("[刷新数据] 刷新数据过程中出错:", err);
+                wx.hideLoading();
+                wx.showToast({
+                    title: '刷新失败',
+                    icon: 'none',
+                    duration: 1500
+                });
+            });
+        }).catch(err => {
+            console.error("[刷新数据] 更新用户累积数据失败:", err);
+            wx.hideLoading();
+            wx.showToast({
+                title: '更新失败',
+                icon: 'none',
+                duration: 1500
+            });
+        });
+    },
+    
+    /**
+     * 更新用户的累积数据
+     */
+    updateUserAccumulateData() {
+        console.log("===== [更新累积数据] 开始更新用户累积数据 =====");
+        return new Promise((resolve, reject) => {
+            if (!app.globalData.userInfo || !app.globalData.userInfo.openId) {
+                console.error("[更新累积数据] 用户未登录，无法更新累积数据");
+                reject(new Error("用户未登录"));
+                return;
+            }
+            
+            const db = app.globalData.db;
+            const openId = app.globalData.userInfo.openId;
+            console.log(`[更新累积数据] 当前用户openId: ${openId}`);
+            
+            // 获取用户信息
+            console.log("[更新累积数据] 开始查询用户信息");
+            db.collection("userinfo").where({
+                openId: openId
+            }).get().then(userRes => {
+                console.log("[更新累积数据] 用户信息查询结果:", userRes);
+                
+                if (userRes.data && userRes.data.length > 0) {
+                    const userInfo = userRes.data[0];
+                    const userId = userInfo._id;
+                    console.log(`[更新累积数据] 找到用户信息, userId: ${userId}`);
+                    
+                    // 获取所有训练记录
+                    console.log("[更新累积数据] 开始获取所有训练记录");
+                    this.getAllTrainingRecords(db, { openId: openId }).then(records => {
+                        console.log(`[更新累积数据] 获取到${records.length}条训练记录`);
+                        
+                        // 完全重新计算累积数据
+                        let totalMuyuCount = 0;
+                        let totalSongboCount = 0;
+                        let totalMuyuSeconds = 0;
+                        let totalSongboSeconds = 0;
+                        
+                        if (records && records.length > 0) {
+                            console.log(`[更新累积数据] 用户${openId}找到${records.length}条训练记录，开始计算总和`);
+                            records.forEach((record, index) => {
+                                const muyuCounts = record.muyuCounts || 0;
+                                const songboCounts = record.songboCounts || 0;
+                                const muyuSeconds = record.muyuSeconds || 0;
+                                const songboSeconds = record.songboSeconds || 0;
+                                
+                                totalMuyuCount += muyuCounts;
+                                totalSongboCount += songboCounts;
+                                totalMuyuSeconds += muyuSeconds;
+                                totalSongboSeconds += songboSeconds;
+                                
+                                if (index < 5 || index === records.length - 1) {
+                                    console.log(`[更新累积数据] 记录[${index}]: 木鱼=${muyuCounts}次/${muyuSeconds}秒, 颂钵=${songboCounts}次/${songboSeconds}秒`);
+                                }
+                                if (index === 5 && records.length > 10) {
+                                    console.log(`[更新累积数据] ...省略${records.length - 10}条记录...`);
+                                }
+                            });
+                            
+                            console.log(`[更新累积数据] 用户${openId}累积数据统计结果:`, {
+                                totalMuyuCount,
+                                totalSongboCount,
+                                totalMuyuSeconds,
+                                totalSongboSeconds
+                            });
+                        } else {
+                            console.log(`[更新累积数据] 用户${openId}没有找到任何训练记录`);
+                        }
+                        
+                        // 计算用户段位
+                        const totalSeconds = totalMuyuSeconds + totalSongboSeconds;
+                        const totalMinutes = Math.ceil(totalSeconds / 60);
+                        
+                        // 调试输出
+                        const { calculateUserLevel } = require('./utils/index');
+                        const { USER_LEVELS, LEVEL_REQUIREMENTS } = require('./constants/index');
+                        console.log('[调试] USER_LEVELS:', USER_LEVELS);
+                        console.log('[调试] LEVEL_REQUIREMENTS:', LEVEL_REQUIREMENTS);
+                        console.log(`[调试] totalMinutes: ${totalMinutes}`);
+                        Object.keys(USER_LEVELS).forEach(key => {
+                            const name = USER_LEVELS[key];
+                            const min = LEVEL_REQUIREMENTS[name];
+                            console.log(`[调试] ${name} 段位要求: ${min} 分钟`);
+                        });
+                        
+                        // 计算段位
+                        const userLevel = calculateUserLevel(totalMinutes);
+                        console.log(`[调试] 计算出的段位: ${userLevel}`);
+                        
+                        // 更新用户数据
+                        const now = new Date();
+                        const formattedDate = now.toISOString();
+                        
+                        console.log(`[更新累积数据] 开始更新用户数据到数据库, userId: ${userId}`);
+                        console.log(`[更新累积数据] 数据对比:`, {
+                            更新前: {
+                                accumulateMuyu: userInfo.accumulateMuyu || 0,
+                                accumulateMuyuTime: userInfo.accumulateMuyuTime || 0,
+                                accumulateSongbo: userInfo.accumulateSongbo || 0,
+                                accumulateSongboTime: userInfo.accumulateSongboTime || 0,
+                                level: userInfo.level || '未定段'
+                            },
+                            更新后: {
+                                accumulateMuyu: totalMuyuCount,
+                                accumulateMuyuTime: totalMuyuSeconds,
+                                accumulateSongbo: totalSongboCount,
+                                accumulateSongboTime: totalSongboSeconds,
+                                level: userLevel
+                            }
+                        });
+                        
+                        db.collection('userinfo').doc(userId).update({
+                            data: {
+                                accumulateMuyu: totalMuyuCount,
+                                accumulateMuyuTime: totalMuyuSeconds,
+                                accumulateSongbo: totalSongboCount,
+                                accumulateSongboTime: totalSongboSeconds,
+                                level: userLevel,
+                                lastUpdateTime: formattedDate
+                            }
+                        }).then((updateRes) => {
+                            console.log("[更新累积数据] 更新用户累积数据和段位成功:", updateRes);
+                            resolve();
+                        }).catch(err => {
+                            console.error('[更新累积数据] 更新用户累积数据失败:', err);
+                            reject(err);
+                        });
+                    }).catch(err => {
+                        console.error('[更新累积数据] 获取用户训练记录失败:', err);
+                        reject(err);
+                    });
+                } else {
+                    console.error('[更新累积数据] 未找到用户信息');
+                    reject(new Error("未找到用户信息"));
+                }
+            }).catch(err => {
+                console.error('[更新累积数据] 获取用户信息失败:', err);
+                reject(err);
+            });
+        });
+    },
+    
+    /**
+     * 分页获取所有训练记录
+     */
+    getAllTrainingRecords: async function(db, query) {
+        console.log(`===== [获取训练记录] 开始获取训练记录 =====`);
+        console.log(`[获取训练记录] 查询条件:`, query);
+        
+        const MAX_LIMIT = 20; // 微信云开发单次查询最大20条记录
+        let records = [];
+        
+        try {
+            // 先获取总数
+            console.log(`[获取训练记录] 开始查询记录总数`);
+            const countResult = await db.collection('trainlog').where(query).count();
+            const total = countResult.total;
+            console.log(`[获取训练记录] 该用户训练记录总数：${total}`);
+            
+            // 如果没有记录，直接返回空数组
+            if (total === 0) {
+                console.log(`[获取训练记录] 用户没有训练记录，返回空数组`);
+                return [];
+            }
+            
+            // 计算需要分几次获取
+            const batchTimes = Math.ceil(total / MAX_LIMIT);
+            console.log(`[获取训练记录] 需要分${batchTimes}次获取训练记录`);
+            
+            // 分批次获取数据
+            const tasks = [];
+            for (let i = 0; i < batchTimes; i++) {
+                console.log(`[获取训练记录] 创建第${i+1}批查询任务, skip=${i * MAX_LIMIT}, limit=${MAX_LIMIT}`);
+                const promise = db.collection('trainlog')
+                    .where(query)
+                    .skip(i * MAX_LIMIT)
+                    .limit(MAX_LIMIT)
+                    .get();
+                tasks.push(promise);
+            }
+            
+            // 等待所有请求完成
+            console.log(`[获取训练记录] 开始并行执行${tasks.length}个查询任务`);
+            const results = await Promise.all(tasks);
+            console.log(`[获取训练记录] 所有查询任务完成, 获取到${results.length}批数据`);
+            
+            // 合并结果
+            results.forEach((res, index) => {
+                console.log(`[获取训练记录] 第${index+1}批数据包含${res.data.length}条记录`);
+                records = records.concat(res.data);
+            });
+            
+            console.log(`[获取训练记录] 成功获取该用户的全部${records.length}条训练记录`);
+            return records;
+        } catch (err) {
+            console.error(`[获取训练记录] 获取训练记录失败:`, err);
+            return [];
+        }
+    },
+
+    /**
+     * 切换日榜展开/收起状态
+     */
+    toggleDayRankingExpand() {
+        this.setData({
+            isDayRankingExpanded: !this.data.isDayRankingExpanded
+        });
     }
 }) 

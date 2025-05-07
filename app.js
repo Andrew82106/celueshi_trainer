@@ -124,7 +124,7 @@ App({
                   openId: openId,
                   nickName: nickname,
                   avatarUrl: avatarUrl,
-                  level: '初入山门',
+                  level: '初入',
                   accumulateMuyu: 0,
                   accumulateMuyuTime: 0,
                   accumulateSongbo: 0,

@@ -1,15 +1,15 @@
 <!--pages/introduction/introduction.wxml-->
-<navigation-bar title="关于山门知行" back="{{true}}"></navigation-bar>
+<navigation-bar title="关于知行" back="{{true}}"></navigation-bar>
 <view class="container">
   <view class="app-header">
     <image class="app-logo" src="https://wx.qlogo.cn/mmhead/QzPtZqIzA0n7k2vHljg5do4WkVqFc8ddgKNFwiaZ63JgOgMfCWLD6xQNqSLBoEoB5z5zuIhKqM4s/0" mode="aspectFit"></image>
-    <text class="app-title">山门知行</text>
+    <text class="app-title">知行</text>
     <text class="app-subtitle">专注于认知能力训练的小程序</text>
   </view>
   
   <view class="info-card">
     <text class="section-title">项目概述</text>
-    <text class="info-text">山门知行是一款专注于认知能力和语言能力训练的微信小程序，旨在帮助用户通过系统性训练提升注意力、记忆力、语言表达和思维逻辑等多方面能力。应用提供多种科学训练方案，记录训练历史，追踪能力提升过程。</text>
+    <text class="info-text">知行是一款专注于认知能力和语言能力训练的微信小程序，旨在帮助用户通过系统性训练提升注意力、记忆力、语言表达和思维逻辑等多方面能力。应用提供多种科学训练方案，记录训练历史，追踪能力提升过程。</text>
     <text class="info-text">使用反馈可通过微信官方小程序进行提交，也可以以微信消息的方式发送给开发者。</text>
   </view>
   
@@ -37,7 +37,7 @@
     </view>
 
     <view class="feature-item">
-      <text class="feature-title">山门训练</text>
+      <text class="feature-title">知行训练</text>
       <text class="feature-desc">提供木鱼和颂钵计时功能，辅助专注力训练，并且提供专注力训练时长记录和排名功能。</text>
     </view>
   </view>
@@ -54,8 +54,14 @@
     <text class="section-title">开发记录</text>
 
     <view class="feature-item">
-    <text class="feature-title">版本0.3.3(当前)</text>
-      <text class="feature-desc">根据用户反馈修改了山门训练的入口页面,添加了日榜、周榜、月榜</text>
+    <text class="feature-title">版本0.3.4(当前)</text>
+      <text class="feature-desc">拆分排行榜页面，修改了数据读取的bug，优化了用户在线显示的逻辑</text>
+      <text class="feature-desc">>>Andrew 在 2025年5月7日下上午10点39分 提交上传</text>
+    </view>
+
+    <view class="feature-item">
+    <text class="feature-title">版本0.3.3</text>
+      <text class="feature-desc">根据用户反馈修改了知行训练的入口页面,添加了日榜、周榜、月榜</text>
       <text class="feature-desc">>>Andrew 在 2025年5月6日下午16点06分 提交上传</text>
     </view>
 
@@ -188,6 +194,6 @@
     </view>
   
   <view class="footer">
-    <text>2025 山门知行 - 专注于认知能力训练的微信小程序</text>
+    <text> 知行训练 - 专注于认知能力训练的微信小程序</text>
   </view>
 </view>

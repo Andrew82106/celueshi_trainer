@@ -1,5 +1,5 @@
 <!--index.wxml-->
-<navigation-bar title="山门知行" back="{{false}}" color="black" background="#FFF"></navigation-bar>
+<navigation-bar title="知行" back="{{false}}" color="black" background="#FFF"></navigation-bar>
 <scroll-view class="scrollarea" scroll-y>
   <view class="container">
     <view class="card-grid">
@@ -37,7 +37,7 @@
     <!-- 山门训练按钮 -->
     <view class="shanmen-btn-container">
       <view class="shanmen-btn" bindtap="navigateToShanmen">
-        <text class="btn-shanmen-title">山门知行</text>
+        <text class="btn-shanmen-title">知行</text>
         <text class="btn-shanmen-sub">训练</text>
       </view>
     </view>

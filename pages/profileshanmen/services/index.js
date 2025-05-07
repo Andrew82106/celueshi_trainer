@@ -134,7 +134,7 @@ function getDefaultStats() {
         muyuTotalMinutes: 0,
         songboTodayMinutes: 0,
         songboTotalMinutes: 0,
-        userLevel: '初入山门'
+        userLevel: '初入'
     };
 }
 

@@ -6,7 +6,7 @@
     </view>
     <view class="user-info">
       <text class="nickname">{{userInfo.nickName || '禅修者'}}</text>
-      <text class="user-level">{{userLevel || '初入山门'}}</text>
+      <text class="user-level">{{userLevel || '初入'}}</text>
       <text class="avatar-tip">点击头像可修改个人信息</text>
     </view>
     <view class="admin-btn" bindtap="navigateToAdmin" wx:if="{{userInfo.admin}}">
@@ -20,6 +20,9 @@
   <view class="statistics-section">
     <view class="section-title">
       <text>数据统计</text>
+      <view class="refresh-button" bindtap="refreshAllData">
+        <text>刷新数据</text>
+      </view>
     </view>
     
     <view class="stat-cards">
@@ -31,10 +34,11 @@
         </view>
         
         <view class="card-content">
+          <!--
           <view class="stat-item">
             <text class="stat-label">今日</text>
             <text class="stat-value">{{muyuTodayCount}}</text>
-          </view>
+          </view>-->
           <view class="stat-item">
             <text class="stat-label">累计</text>
             <text class="stat-value">{{muyuTotalCount}}</text>
@@ -43,10 +47,10 @@
             <text class="stat-label">连续天数</text>
             <text class="stat-value">{{muyuStreakDays}}</text>
           </view>
-          <view class="stat-item">
+          <!--<view class="stat-item">
             <text class="stat-label">今日时长</text>
             <text class="stat-value">{{muyuTodayMinutes}}min</text>
-          </view>
+          </view>-->
           <view class="stat-item">
             <text class="stat-label">累计时长</text>
             <text class="stat-value">{{muyuTotalMinutes}}min</text>
@@ -62,10 +66,10 @@
         </view>
         
         <view class="card-content">
-          <view class="stat-item">
+          <!--<view class="stat-item">
             <text class="stat-label">今日</text>
             <text class="stat-value">{{songboTodayCount}}</text>
-          </view>
+          </view>-->
           <view class="stat-item">
             <text class="stat-label">累计</text>
             <text class="stat-value">{{songboTotalCount}}</text>
@@ -74,10 +78,10 @@
             <text class="stat-label">连续天数</text>
             <text class="stat-value">{{songboStreakDays}}</text>
           </view>
-          <view class="stat-item">
+          <!--<view class="stat-item">
             <text class="stat-label">今日时长</text>
             <text class="stat-value">{{songboTodayMinutes}}min</text>
-          </view>
+          </view>-->
           <view class="stat-item">
             <text class="stat-label">累计时长</text>
             <text class="stat-value">{{songboTotalMinutes}}min</text>
@@ -118,31 +122,24 @@
     </view>
   </view>
   
+  <!-- 简易日榜部分 -->
   <view class="ranking-section">
     <view class="section-title">
-      <text>{{currentRankingType === 'day' ? '日榜' : currentRankingType === 'week' ? '周榜' : currentRankingType === 'month' ? '月榜' : '总榜'}}</text>
-      <text class="online-status-tip">金色名字表示用户当前在线(1分钟内活跃)</text>
-    </view>
-    
-    <!-- 榜单切换按钮 -->
-    <view class="ranking-tabs">
-      <view class="ranking-tab {{currentRankingType === 'day' ? 'active' : ''}}" bindtap="switchRankingType" data-type="day">
-        <text>日榜</text>
-      </view>
-      <view class="ranking-tab {{currentRankingType === 'week' ? 'active' : ''}}" bindtap="switchRankingType" data-type="week">
-        <text>周榜</text>
-      </view>
-      <view class="ranking-tab {{currentRankingType === 'month' ? 'active' : ''}}" bindtap="switchRankingType" data-type="month">
-        <text>月榜</text>
-      </view>
-      <view class="ranking-tab {{currentRankingType === 'total' ? 'active' : ''}}" bindtap="switchRankingType" data-type="total">
-        <text>总榜</text>
+      <text>日榜</text>
+      <view class="online-status-container">
+        <text class="online-count">在线: {{onlineUserCount}}人</text>
+        <view class="refresh-online-button" bindtap="refreshOnlineStatus">
+          <text>刷新</text>
+        </view>
       </view>
     </view>
     
-    <!-- 刷新在线状态按钮 -->
-    <view class="refresh-online-button" bindtap="refreshOnlineStatus">
-      <text>刷新在线状态</text>
+    <text class="online-status-tip">金色名字表示用户当前在线(1分钟内活跃)</text>
+    
+    <!-- 查看完整排行榜按钮 -->
+    <view class="navigate-ranking-button" bindtap="navigateToRanklist">
+      <text>查看完整排行榜</text>
+      <view class="navigate-icon"></view>
     </view>
     
     <!-- 加载中动画 -->
@@ -151,56 +148,36 @@
       <text class="loading-text">排名数据加载中...</text>
     </view>
     
-    <!-- 排名列表 -->
+    <!-- 简易排名列表 -->
     <view class="ranking-list" wx:if="{{!isRankingLoading}}">
       <view class="ranking-header">
         <text class="rank-column">排名</text>
         <text class="name-column">用户</text>
-        <text class="time-column">
-          <block wx:if="{{currentRankingType === 'day'}}">今日(分)</block>
-          <block wx:elif="{{currentRankingType === 'week'}}">7天(分)</block>
-          <block wx:elif="{{currentRankingType === 'month'}}">30天(分)</block>
-          <block wx:else>总时长(分)</block>
-        </text>
-        <text class="count-column">
-          <block wx:if="{{currentRankingType === 'day'}}">今日(次)</block>
-          <block wx:elif="{{currentRankingType === 'week'}}">7天(次)</block>
-          <block wx:elif="{{currentRankingType === 'month'}}">30天(次)</block>
-          <block wx:else>总次数(次)</block>
-        </text>
+        <text class="time-column">时长(分)</text>
+        <text class="count-column">次数</text>
         <text class="level-column">段位</text>
       </view>
       
       <view class="ranking-item {{item.isCurrentUser ? 'current-user' : ''}}" 
-            wx:for="{{rankingList}}" 
+            wx:for="{{dayRankingList}}" 
             wx:key="index"
-            wx:if="{{isRankingExpanded || index < displayRankingLimit}}">
+            wx:if="{{isDayRankingExpanded || index < 5}}">
         <text class="rank-column">{{index + 1}}</text>
         <text class="name-column {{item.isOnline ? 'online-user' : ''}}">{{item.nickName || '禅修者'}}</text>
-        <text class="time-column">
-          <block wx:if="{{currentRankingType === 'day'}}">{{item.todayMinutes}}</block>
-          <block wx:elif="{{currentRankingType === 'week'}}">{{item.weekMinutes}}</block>
-          <block wx:elif="{{currentRankingType === 'month'}}">{{item.monthMinutes}}</block>
-          <block wx:else>{{item.totalMinutes}}</block>
-        </text>
-        <text class="count-column">
-          <block wx:if="{{currentRankingType === 'day'}}">{{item.todayCount}}</block>
-          <block wx:elif="{{currentRankingType === 'week'}}">{{item.weekCount}}</block>
-          <block wx:elif="{{currentRankingType === 'month'}}">{{item.monthCount}}</block>
-          <block wx:else>{{item.totalCount}}</block>
-        </text>
+        <text class="time-column">{{item.todayMinutes}}</text>
+        <text class="count-column">{{item.todayCount}}</text>
         <text class="level-column">{{item.userLevel}}</text>
       </view>
       
-      <!-- 展开/收起按钮 -->
-      <view class="expand-button" wx:if="{{rankingList.length > displayRankingLimit && !isRankingLoading}}" bindtap="toggleRankingExpand">
-        <text>{{isRankingExpanded ? '收起' : '查看更多'}}</text>
-        <view class="expand-icon {{isRankingExpanded ? 'expanded' : ''}}"></view>
+      <!-- 展开/收起日榜按钮 -->
+      <view class="expand-button" wx:if="{{dayRankingList.length > 5}}" bindtap="toggleDayRankingExpand">
+        <text>{{isDayRankingExpanded ? '收起' : '展开日榜'}}</text>
+        <view class="expand-icon {{isDayRankingExpanded ? 'expanded' : ''}}"></view>
       </view>
     </view>
   </view>
   
   <view class="footer">
-    <text>山门已开，步履光明</text>
+    <text>苟日新，又日新，日日新</text>
   </view>
 </view> 

@@ -133,7 +133,7 @@ Page({
               userMap[user.openId] = {
                 nickName: user.nickName || '禅修者',
                 // 直接从用户信息中读取段位，不再计算
-                userLevel: user.level || '初入山门',
+                userLevel: user.level || '初入',
                 // 添加累积字符数量，格式化显示
                 charCount: this.formatCharCount(user.accumulateCount)
               };
@@ -149,7 +149,7 @@ Page({
               // 获取用户信息
               const userInfo = userMap[record.openId] || { 
                 nickName: '禅修者', 
-                userLevel: '初入山门',
+                userLevel: '初入',
                 charCount: '0字'
               };
               

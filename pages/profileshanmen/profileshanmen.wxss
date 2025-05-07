@@ -115,9 +115,23 @@
   justify-content: space-between;
 }
 
+.online-status-container {
+  display: flex;
+  align-items: center;
+}
+
+.online-count {
+  font-size: 24rpx;
+  color: #E6C33C;
+  margin-right: 10rpx;
+  font-weight: bold;
+}
+
 .online-status-tip {
   font-size: 20rpx;
   color: #999;
+  display: block;
+  margin-bottom: 10rpx;
 }
 
 /* 刷新在线状态按钮 */
@@ -125,13 +139,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 10rpx auto 20rpx;
-  padding: 10rpx 20rpx;
-  width: 200rpx;
+  padding: 6rpx 14rpx;
   background-color: #E6C33C;
   color: white;
-  font-size: 24rpx;
-  border-radius: 30rpx;
+  font-size: 22rpx;
+  border-radius: 20rpx;
   box-shadow: 0 2rpx 5rpx rgba(0, 0, 0, 0.1);
 }
 
@@ -458,6 +470,35 @@
   color: #9F8053;
 }
 
+/* 跳转排行榜按钮样式 */
+.navigate-ranking-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10rpx auto 20rpx;
+  padding: 12rpx 30rpx;
+  background: linear-gradient(to right, #9F8053, #E6C33C);
+  color: white;
+  font-size: 26rpx;
+  border-radius: 30rpx;
+  box-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.1);
+  width: 60%;
+}
+
+.navigate-ranking-button text {
+  color: white;
+}
+
+.navigate-icon {
+  margin-left: 10rpx;
+  width: 0;
+  height: 0;
+  border-left: 8rpx solid transparent;
+  border-right: 8rpx solid transparent;
+  border-bottom: 8rpx solid white;
+  transform: rotate(90deg);
+}
+
 /* 展开按钮样式 */
 .expand-button {
   display: flex;
@@ -483,4 +524,83 @@
 
 .expand-icon.expanded {
   transform: rotate(180deg);
+}
+
+/* 切换排行榜按钮 */
+.toggle-ranking-button {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin: 30rpx auto;
+  padding: 20rpx 40rpx;
+  width: 320rpx;
+  background: linear-gradient(to right, #9F8053, #E6C33C);
+  color: white;
+  font-size: 30rpx;
+  font-weight: bold;
+  border-radius: 40rpx;
+  box-shadow: 0 6rpx 12rpx rgba(159, 128, 83, 0.3);
+  transition: all 0.3s ease;
+}
+
+.toggle-ranking-button:active {
+  transform: scale(0.96);
+  box-shadow: 0 2rpx 6rpx rgba(159, 128, 83, 0.2);
+}
+
+.toggle-icon {
+  margin-left: 14rpx;
+  width: 0;
+  height: 0;
+  border-left: 14rpx solid transparent;
+  border-right: 14rpx solid transparent;
+  border-top: 14rpx solid white;
+  transition: transform 0.3s ease;
+}
+
+.toggle-icon.expanded {
+  transform: rotate(180deg);
+}
+
+/* 刷新数据按钮 */
+.refresh-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8rpx 16rpx;
+  background-color: #9F8053;
+  color: white;
+  font-size: 24rpx;
+  border-radius: 20rpx;
+  box-shadow: 0 2rpx 5rpx rgba(0, 0, 0, 0.1);
+}
+
+.refresh-button text {
+  color: white;
+}
+
+/* 查看更多按钮样式 */
+.view-more-button {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20rpx;
+  padding: 20rpx 0;
+  color: #9F8053;
+  font-size: 28rpx;
+  border-top: 1rpx solid #f0f0f0;
+  background-color: #FFFBF2;
+  border-radius: 8rpx;
+}
+
+.view-more-icon {
+  margin-left: 10rpx;
+  width: 0;
+  height: 0;
+  border-left: 10rpx solid transparent;
+  border-right: 10rpx solid transparent;
+  border-top: 0;
+  border-bottom: 10rpx solid #9F8053;
 }

@@ -71,27 +71,27 @@ export function calculateStreakDays(records) {
 export function calculateUserLevel(totalMinutes) {
     const { USER_LEVELS, LEVEL_REQUIREMENTS } = require('../constants/index');
     
-    // 从高到低检查每个等级要求
-    if (totalMinutes >= LEVEL_REQUIREMENTS[USER_LEVELS.IMMORTAL_IMMORTAL]) {
-        return USER_LEVELS.IMMORTAL_IMMORTAL;
-    } else if (totalMinutes >= LEVEL_REQUIREMENTS[USER_LEVELS.IMMORTAL_GRANDMASTER]) {
-        return USER_LEVELS.IMMORTAL_GRANDMASTER;
-    } else if (totalMinutes >= LEVEL_REQUIREMENTS[USER_LEVELS.IMMORTAL_MASTER]) {
-        return USER_LEVELS.IMMORTAL_MASTER;
-    } else if (totalMinutes >= LEVEL_REQUIREMENTS[USER_LEVELS.IMMORTAL]) {
-        return USER_LEVELS.IMMORTAL;
-    } else if (totalMinutes >= LEVEL_REQUIREMENTS[USER_LEVELS.GRANDMASTER]) {
-        return USER_LEVELS.GRANDMASTER;
-    } else if (totalMinutes >= LEVEL_REQUIREMENTS[USER_LEVELS.MASTER]) {
-        return USER_LEVELS.MASTER;
-    } else if (totalMinutes >= LEVEL_REQUIREMENTS[USER_LEVELS.ADVANCED]) {
-        return USER_LEVELS.ADVANCED;
-    } else if (totalMinutes >= LEVEL_REQUIREMENTS[USER_LEVELS.INTERMEDIATE]) {
-        return USER_LEVELS.INTERMEDIATE;
-    } else if (totalMinutes >= LEVEL_REQUIREMENTS[USER_LEVELS.BEGINNER]) {
-        return USER_LEVELS.BEGINNER;
-    } else {
+    // 从低到高检查每个等级要求
+    if (totalMinutes < LEVEL_REQUIREMENTS[USER_LEVELS.BEGINNER]) {
         return USER_LEVELS.INITIAL;
+    } else if (totalMinutes < LEVEL_REQUIREMENTS[USER_LEVELS.INTERMEDIATE]) {
+        return USER_LEVELS.BEGINNER;
+    } else if (totalMinutes < LEVEL_REQUIREMENTS[USER_LEVELS.ADVANCED]) {
+        return USER_LEVELS.INTERMEDIATE;
+    } else if (totalMinutes < LEVEL_REQUIREMENTS[USER_LEVELS.MASTER]) {
+        return USER_LEVELS.ADVANCED;
+    } else if (totalMinutes < LEVEL_REQUIREMENTS[USER_LEVELS.GRANDMASTER]) {
+        return USER_LEVELS.MASTER;
+    } else if (totalMinutes < LEVEL_REQUIREMENTS[USER_LEVELS.IMMORTAL]) {
+        return USER_LEVELS.GRANDMASTER;
+    } else if (totalMinutes < LEVEL_REQUIREMENTS[USER_LEVELS.IMMORTAL_MASTER]) {
+        return USER_LEVELS.IMMORTAL;
+    } else if (totalMinutes < LEVEL_REQUIREMENTS[USER_LEVELS.IMMORTAL_GRANDMASTER]) {
+        return USER_LEVELS.IMMORTAL_MASTER;
+    } else if (totalMinutes < LEVEL_REQUIREMENTS[USER_LEVELS.IMMORTAL_IMMORTAL]) {
+        return USER_LEVELS.IMMORTAL_GRANDMASTER;
+    } else {
+        return USER_LEVELS.IMMORTAL_IMMORTAL;
     }
 }
 

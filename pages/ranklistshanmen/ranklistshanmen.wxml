@@ -1,0 +1,105 @@
+<!--pages/ranklistshanmen/ranklistshanmen.wxml-->
+<view class="container">
+  <view class="header">
+    <view class="back-btn" bindtap="navigateBack">
+      <text class="back-text">返回</text>
+    </view>
+    <view class="title-container">
+      <text class="page-title">排行榜</text>
+    </view>
+    <view class="placeholder-right"></view>
+  </view>
+  
+  <view class="ranking-section">
+    <!-- 榜单切换按钮 -->
+    <view class="ranking-tabs">
+      <view class="ranking-tab {{currentRankingType === 'day' ? 'active' : ''}}" bindtap="switchRankingType" data-type="day">
+        <text>日榜</text>
+      </view>
+      <view class="ranking-tab {{currentRankingType === 'week' ? 'active' : ''}}" bindtap="switchRankingType" data-type="week">
+        <text>周榜</text>
+      </view>
+      <view class="ranking-tab {{currentRankingType === 'month' ? 'active' : ''}}" bindtap="switchRankingType" data-type="month">
+        <text>月榜</text>
+      </view>
+      <view class="ranking-tab {{currentRankingType === 'year' ? 'active' : ''}}" bindtap="switchRankingType" data-type="year">
+        <text>年榜</text>
+      </view>
+      <view class="ranking-tab {{currentRankingType === 'total' ? 'active' : ''}}" bindtap="switchRankingType" data-type="total">
+        <text>总榜</text>
+      </view>
+    </view>
+    
+    <view class="online-info">
+      <text class="online-status-tip">金色名字表示用户当前在线(1分钟内活跃)</text>
+      <view class="online-status-container">
+        <text class="online-count">在线: {{onlineUserCount}}人</text>
+        <view class="refresh-online-button" bindtap="refreshOnlineStatus">
+          <text>刷新在线状态</text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 加载中动画 -->
+    <view class="loading-container" wx:if="{{isRankingLoading}}">
+      <view class="loading-spinner"></view>
+      <text class="loading-text">排名数据加载中...</text>
+    </view>
+    
+    <!-- 排名列表 -->
+    <view class="ranking-list" wx:if="{{!isRankingLoading}}">
+      <view class="ranking-header">
+        <text class="rank-column">排名</text>
+        <text class="name-column">用户</text>
+        <text class="time-column">
+          <block wx:if="{{currentRankingType === 'day'}}">今日(分)</block>
+          <block wx:elif="{{currentRankingType === 'week'}}">7天(分)</block>
+          <block wx:elif="{{currentRankingType === 'month'}}">30天(分)</block>
+          <block wx:elif="{{currentRankingType === 'year'}}">年度(分)</block>
+          <block wx:else>总时长(分)</block>
+        </text>
+        <text class="count-column">
+          <block wx:if="{{currentRankingType === 'day'}}">今日(次)</block>
+          <block wx:elif="{{currentRankingType === 'week'}}">7天(次)</block>
+          <block wx:elif="{{currentRankingType === 'month'}}">30天(次)</block>
+          <block wx:elif="{{currentRankingType === 'year'}}">年度(次)</block>
+          <block wx:else>总次数(次)</block>
+        </text>
+        <text class="level-column">段位</text>
+      </view>
+      
+      <view class="ranking-item {{item.isCurrentUser ? 'current-user' : ''}}" 
+            wx:for="{{rankingList}}" 
+            wx:key="index"
+            wx:if="{{isRankingExpanded || index < displayRankingLimit}}">
+        <text class="rank-column">{{index + 1}}</text>
+        <text class="name-column {{item.isOnline ? 'online-user' : ''}}">{{item.nickName || '禅修者'}}</text>
+        <text class="time-column">
+          <block wx:if="{{currentRankingType === 'day'}}">{{item.todayMinutes}}</block>
+          <block wx:elif="{{currentRankingType === 'week'}}">{{item.weekMinutes}}</block>
+          <block wx:elif="{{currentRankingType === 'month'}}">{{item.monthMinutes}}</block>
+          <block wx:elif="{{currentRankingType === 'year'}}">{{item.yearMinutes}}</block>
+          <block wx:else>{{item.totalMinutes}}</block>
+        </text>
+        <text class="count-column">
+          <block wx:if="{{currentRankingType === 'day'}}">{{item.todayCount}}</block>
+          <block wx:elif="{{currentRankingType === 'week'}}">{{item.weekCount}}</block>
+          <block wx:elif="{{currentRankingType === 'month'}}">{{item.monthCount}}</block>
+          <block wx:elif="{{currentRankingType === 'year'}}">{{item.yearCount}}</block>
+          <block wx:else>{{item.totalCount}}</block>
+        </text>
+        <text class="level-column">{{item.userLevel}}</text>
+      </view>
+      
+      <!-- 展开/收起按钮 -->
+      <view class="expand-button" wx:if="{{rankingList.length > displayRankingLimit && !isRankingLoading}}" bindtap="toggleRankingExpand">
+        <text>{{isRankingExpanded ? '收起' : '查看更多'}}</text>
+        <view class="expand-icon {{isRankingExpanded ? 'expanded' : ''}}"></view>
+      </view>
+    </view>
+  </view>
+  
+  <view class="footer">
+    <text>苟日新，又日新，日日新</text>
+  </view>
+</view> 

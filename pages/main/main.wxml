@@ -1,9 +1,9 @@
 <!--pages/main/main.wxml-->
-<navigation-bar title="山门知行" back="{{false}}"></navigation-bar>
+<navigation-bar title="知行" back="{{false}}"></navigation-bar>
 <view class="container">
   <view class="welcome-section">
     <image class="logo" src="https://wx.qlogo.cn/mmhead/QzPtZqIzA0n7k2vHljg5do4WkVqFc8ddgKNFwiaZ63JgOgMfCWLD6xQNqSLBoEoB5z5zuIhKqM4s/0" mode="aspectFill"></image>
-    <text class="app-title">山门知行</text>
+    <text class="app-title">知行</text>
     <text class="app-slogan">提升认知能力，培养专注思维</text>
   </view>
   
@@ -28,6 +28,6 @@
   </view>
   
   <view class="footer">
-    <text class="copyright">© 山门知行 - 专注于认知能力训练</text>
+    <text class="copyright">© 知行训练 - 专注于认知能力训练</text>
   </view>
 </view>
