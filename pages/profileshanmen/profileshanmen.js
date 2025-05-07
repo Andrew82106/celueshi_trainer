@@ -230,7 +230,7 @@ Page({
 
     navigateToAdmin() {
         wx.navigateTo({
-            url: '/pages/admin/admin'
+            url: '/packageTrain/pages/admin/admin'
         });
     },
 

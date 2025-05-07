@@ -12,17 +12,17 @@ Page({
   },
   navigateToDotTraining() {
     wx.navigateTo({
-      url: '/pages/dot-training/dot-training'
+      url: '/packageTrain/pages/dot-training/dot-training'
     })
   },
   navigateToSchulte() {
     wx.navigateTo({
-      url: '/pages/schulte-table/schulte-table'
+      url: '/packageTrain/pages/schulte-table/schulte-table'
     })
   },
   navigateToAudioTraining() {
     wx.navigateTo({
-      url: '/pages/audio-training/audio-training'
+      url: '/packageTrain/pages/audio-training/audio-training'
     })
   },
   navigateToProfile() {
@@ -37,7 +37,7 @@ Page({
   },
   navigateTranslate() {
     wx.navigateTo({
-        url: '/pages/translate-training/translate-training'
+        url: '/packageTrain/pages/translate-training/translate-training'
       })
   },
   navigateToShanmen() {

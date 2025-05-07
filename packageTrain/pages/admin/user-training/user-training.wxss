@@ -1,0 +1,174 @@
+/* 用户训练信息页面样式 */
+.container {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  padding-bottom: 30rpx;
+}
+
+.header {
+  width: 100%;
+  padding: 30rpx;
+  background-color: #8053A1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20rpx;
+  position: relative;
+}
+
+.title {
+  color: #fff;
+  font-size: 36rpx;
+  font-weight: bold;
+}
+
+/* 返回按钮样式 */
+.back-btn {
+  position: absolute;
+  left: 20rpx;
+  display: flex;
+  align-items: center;
+  color: #fff;
+  font-size: 30rpx;
+}
+
+.back-icon {
+  font-size: 36rpx;
+  margin-right: 8rpx;
+}
+
+/* 用户卡片样式 */
+.user-card {
+  width: 92%;
+  margin: 20rpx auto;
+  background-color: #fff;
+  border-radius: 12rpx;
+  padding: 30rpx;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.1);
+}
+
+.user-avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 30rpx;
+  border: 3rpx solid #8053A1;
+}
+
+.user-avatar image {
+  width: 100%;
+  height: 100%;
+}
+
+.user-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-size: 34rpx;
+  font-weight: bold;
+  margin-bottom: 10rpx;
+}
+
+.user-id {
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* 统计数据区域样式 */
+.stats-section, .records-section {
+  width: 92%;
+  margin: 20rpx auto;
+  background-color: #fff;
+  border-radius: 12rpx;
+  padding: 30rpx;
+  box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.1);
+}
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+  padding-bottom: 15rpx;
+  border-bottom: 1rpx solid #eee;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20rpx;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20rpx;
+  background-color: #f9f5fd;
+  border-radius: 8rpx;
+}
+
+.stat-value {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #8053A1;
+  margin-bottom: 10rpx;
+}
+
+.stat-label {
+  font-size: 24rpx;
+  color: #666;
+}
+
+/* 训练记录列表样式 */
+.records-list {
+  max-height: 800rpx;
+  overflow-y: auto;
+}
+
+.record-item {
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #eee;
+}
+
+.record-date {
+  font-size: 26rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10rpx;
+}
+
+.record-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5rpx;
+}
+
+.detail-label {
+  width: 80rpx;
+  font-size: 24rpx;
+  color: #666;
+}
+
+.detail-value {
+  font-size: 24rpx;
+  color: #333;
+}
+
+.empty-state {
+  padding: 60rpx 0;
+  text-align: center;
+  color: #999;
+  font-size: 28rpx;
+} 

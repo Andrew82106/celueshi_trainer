@@ -1,0 +1,55 @@
+<!--pages/translate-records/translate-records.wxml-->
+<navigation-bar title="翻译记录" back="{{true}}"bindback="onBack"></navigation-bar>
+<view class="container">
+    <!-- 空状态提示 -->
+    <view wx:if="{{records.length === 0}}" class="empty-state">
+        <text class="empty-text">暂无翻译记录\n开始你的第一次训练吧～</text>
+    </view>
+
+    <!-- 记录列表 -->
+    <view wx:else class="record-list">
+        <block wx:for="{{records}}" wx:key="timestamp">
+            <view class="record-card">
+                <!-- 头部信息 -->
+                <view class="card-header">
+                    <view class="mode-tag {{item.mode === 'en2zh' ? 'en' : 'zh'}}">
+                        {{item.mode === 'en2zh' ? '英→中' : '中→英'}}
+                    </view>
+                    <view class="accuracy-progress">
+                        <progress 
+                            percent="{{item.accuracy * 10}}" 
+                            stroke-width="12" 
+                            activeColor="#08a8ff"
+                            backgroundColor="#eee"
+                        />
+                        <text class="accuracy-text">评分：{{item.accuracy}}</text>
+                    </view>
+                    <text class="time">{{formatTime(item.timestamp)}}</text>
+                </view>
+
+                <!-- 内容预览 -->
+                <view class="content-preview">
+                    <view class="preview-item">
+                        <text class="preview-label">原文：</text>
+                        <text class="preview-text"> {{item.details[0].reference}} </text>
+                    </view>
+                    <view class="preview-item">
+                        <text class="preview-label">翻译：</text>
+                        <text class="preview-text"> {{item.details[0].source}} </text>
+                    </view>
+                </view>
+
+                <!-- 操作按钮 -->
+                <view class="action-buttons">
+                    <view 
+                        class="action-btn detail-btn" 
+                        bindtap="viewDetail" 
+                        data-index="{{index}}"
+                    >
+                        查看详情
+                    </view>
+                </view>
+            </view>
+        </block>
+    </view>
+</view>

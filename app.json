@@ -2,34 +2,69 @@
     "pages": [
         "pages/main/main",
         "pages/index/index",
-        "pages/dot-training/dot-training",
-        "pages/audio-training/audio-training",
-        "pages/schulte-table/schulte-table",
         "pages/profile/profile",
-        "pages/schulte-records/schulte-records",
-        "pages/dot-records/dot-records",
-        "pages/audio-records/audio-records",
-        "pages/translate-training/translate-training",
-        "pages/translate-train-records/translate-train-records",
-        "pages/translate-drill/translate-drill",
-        "pages/translate-review/translate-review",
-        "pages/translate-records/translate-records",
-        "pages/introduction/introduction",
         "pages/login/login",
+        "pages/profileshanmen/profileshanmen",
         "pages/shanmen/shanmen",
+        "pages/ranklistshanmen/ranklistshanmen",
+        "pages/userinfoshanmen/userinfoshanmen",
+        "pages/introduction/introduction",
         "pages/muyu/muyu",
         "pages/songbo/songbo",
-        "pages/meditation-writing/meditation-writing",
-        "pages/meditation-writing/edit/edit",
-        "pages/meditation-writing/records/records",
-        "pages/meditation-writing/community/community",
-        "pages/profileshanmen/profileshanmen",
-        "pages/admin/admin",
-        "pages/admin/user-management/user-management",
-        "pages/admin/user-training/user-training",
-        "pages/admin/training-records/training-records",
-        "pages/ranklistshanmen/ranklistshanmen",
-        "pages/userinfoshanmen/userinfoshanmen"
+        "pages/meditation-writing/meditation-writing"
+    ],
+    "subPackages": [
+        {
+            "root": "packageTrain",
+            "pages": [
+                "pages/dot-training/dot-training",
+                "pages/audio-training/audio-training",
+                "pages/schulte-table/schulte-table",
+                "pages/translate-training/translate-training",
+                "pages/translate-drill/translate-drill",
+                "pages/translate-review/translate-review",
+                "pages/admin/admin",
+                "pages/admin/user-management/user-management",
+                "pages/admin/user-training/user-training",
+                "pages/admin/training-records/training-records"
+            ],
+            "entry": "index.js"
+        },
+        {
+            "root": "packageRecords",
+            "pages": [
+                "pages/schulte-records/schulte-records",
+                "pages/dot-records/dot-records",
+                "pages/audio-records/audio-records",
+                "pages/translate-records/translate-records",
+                "pages/translate-train-records/translate-train-records"
+            ],
+            "entry": "index.js"
+        },
+        {
+            "root": "packageZen",
+            "pages": [
+                "pages/meditation-writing/edit/edit",
+                "pages/meditation-writing/records/records",
+                "pages/meditation-writing/community/community"
+            ],
+            "entry": "index.js"
+        },
+        {
+            "root": "packageZenAssets",
+            "pages": [],
+            "entry": "index.js"
+        },
+        {
+            "root": "packageTrainAssets",
+            "pages": [],
+            "entry": "index.js"
+        },
+        {
+            "root": "packageRecordsAssets",
+            "pages": [],
+            "entry": "index.js"
+        }
     ],
     "window": {
         "navigationBarTextStyle": "black",
@@ -43,30 +78,31 @@
         "list": [
             {
                 "pagePath": "pages/muyu/muyu",
-                "iconPath": "assets/picture/muyu.png",
-                "selectedIconPath": "assets/picture/muyu.png",
+                "iconPath": "packageZenAssets/assets/picture/muyu.png",
+                "selectedIconPath": "packageZenAssets/assets/picture/muyu.png",
                 "text": "木鱼"
             },
             {
                 "pagePath": "pages/songbo/songbo",
-                "iconPath": "assets/picture/songbo.png",
-                "selectedIconPath": "assets/picture/songbo.png",
+                "iconPath": "packageZenAssets/assets/picture/songbo.png",
+                "selectedIconPath": "packageZenAssets/assets/picture/songbo.png",
                 "text": "颂钵"
             },
             {
                 "pagePath": "pages/meditation-writing/meditation-writing",
-                "iconPath": "assets/picture/writingButton.png",
-                "selectedIconPath": "assets/picture/writingButton.png",
+                "iconPath": "packageZenAssets/assets/picture/writingButton.png",
+                "selectedIconPath": "packageZenAssets/assets/picture/writingButton.png",
                 "text": "内观写作"
             },
             {
                 "pagePath": "pages/profileshanmen/profileshanmen",
-                "iconPath": "assets/picture/personalInfo.png",
-                "selectedIconPath": "assets/picture/personalInfo.png",
+                "iconPath": "packageZenAssets/assets/picture/personalInfo.png",
+                "selectedIconPath": "packageZenAssets/assets/picture/personalInfo.png",
                 "text": "我的"
             }
         ]
     },
+    "preloadRule": {},
     "style": "v2",
     "componentFramework": "glass-easel",
     "sitemapLocation": "sitemap.json"

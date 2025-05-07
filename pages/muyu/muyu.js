@@ -493,7 +493,7 @@ Page({
         
         // 木鱼音效路径，后续需要添加实际的音效文件
         // TODO: 添加木鱼音效文件到 assets/vedio/muyu.mp3
-        innerAudioContext.src = '/assets/audio/muyu.wav';
+        innerAudioContext.src = '/packageZenAssets/packageZenAssets/packageZenAssets/assets/audio/muyu.wav';
         
         innerAudioContext.onError((res) => {
             console.log('音频播放失败：', res);

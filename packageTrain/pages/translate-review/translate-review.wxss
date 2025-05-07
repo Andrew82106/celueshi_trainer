@@ -1,0 +1,59 @@
+/* pages/translate-review/translate-review.wxss */
+.container {
+    padding: 40rpx;
+}
+
+.review-list {
+    margin-bottom: 60rpx;
+}
+
+.review-item {
+    background: #fff;
+    border-radius: 16rpx;
+    padding: 30rpx;
+    margin-bottom: 30rpx;
+    box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.1);
+}
+
+.original {
+    font-size: 32rpx;
+    color: #333;
+    margin-bottom: 20rpx;
+    border-left: 8rpx solid #4a90e2;
+    padding-left: 20rpx;
+}
+
+.translation {
+    font-size: 28rpx;
+    color: #666;
+    line-height: 1.6;
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 50rpx;
+    margin: 10rpx;
+}
+
+.nav-button {
+    width: 300rpx !important;
+    height: 100rpx;
+    border-radius: 30rpx;
+    font-size: 34rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+}
+
+.edit-button {
+    background: #ebe7e7;
+    color: #666;
+}
+
+.evaluate-button {
+    background: #4a90e2;
+    color: white;
+}

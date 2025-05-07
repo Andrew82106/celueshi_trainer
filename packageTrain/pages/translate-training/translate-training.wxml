@@ -1,0 +1,43 @@
+<navigation-bar title="中英互翻训练" back="{{true}}"bindback="onBack"></navigation-bar>
+
+
+<view class="container">
+
+    <!-- <view class="back-btn" bindtap="onBack">← 返回训练列表</view> -->
+    
+    <!-- 新增翻译模式选择 -->
+    <view class="mode-selector">
+        <view 
+            class="mode-btn {{translationMode === 'en2zh' ? 'active' : ''}}" 
+            bindtap="selectTranslationMode" 
+            data-mode="en2zh"
+        >
+            英译中
+        </view>
+        <view 
+            class="mode-btn {{translationMode === 'zh2en' ? 'active' : ''}}" 
+            bindtap="selectTranslationMode" 
+            data-mode="zh2en"
+        >
+            中译英
+        </view>
+    </view>
+
+    <view class="file-list">
+        <block wx:for="{{textFiles}}" wx:key="id">
+            <view class="file-card" bindtap="selectTextFile" data-id="{{item.id}}">
+                <view class="file-header">
+                    <text class="file-title">{{item.title}}</text>
+                    <view class="file-mode">{{translationMode === 'en2zh' ? '英→中' : '中→英'}}</view>
+                </view>
+                <text class="file-sample">{{translationMode === 'en2zh' ? item.content[0] : item.translate[0]}}</text>
+            </view>
+        </block>
+        <view wx:if="{{loading}}" class="loading">加载训练内容中...</view>
+    </view>
+
+    <!-- 添加游客模式提示 -->
+    <view class="guest-tip" wx:if="{{isGuest}}">
+        <text>您正在使用游客模式，训练记录不会被永久保存</text>
+    </view>
+</view> 

@@ -1,0 +1,39 @@
+<navigation-bar title="舒尔特方格训练" back="{{true}}"></navigation-bar>
+<view class="container">
+  <block wx:if="{{!isTraining}}">
+    <view class="size-selector">
+      <text>选择表格尺寸：</text>
+      <picker value="{{selectedSize}}" range="{{sizeRange}}" bindchange="onSizeChange">
+        <view class="picker">{{selectedSize}}x{{selectedSize}}</view>
+      </picker>
+      <view class="start-btn" bindtap="startTraining">开始训练</view>
+    </view>
+  </block>
+
+  <block wx:else>
+    <view class="grid-container">
+      <view class="current-number-hint">
+        当前应点击：{{currentNumber}}
+      </view>
+      <view class="grid" style="grid-template-columns: repeat({{gridSize}}, 1fr);">
+        <view 
+          wx:for="{{numberMatrix}}"
+          wx:key="index"
+          class="grid-item"
+          bindtap="handleNumberClick"
+          data-number="{{item.num}}"
+        >
+          {{item.num}}
+        </view>
+      </view>
+      <view class="stats">
+        <text>错误：{{errorCount}}次</text>
+      </view>
+    </view>
+  </block>
+
+  <!-- 添加游客模式提示 -->
+  <view class="guest-tip" wx:if="{{isGuest}}">
+    <text>您正在使用游客模式，训练记录不会被永久保存</text>
+  </view>
+</view> 

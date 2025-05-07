@@ -499,7 +499,7 @@ Page({
         innerAudioContext.autoplay = true;
         
         // 颂钵音效路径
-        innerAudioContext.src = '/assets/audio/songbo.wav';
+        innerAudioContext.src = '/packageZenAssets/assets/audio/songbo.wav';
         
         innerAudioContext.onError((res) => {
             console.log('音频播放失败：', res);

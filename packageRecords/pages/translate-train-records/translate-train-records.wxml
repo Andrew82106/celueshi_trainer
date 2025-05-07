@@ -1,0 +1,64 @@
+<!--pages/translate-train-records/translate-train-records.wxml-->
+<page-meta>
+    <navigation-bar 
+        title="评测结果" 
+        back="{{true}}"
+        bindback="onBack"
+    ></navigation-bar>
+</page-meta>
+
+
+<view class="container">
+    <!-- 综合评分 -->
+    <view class="overall-score">
+        <text class="score-label">综合准确率：</text>
+        <text class="score-value">{{evaluationResult.accuracy}}</text>
+    </view>
+
+    <!-- 新增返回主页按钮 -->
+    <view class="home-button-container">
+        <button class="home-button" bindtap="goHome">返回首页</button>
+    </view>
+
+    <!-- 详细条目 -->
+    <view class="detail-list">
+        <block wx:for="{{evaluationResult.details}}" wx:key="index">
+            <view class="detail-card">
+                <!-- 原文 -->
+                <view class="section">
+                    <text class="section-label">原文：</text>
+                    <text class="section-content">{{item.source}}</text>
+                </view>
+
+                <!-- 参考译文 -->
+                <view class="section">
+                    <text class="section-label">参考译文：</text>
+                    <text class="section-content reference">
+                        {{item.reference ? item.reference : '（暂无参考译文）'}}
+                    </text>
+                </view>
+
+                <!-- 用户译文 -->
+                <view class="section">
+                    <text class="section-label">你的翻译：</text>
+                    <text class="section-content user-translation">{{item.userTranslation}}</text>
+                </view>
+
+                <!-- 评分和建议 -->
+                <view class="score-section">
+                    <text class="score-text">评分：{{item.score}}/10</text>
+                    <view class="suggestions">
+                        <text class="suggestions-title">改进建议：</text>
+                        <block wx:for="{{item.suggestions}}" wx:key="*this">
+                            <view class="suggestion-item">
+                                <text class="suggestion-index">{{index + 1}}.</text>
+                                {{item}}
+                            </view>
+                        </block>
+                    </view>
+                </view>
+            </view>
+        </block>
+    </view>
+
+</view>

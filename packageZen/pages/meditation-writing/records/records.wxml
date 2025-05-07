@@ -1,0 +1,104 @@
+<!--pages/meditation-writing/records/records.wxml-->
+<view class="container">
+  <!-- 背景图片 -->
+  <image class="background-image" src="/assets/picture/trainingBackground.jpeg" mode="aspectFill"></image>
+  
+  <!-- 顶部导航区 -->
+  <view class="header">
+    <view class="back-button" bindtap="goBack">
+      <text class="back-arrow">←</text>
+      <text class="back-text">返回</text>
+    </view>
+    <view class="page-title">
+      <text>我的记录</text>
+    </view>
+  </view>
+
+  <!-- 筛选栏 -->
+  <view class="filter-bar">
+    <view class="filter-item {{currentFilter === 'all' ? 'active' : ''}}" bindtap="setFilter" data-filter="all">
+      <text>全部</text>
+    </view>
+    <view class="filter-item {{currentFilter === 'week' ? 'active' : ''}}" bindtap="setFilter" data-filter="week">
+      <text>本周</text>
+    </view>
+    <view class="filter-item {{currentFilter === 'month' ? 'active' : ''}}" bindtap="setFilter" data-filter="month">
+      <text>本月</text>
+    </view>
+  </view>
+  
+  <!-- 记录列表 -->
+  <scroll-view scroll-y class="records-scroll-container" enable-back-to-top>
+    <view class="records-container">
+      <block wx:if="{{records.length > 0}}">
+        <view class="record-item" wx:for="{{records}}" wx:key="index" bindtap="viewRecordDetail" data-index="{{index}}">
+          <view class="record-header">
+            <text class="record-date">{{item.date}}</text>
+            <view class="record-counts">
+              <text class="record-count">内观写作: {{item.count}} 字</text>
+              <text class="record-insight-count" wx:if="{{item.insightCount}}">感想: {{item.insightCount}} 字</text>
+            </view>
+          </view>
+          <view class="record-content">
+            <text space="nbsp">{{item.preview}}</text>
+          </view>
+          <view class="record-actions">
+            <view class="visibility-toggle {{item.visible !== false ? 'visible' : 'hidden'}}" 
+                  catchtap="toggleRecordVisibility" 
+                  data-id="{{item._id}}" 
+                  data-index="{{index}}">
+              <text>{{item.visible !== false ? '公开' : '私密'}}</text>
+            </view>
+            <view class="delete-btn" catchtap="deleteRecord" data-id="{{item._id}}" data-index="{{index}}">
+              <text>删除</text>
+            </view>
+          </view>
+        </view>
+        
+        <!-- 加载更多 -->
+        <view class="load-more" wx:if="{{hasMoreRecords}}" bindtap="loadMoreRecords">
+          <text>加载更多</text>
+        </view>
+      </block>
+      
+      <!-- 空记录提示 -->
+      <view class="empty-records" wx:else>
+        <text>暂无写作记录</text>
+        <view class="start-writing-btn" bindtap="startWriting">
+          <text>开始写作</text>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+  
+  <!-- 记录详情弹窗 -->
+  <view class="record-detail-modal" wx:if="{{showDetailModal}}">
+    <view class="modal-mask" bindtap="closeDetailModal"></view>
+    <view class="modal-content">
+      <view class="modal-header">
+        <text class="modal-date">{{currentRecord.date}}</text>
+        <view class="modal-counts">
+          <text class="modal-count">内观写作: {{currentRecord.count}} 字</text>
+          <text class="modal-insight-count" wx:if="{{currentRecord.insightCount}}">感想: {{currentRecord.insightCount}} 字</text>
+        </view>
+      </view>
+      <scroll-view class="modal-body" scroll-y="true" enhanced="true" show-scrollbar="true">
+        <text space="nbsp">{{currentRecord.content}}</text>
+      </scroll-view>
+      <view class="modal-footer">
+        <view class="modal-actions">
+          <view class="visibility-toggle modal-visibility-toggle {{currentRecord.visible !== false ? 'visible' : 'hidden'}}" 
+                catchtap="toggleRecordVisibility" 
+                data-id="{{currentRecord._id}}" 
+                data-index="{{currentRecordIndex}}">
+            <text>{{currentRecord.visible !== false ? '公开' : '私密'}}</text>
+          </view>
+          <view class="delete-btn modal-delete-btn" catchtap="deleteRecord" data-id="{{currentRecord._id}}" data-index="{{currentRecordIndex}}">
+            <text>删除</text>
+          </view>
+        </view>
+        <view class="modal-btn" bindtap="closeDetailModal">关闭</view>
+      </view>
+    </view>
+  </view>
+</view> 

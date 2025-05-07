@@ -1,0 +1,90 @@
+<navigation-bar title="圆点闪视训练" back="{{true}}"></navigation-bar>
+<view class="container">
+  <!-- 设置区域 -->
+  <view class="settings" wx:if="{{!isTraining}}">
+    <view class="setting-item">
+      <text class="label">圆点数量范围：</text>
+      <view class="picker-group">
+        <picker 
+          mode="selector" 
+          range="{{['2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20']}}" 
+          value="{{minDots-2}}"
+          bindchange="bindMinChange"
+        >
+          <view class="picker">{{minDots}}</view>
+        </picker>
+        <text class="separator">-</text>
+        <picker 
+          mode="selector" 
+          range="{{['2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20']}}" 
+          value="{{maxDots-2}}"
+          bindchange="bindMaxChange"
+        >
+          <view class="picker">{{maxDots}}</view>
+        </picker>
+      </view>
+    </view>
+
+    <view class="setting-item">
+      <text class="label">闪视时间：</text>
+      <view class="time-picker">
+        <picker 
+          mode="selector" 
+          range="{{['0秒','1秒','2秒','3秒']}}" 
+          value="{{seconds}}"
+          data-type="seconds"
+          bindchange="handleTimeChange"
+        >
+          <view class="time-unit">{{seconds}}秒</view>
+        </picker>
+        <picker 
+          mode="selector" 
+          range="{{millisecondsOptions}}" 
+          value="{{milliseconds/250}}"
+          data-type="milliseconds"
+          bindchange="handleTimeChange"
+        >
+          <view class="time-unit">{{milliseconds}}毫秒</view>
+        </picker>
+      </view>
+    </view>
+  </view>
+
+
+  <!-- 在按钮组上方添加游客模式提示 -->
+  <view class="guest-tip" wx:if="{{isGuest}}">
+    <text>您正在使用游客模式，训练记录不会被永久保存</text>
+  </view>
+  
+  <!-- 训练显示区域 -->
+  <view class="training-area" wx:if="{{isTraining}}">
+    <text wx:if="{{countdown > 0}}" class="countdown">{{countdown}}</text>
+    <view class="dot-area">
+      <view wx:for="{{dots}}" wx:key="index" wx:if="{{!item.isDebug}}"
+            class="dot"
+            style="left: {{item.x}}rpx; top: {{item.y}}rpx; width: {{item.size}}rpx; height: {{item.size}}rpx">
+      </view>
+    </view>
+  </view>
+
+  <!-- 输入弹窗 -->
+  <view class="mask" wx:if="{{showInput}}">
+    <view class="input-box">
+      <text>请输入看到的圆点数量：</text>
+      <input type="number" value="{{userAnswer}}" bindinput="handleInput"/>
+      <button bindtap="submitAnswer">提交</button>
+    </view>
+  </view>
+
+  
+
+  <!-- 操作按钮 -->
+  <view class="button-group" wx:if="{{!isTraining && !showInput}}">
+    <button bindtap="startTraining" type="primary">{{trainingRecords.length ? '开始新训练' : '开始训练'}}</button>
+  </view>
+
+  <view class="button-group" wx:if="{{isTraining && !showInput}}">
+    <button bindtap="continueTraining" type="primary">继续训练</button>
+    <button bindtap="endTraining">结束训练</button>
+  </view>
+</view> 

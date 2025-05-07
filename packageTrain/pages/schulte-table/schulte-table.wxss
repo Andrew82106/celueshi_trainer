@@ -1,0 +1,96 @@
+/* 继承导航栏组件样式 */
+.container {
+  padding: 40rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.grid-preview {
+  width: 600rpx;
+  height: 600rpx;
+  border: 2rpx solid #4a90e2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 60rpx;
+  border-radius: 16rpx;
+  color: #666;
+}
+
+.size-selector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 100rpx;
+}
+
+.picker {
+  padding: 20rpx 40rpx;
+  border: 2rpx solid #4a90e2;
+  border-radius: 8rpx;
+  margin: 40rpx 0;
+}
+
+.start-btn {
+  background: #4a90e2;
+  color: white;
+  padding: 30rpx 80rpx;
+  border-radius: 40rpx;
+  margin-top: 60rpx;
+}
+
+.grid-container {
+  width: 90vw;
+  margin: 40rpx auto;
+}
+
+.grid {
+  display: grid;
+  gap: 10rpx;
+  width: 100%;
+}
+
+.grid-item {
+  aspect-ratio: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f5f5f5;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  font-weight: bold;
+}
+
+.stats {
+  display: flex;
+  justify-content: space-around;
+  font-size: 32rpx;
+}
+
+/* 新增当前数字提示样式 */
+.current-number-hint {
+    font-size: 40rpx;
+    color: #4a90e2;
+    margin: 30rpx 0;
+    text-align: center;
+    font-weight: 500;
+}
+
+.container {
+  padding: 50rpx;
+  box-sizing: border-box;
+  min-height: 50vh;
+}
+
+/* 添加游客模式提示样式 */
+.guest-tip {
+  background-color: rgba(255, 193, 7, 0.2);
+  color: #e65100;
+  padding: 16rpx 20rpx;
+  margin: 20rpx 0;
+  border-radius: 10rpx;
+  font-size: 28rpx;
+  text-align: center;
+  border-left: 8rpx solid #ffb300;
+} 

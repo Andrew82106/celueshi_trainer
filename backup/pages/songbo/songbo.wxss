@@ -1,0 +1,247 @@
+/* pages/songbo/songbo.wxss */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  position: relative;
+  /* 移除背景色，使用背景图片 */
+  /* background-color: #F8F4FB; */
+}
+
+/* 背景图片样式 */
+.background-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  filter: brightness(0.6) grayscale(0.4); /* 降低亮度并增加灰度 */
+}
+
+/* 按钮容器样式 */
+.settings-container {
+  position: absolute;
+  top: 130rpx;
+  left: 30rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  z-index: 10;
+}
+
+/* 每个按钮的样式 */
+.settings-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 40rpx;  /* 按钮之间的间距 */
+  padding: 10rpx 20rpx;
+  /* 移除背景色 */
+}
+
+.settings-btn text {
+  color: #e9d8f4; /* 浅紫色文字 */
+  font-weight: bold;
+  text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.8); /* 增强文字阴影 */
+}
+
+.settings-icon {
+  width: 30px;
+  height: 30px;
+  margin-bottom: 5px;
+}
+
+/* 计数器样式 */
+.counter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 40px;
+  z-index: 10; /* 确保在背景上方 */
+  padding: 20rpx 40rpx;
+  /* 移除背景色 */
+}
+
+.count-text {
+  font-size: 60px;
+  font-weight: bold;
+  color: #d4c2e5; /* 更浅的紫色 */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6); /* 增强文字阴影效果 */
+}
+
+.merit-text {
+  font-size: 16px;
+  color: #e9d8f4; /* 浅紫色文字 */
+  margin-bottom: 5px;
+  font-weight: bold;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.total-count {
+  font-size: 14px;
+  color: #ddd;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* 颂钵样式 */
+.songbo-container {
+  width: 250px;
+  height: 250px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10; /* 确保在背景上方 */
+}
+
+.songbo-image {
+  width: 100%;
+  height: 100%;
+  transition: transform 0.1s;
+}
+
+/* 颂钵敲击动画 */
+.tap-animation {
+  transform: scale(0.95);
+}
+
+/* 随机背景按钮样式 */
+.random-bg-btn {
+  position: absolute;
+  right: 30rpx;
+  bottom: 30rpx;
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+.random-bg-icon {
+  width: 60rpx;
+  height: 60rpx;
+}
+
+/* 模态框样式 */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+
+.modal-content {
+  width: 80%;
+  background-color: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.modal-header {
+  padding: 20px;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.modal-footer {
+  display: flex;
+  border-top: 1px solid #eee;
+}
+
+.btn {
+  flex: 1;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  background-color: #fff;
+  border-radius: 0;
+  font-size: 16px;
+}
+
+.btn::after {
+  border: none;
+}
+
+.cancel {
+  color: #666;
+  border-right: 1px solid #eee;
+}
+
+.confirm {
+  color: #7D6B91;
+  font-weight: bold;
+}
+
+.title {
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+.training-time {
+  font-size: 28rpx;
+  color: #e9d8f4; /* 浅紫色文字 */
+  margin-top: 10rpx;
+  font-weight: bold;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.disabled-songbo {
+  opacity: 0.5;
+  filter: grayscale(50%);
+}
+
+/* 静音图标样式 */
+.muted-icon {
+  opacity: 0.5;
+  /* 可以添加更多样式来表示静音状态 */
+}
+
+/* 输入框样式 */
+.input-field {
+  width: 100%;
+  height: 80rpx;
+  border: 1px solid #ddd;
+  border-radius: 8rpx;
+  margin: 20rpx 0;
+  padding: 0 20rpx;
+  box-sizing: border-box;
+  font-size: 32rpx;
+}
+
+/* 在线用户数量样式 */
+.online-users-count {
+  position: absolute;
+  top: 250rpx;
+  left: 30rpx;
+  background-color: rgba(0, 0, 0, 0.4);
+  padding: 5px 10px;
+  border-radius: 15px;
+  z-index: 10;
+}
+
+.online-count-text {
+  font-size: 14px;
+  color: #d4af37; /* 棕金色 */
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+} 
