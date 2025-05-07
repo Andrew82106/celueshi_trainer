@@ -54,7 +54,13 @@
     <text class="section-title">开发记录</text>
 
     <view class="feature-item">
-    <text class="feature-title">版本0.3.4(当前)</text>
+    <text class="feature-title">版本0.3.5(当前)</text>
+      <text class="feature-desc">添加了用户在线状态显示，修正了在线状态显示的bug，同时添加了用户详情页面，增强了在线人数显示</text>
+      <text class="feature-desc">>>Andrew 在 2025年5月7日下午19点50分 提交上传</text>
+    </view>
+
+    <view class="feature-item">
+    <text class="feature-title">版本0.3.4</text>
       <text class="feature-desc">拆分排行榜页面，修改了数据读取的bug，优化了用户在线显示的逻辑</text>
       <text class="feature-desc">>>Andrew 在 2025年5月7日下上午10点39分 提交上传</text>
     </view>

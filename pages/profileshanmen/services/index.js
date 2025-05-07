@@ -226,6 +226,9 @@ export function loadRankingData_() {
             console.log(`[在线状态] 获取到${onlineStatusData.length}条用户在线状态记录`);
             console.log(`[在线状态] 详细记录:`, JSON.stringify(onlineStatusData));
             
+            // 调试输出当前用户的openId
+            console.log(`[在线状态调试] 当前用户openId: ${currentUserOpenId}`);
+            
             onlineStatusData.forEach(status => {
                 if (status.openId) {
                     // 判断用户是否在线（最后活跃时间在1分钟内）
@@ -233,7 +236,20 @@ export function loadRankingData_() {
                     const lastActive = status.lastActiveTime;
                     const timeDiff = now - lastActive;
                     const timeout = app.globalData.offlineTimeout;
-                    const isActive = timeDiff < timeout;
+                    let isActive = timeDiff < timeout;
+                    
+                    // 如果是当前用户，添加额外调试信息
+                    if (status.openId === currentUserOpenId) {
+                        console.log(`[在线状态调试] 找到当前用户在线状态记录！`);
+                        console.log(`[在线状态调试] 当前用户在线状态比较：`);
+                        console.log(`[在线状态调试] - 数据库中的openId: ${status.openId}`);
+                        console.log(`[在线状态调试] - 全局变量中的openId: ${currentUserOpenId}`);
+                        console.log(`[在线状态调试] - 长度比较: ${status.openId.length} vs ${currentUserOpenId.length}`);
+                        console.log(`[在线状态调试] - 字符串完全匹配: ${status.openId === currentUserOpenId}`);
+                        
+                        // 确保当前用户在线
+                        isActive = true;
+                    }
                     
                     console.log(`[在线状态] 用户${status.openId} - 判定详情:
                     - 当前时间: ${now}
@@ -244,8 +260,12 @@ export function loadRankingData_() {
                     - 活跃判定: ${isActive ? '在线' : '超时'}
                     - 最终判定: ${(status.isOnline && isActive) ? '在线' : '离线'}`);
                     
+                    // 修复问题：对于当前用户，强制设置在线状态为true
+                    const finalIsOnline = (status.openId === currentUserOpenId) ? 
+                        true : (status.isOnline && isActive);
+                    
                     onlineStatusMap.set(status.openId, {
-                        isOnline: status.isOnline && isActive, // 只有状态为在线且活跃时间在超时范围内才算真正在线
+                        isOnline: finalIsOnline,
                         lastActiveTime: status.lastActiveTime
                     });
                 }
@@ -485,6 +505,15 @@ function updateCurrentUserTodayData(currentUserOpenId, todayTrainMap, today, db)
 function processUserRankingData(usersMap, todayTrainMap, currentUserOpenId, onlineStatusMap) {
     const rankingData = [];
     
+    console.log(`[在线状态调试] 处理用户排名数据，当前用户ID: ${currentUserOpenId}`);
+    console.log(`[在线状态调试] 在线状态Map大小: ${onlineStatusMap.size}`);
+    
+    // 如果当前用户存在，检查是否有在线状态记录
+    if (currentUserOpenId) {
+        const currentUserOnlineStatus = onlineStatusMap.get(currentUserOpenId);
+        console.log(`[在线状态调试] 当前用户在线状态记录: ${JSON.stringify(currentUserOnlineStatus || '未找到')}`);
+    }
+    
     // 处理每个用户的数据
     usersMap.forEach((user, openId) => {
         // 获取累积数据
@@ -516,7 +545,21 @@ function processUserRankingData(usersMap, todayTrainMap, currentUserOpenId, onli
         // 获取用户在线状态
         const onlineStatus = onlineStatusMap.get(openId) || { isOnline: false };
         
-        // 添加所有用户到排行榜，不限制条件
+        // 如果是当前用户，添加调试信息
+        if (openId === currentUserOpenId) {
+            console.log(`[在线状态调试] 处理当前用户的排名数据:`);
+            console.log(`[在线状态调试] - 昵称: ${user.nickName || '禅修者'}`);
+            console.log(`[在线状态调试] - 在线状态: ${onlineStatus.isOnline ? '在线' : '离线'}`);
+        }
+        
+        // 获取当前用户的openId
+        const currentUserOpenId = app.globalData.userInfo && app.globalData.userInfo.openId;
+        
+        // 如果是当前用户，确保显示为在线
+        const isCurrentUser = currentUserOpenId && openId === currentUserOpenId;
+        const finalIsOnline = isCurrentUser ? true : onlineStatus.isOnline;
+        
+        // 添加到排行榜
         rankingData.push({
             openId,
             nickName: user.nickName || '禅修者',
@@ -534,8 +577,8 @@ function processUserRankingData(usersMap, todayTrainMap, currentUserOpenId, onli
             totalMinutes,
             todayMinutes,
             userLevel,
-            isCurrentUser: openId === currentUserOpenId,
-            isOnline: onlineStatus.isOnline // 添加在线状态
+            isCurrentUser: isCurrentUser,
+            isOnline: finalIsOnline
         });
     });
     
@@ -751,11 +794,24 @@ export async function loadRankingDataByDateRange(db, startDate, endDate) {
                     const now = Date.now();
                     const lastActive = status.lastActiveTime;
                     const timeDiff = now - lastActive;
-                    const timeout = 60000; // 1分钟超时
-                    const isActive = timeDiff < timeout;
+                    const timeout = app.globalData.offlineTimeout || 300000; // 默认5分钟超时
+                    let isActive = timeDiff < timeout;
+                    
+                    // 获取当前用户的openId
+                    const currentUserOpenId = app.globalData.userInfo && app.globalData.userInfo.openId;
+                    
+                    // 如果是当前用户，确保显示为在线
+                    if (currentUserOpenId && status.openId === currentUserOpenId) {
+                        console.log(`[在线状态调试] loadRankingDataByDateRange - 找到当前用户状态记录`);
+                        isActive = true;
+                    }
+                    
+                    // 对于当前用户，强制设置在线状态为true
+                    const finalIsOnline = (currentUserOpenId && status.openId === currentUserOpenId) ? 
+                        true : (status.isOnline && isActive);
                     
                     onlineStatusMap.set(status.openId, {
-                        isOnline: status.isOnline && isActive,
+                        isOnline: finalIsOnline,
                         lastActiveTime: status.lastActiveTime
                     });
                 }
@@ -795,6 +851,13 @@ export async function loadRankingDataByDateRange(db, startDate, endDate) {
             // 获取用户在线状态
             const onlineStatus = onlineStatusMap.get(openId) || { isOnline: false };
             
+            // 获取当前用户的openId
+            const currentUserOpenId = app.globalData.userInfo && app.globalData.userInfo.openId;
+            
+            // 如果是当前用户，确保显示为在线
+            const isCurrentUser = currentUserOpenId && openId === currentUserOpenId;
+            const finalIsOnline = isCurrentUser ? true : onlineStatus.isOnline;
+            
             // 添加到排行榜
             rankingData.push({
                 openId,
@@ -811,7 +874,8 @@ export async function loadRankingDataByDateRange(db, startDate, endDate) {
                 totalCount: accumulateMuyu + accumulateSongbo,
                 totalMinutes,
                 userLevel,
-                isOnline: onlineStatus.isOnline
+                isCurrentUser: isCurrentUser,
+                isOnline: finalIsOnline
             });
         });
         

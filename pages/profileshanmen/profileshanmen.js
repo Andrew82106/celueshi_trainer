@@ -243,6 +243,16 @@ Page({
         });
     },
 
+    navigateToUserInfoShanmen(e) {
+        const userId = e.currentTarget.dataset.userId;
+        const userName = e.currentTarget.dataset.userName;
+        console.log(`[用户详情] 跳转到用户详情页，用户ID: ${userId}, 用户名: ${userName}`);
+        
+        wx.navigateTo({
+            url: `/pages/userinfoshanmen/userinfoshanmen?userId=${userId}&userName=${userName}`
+        });
+    },
+
     /**
      * 加载用户排名数据（仅日榜）
      */

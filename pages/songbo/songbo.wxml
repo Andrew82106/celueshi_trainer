@@ -28,6 +28,11 @@
     </view>
   </view>
   
+  <!-- 在线用户数量 -->
+  <view class="online-users-count">
+    <text class="online-count-text">当前在线: {{onlineUserCount}}人</text>
+  </view>
+  
   <!-- 敲击计数 -->
   <view class="counter">
     <text class="count-text">{{count}}</text>

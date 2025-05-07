@@ -27,7 +27,11 @@ Page({
         showUploadModal: false,      // 上传模态框显示状态
         offlineTrainingMinutes: '',  // 离线训练时长（分钟）
         offlineTapDuration: '',      // 单次敲击长度（秒）
-        calculatedTapCount: 0        // 计算得出的敲击次数
+        calculatedTapCount: 0,       // 计算得出的敲击次数
+        
+        // 在线用户数量
+        onlineUserCount: 0,           // 当前在线用户数量
+        onlineCountTimer: null        // 在线用户数量刷新定时器
     },
 
     /**
@@ -43,6 +47,18 @@ Page({
         
         // 从数据库加载木鱼训练数据
         this.loadTrainingDataFromDB();
+        
+        // 获取当前在线用户数量
+        this.getOnlineUserCount();
+        
+        // 设置定时器每30秒刷新一次在线用户数量
+        const onlineCountTimer = setInterval(() => {
+            this.getOnlineUserCount();
+        }, 30000); // 30秒刷新一次
+        
+        this.setData({
+            onlineCountTimer: onlineCountTimer
+        });
     },
     
     /**
@@ -692,6 +708,11 @@ Page({
             // 上传训练数据到数据库
             this.uploadTrainingData(finalSeconds);
         }
+        
+        // 清除在线用户数量刷新定时器
+        if (this.data.onlineCountTimer) {
+            clearInterval(this.data.onlineCountTimer);
+        }
     },
 
     /**
@@ -882,5 +903,25 @@ Page({
                 duration: 2000
             });
         }, 1000);
+    },
+
+    /**
+     * 获取当前在线用户数量
+     */
+    getOnlineUserCount() {
+        const db = app.globalData.db;
+        
+        // 查询 userOnlineStatus 集合中在线的用户
+        db.collection('userOnlineStatus').where({
+            lastActiveTime: db.command.gt(Date.now() - 60000)
+        }).count().then(res => {
+            console.log('[在线状态] 当前在线用户数量:', res.total);
+            
+            this.setData({
+                onlineUserCount: res.total
+            });
+        }).catch(err => {
+            console.error('[在线状态] 获取在线用户数量失败:', err);
+        });
     }
 }) 

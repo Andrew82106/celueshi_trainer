@@ -73,7 +73,7 @@
             wx:key="index"
             wx:if="{{isRankingExpanded || index < displayRankingLimit}}">
         <text class="rank-column">{{index + 1}}</text>
-        <text class="name-column {{item.isOnline ? 'online-user' : ''}}">{{item.nickName || '禅修者'}}</text>
+        <text class="name-column {{item.isOnline ? 'online-user' : ''}}" bindtap="navigateToUserInfoShanmen" data-user-id="{{item.openId}}" data-user-name="{{item.nickName || '禅修者'}}">{{item.nickName || '禅修者'}}</text>
         <text class="time-column">
           <block wx:if="{{currentRankingType === 'day'}}">{{item.todayMinutes}}</block>
           <block wx:elif="{{currentRankingType === 'week'}}">{{item.weekMinutes}}</block>

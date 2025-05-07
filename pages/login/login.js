@@ -9,7 +9,8 @@ Page({
     userInfo: null,
     nickName: '',
     isLoading: false,
-    cloudAvatarUrl: ''
+    cloudAvatarUrl: '',
+    permanentAvatarUrl: ''
   },
   
   onLoad() {
@@ -35,7 +36,8 @@ Page({
         userInfo: userInfo,
         avatarUrl: userInfo.avatarUrl || defaultAvatarUrl,
         nickName: userInfo.nickName || '',
-        cloudAvatarUrl: userInfo.avatarUrl || ''
+        cloudAvatarUrl: userInfo.avatarUrl || '',
+        permanentAvatarUrl: userInfo.avatarUrl || ''
       });
     }
 
@@ -66,13 +68,47 @@ Page({
         console.log("头像上传成功:", res);
         const fileID = res.fileID;
         this.setData({
-          cloudAvatarUrl: fileID,
-          isLoading: false
+          cloudAvatarUrl: fileID
         });
         
-        wx.showToast({
-          title: '头像上传成功',
-          icon: 'success'
+        // 获取永久链接
+        wx.cloud.getTempFileURL({
+          fileList: [fileID],
+          success: result => {
+            console.log("获取永久链接成功:", result);
+            if (result.fileList && result.fileList.length > 0) {
+              const permanentUrl = result.fileList[0].tempFileURL;
+              console.log("头像永久链接:", permanentUrl);
+              this.setData({
+                permanentAvatarUrl: permanentUrl,
+                isLoading: false
+              });
+              
+              wx.showToast({
+                title: '头像上传成功',
+                icon: 'success'
+              });
+            } else {
+              console.error("获取永久链接失败: 返回结果为空");
+              this.setData({
+                isLoading: false
+              });
+              wx.showToast({
+                title: '头像处理失败',
+                icon: 'none'
+              });
+            }
+          },
+          fail: err => {
+            console.error("获取永久链接失败:", err);
+            this.setData({
+              isLoading: false
+            });
+            wx.showToast({
+              title: '头像处理失败',
+              icon: 'none'
+            });
+          }
         });
       },
       fail: err => {
@@ -99,8 +135,8 @@ Page({
   onSubmit(e) {
     if (this.data.isLoading) return;
     
-    const { nickName, cloudAvatarUrl, avatarUrl } = this.data;
-    console.log("提交的昵称和头像:", nickName, cloudAvatarUrl || avatarUrl);
+    const { nickName, permanentAvatarUrl, cloudAvatarUrl, avatarUrl } = this.data;
+    console.log("提交的昵称和头像:", nickName, permanentAvatarUrl || cloudAvatarUrl || avatarUrl);
     
     if (!nickName || nickName.length < 2 || nickName.length > 10) {
       wx.showToast({
@@ -114,7 +150,8 @@ Page({
     
     const baseUserInfo = this.data.userInfo || {};
     
-    const finalAvatarUrl = cloudAvatarUrl || avatarUrl;
+    // 优先使用永久链接，其次是云存储ID，最后是临时链接
+    const finalAvatarUrl = permanentAvatarUrl || cloudAvatarUrl || avatarUrl;
     
     const userInfo = {
       ...baseUserInfo,

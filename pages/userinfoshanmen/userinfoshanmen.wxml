@@ -1,0 +1,147 @@
+<!--pages/userinfoshanmen/userinfoshanmen.wxml-->
+<view class="container">
+  <view class="header">
+    <view class="back-btn" bindtap="navigateBack">
+      <text class="back-text">返回</text>
+    </view>
+    <view class="title-container">
+      <text class="page-title">用户详情</text>
+    </view>
+    <view class="placeholder-right"></view>
+  </view>
+  
+  <!-- 用户基本信息 -->
+  <view class="user-info-section">
+    <view class="avatar-container">
+      <image class="avatar" src="{{userInfo.avatarUrl}}"></image>
+    </view>
+    <view class="user-basic-info">
+      <text class="nickname">{{userName}}</text>
+      <text class="user-level">{{userInfo.level || '初入'}}</text>
+      <text class="last-login">上次登录: {{lastLoginTime || '未知'}}</text>
+    </view>
+  </view>
+  
+  <!-- 加载中动画 -->
+  <view class="loading-container" wx:if="{{isLoading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">数据加载中...</text>
+  </view>
+  
+  <!-- 用户训练统计数据 -->
+  <view class="statistics-section" wx:if="{{!isLoading}}">
+    <view class="section-title">
+      <text>训练数据</text>
+    </view>
+    
+    <view class="stat-overview">
+      <view class="overview-item">
+        <text class="overview-label">累计训练时长</text>
+        <text class="overview-value">{{totalTrainingMinutes}}分钟</text>
+      </view>
+      <view class="overview-item">
+        <text class="overview-label">累计敲击次数</text>
+        <text class="overview-value">{{totalTapCount}}次</text>
+      </view>
+    </view>
+    
+    <view class="stat-cards">
+      <!-- 木鱼统计卡片 -->
+      <view class="stat-card">
+        <view class="card-header">
+          <image class="card-icon" src="/assets/picture/muyu.png"></image>
+          <text class="card-title">木鱼敲击</text>
+        </view>
+        
+        <view class="card-content">
+          <view class="stat-item">
+            <text class="stat-label">累计次数</text>
+            <text class="stat-value">{{muyuCount}}</text>
+          </view>
+          <view class="stat-item">
+            <text class="stat-label">累计时长</text>
+            <text class="stat-value">{{muyuMinutes}}分钟</text>
+          </view>
+        </view>
+      </view>
+      
+      <!-- 颂钵统计卡片 -->
+      <view class="stat-card">
+        <view class="card-header">
+          <image class="card-icon" src="/assets/picture/songbo.png"></image>
+          <text class="card-title">颂钵敲击</text>
+        </view>
+        
+        <view class="card-content">
+          <view class="stat-item">
+            <text class="stat-label">累计次数</text>
+            <text class="stat-value">{{songboCount}}</text>
+          </view>
+          <view class="stat-item">
+            <text class="stat-label">累计时长</text>
+            <text class="stat-value">{{songboMinutes}}分钟</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 用户公开的内观写作 -->
+  <view class="writing-section" wx:if="{{!isLoading && writingRecords.length > 0}}">
+    <view class="section-title">
+      <text>内观写作</text>
+    </view>
+    
+    <view class="writing-list">
+      <view class="writing-item" wx:for="{{displayedWritings}}" wx:key="index" bindtap="viewWritingDetail" data-index="{{index}}">
+        <view class="writing-header">
+          <text class="writing-title">{{item.title || '无标题'}}</text>
+          <text class="writing-date">{{item.createTime}}</text>
+        </view>
+        <text class="writing-content">{{item.content}}</text>
+      </view>
+    </view>
+    
+    <!-- 展开/收起按钮 -->
+    <view class="toggle-btn" wx:if="{{showToggleBtn}}" bindtap="toggleWritings">
+      <text class="toggle-btn-text">{{isWritingsExpanded ? '收起' : '展开更多'}}</text>
+    </view>
+  </view>
+  
+  <!-- 没有内观写作记录时显示 -->
+  <view class="no-data-tip" wx:if="{{!isLoading && writingRecords.length === 0}}">
+    <text>该用户暂未公开内观写作</text>
+  </view>
+  
+  <view class="footer">
+    <text>苟日新，又日新，日日新</text>
+  </view>
+  
+  <!-- 内观写作详情模态框 -->
+  <view class="writing-modal" wx:if="{{showWritingModal}}" bindtap="closeModalOnMask">
+    <view class="writing-modal-content" catchtap="preventBubble">
+      <view class="writing-modal-header">
+        <text class="writing-modal-title">内观写作</text>
+        <view class="writing-modal-close" bindtap="closeWritingModal">×</view>
+      </view>
+      <view class="writing-modal-body">
+        <view class="writing-detail-date">{{currentWriting.createTime}}</view>
+        <scroll-view class="writing-detail-content-scroll" scroll-y="true">
+          <view class="writing-detail-content">{{currentWriting.content}}</view>
+        </scroll-view>
+      </view>
+      <view class="writing-modal-footer">
+        <view class="writing-stats">
+          <view class="stat-item-modal">
+            <text class="stat-label-modal">内观写作字数</text>
+            <text class="stat-value-modal">{{currentWriting.insightCount || 0}}</text>
+          </view>
+          <view class="stat-item-modal" wx:if="{{currentWriting.originalData.likes}}">
+            <text class="stat-label-modal">喜爱</text>
+            <text class="stat-value-modal">{{currentWriting.originalData.likes || 0}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view> 

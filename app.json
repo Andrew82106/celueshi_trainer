@@ -28,7 +28,8 @@
         "pages/admin/user-management/user-management",
         "pages/admin/user-training/user-training",
         "pages/admin/training-records/training-records",
-        "pages/ranklistshanmen/ranklistshanmen"
+        "pages/ranklistshanmen/ranklistshanmen",
+        "pages/userinfoshanmen/userinfoshanmen"
     ],
     "window": {
         "navigationBarTextStyle": "black",
