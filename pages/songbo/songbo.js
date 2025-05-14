@@ -941,5 +941,14 @@ Page({
             // 使用本地缓存数据
             this.loadFromLocalStorage();
         });
+    },
+
+    /**
+     * 跳转到反馈页面
+     */
+    goToFeedback: function() {
+        wx.navigateTo({
+            url: `/pages/feedback/feedback?background=${encodeURIComponent(this.data.currentBackground)}`
+        });
     }
 }) 

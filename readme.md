@@ -232,6 +232,16 @@
 - "like": 代表用户输入的感想文本的点赞数量
 - "visible": 代表用户输入的感想文本的可见性，默认为true，用户可以修改为false来隐藏感想文本"
 
+## feedback表
+
+保存用户反馈数据，每条数据包含如下字段：
+- "_id": 代表数据库中的ID
+- "openId": 代表用户的openId
+- "Time": 代表反馈时间，格式为XXXX-XX-XX XX:XX:XX
+- "content": 代表用户输入的反馈文本
+- "feedback": 代表管理员给用户的反馈
+- "feedbackAdminOpenID": 代表反馈信息的管理员的openId
+- "feedbackTime": 代表管理员给用户的反馈时间，格式为XXXX-XX-XX XX:XX:XX"
 
 # tips
 

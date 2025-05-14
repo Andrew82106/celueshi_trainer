@@ -1,0 +1,118 @@
+<!--pages/feedback/feedback.wxml-->
+<view class="container">
+  <!-- 背景图片 -->
+  <image class="background-image" src="/assets/picture/trainingBackground.jpeg" mode="aspectFill"></image>
+  
+  <!-- 返回按钮 -->
+  <view class="back-btn" bindtap="goBack">
+    <text class="back-arrow">←</text>
+  </view>
+  
+  <view class="feedback-content">
+    <view class="page-title">
+      <text class="title-text">用户反馈</text>
+    </view>
+    
+    <!-- 选项卡导航 -->
+    <view class="tab-nav">
+      <view class="tab-item {{activeTab === 'submit' ? 'active' : ''}}" bindtap="switchTab" data-tab="submit">
+        <text>提交反馈</text>
+      </view>
+      <view class="tab-item {{activeTab === 'all' ? 'active' : ''}}" bindtap="switchTab" data-tab="all">
+        <text>所有反馈</text>
+      </view>
+      <view class="tab-item {{activeTab === 'my' ? 'active' : ''}}" bindtap="switchTab" data-tab="my">
+        <text>我的反馈</text>
+      </view>
+    </view>
+    
+    <!-- 提交反馈选项卡 -->
+    <view class="tab-content" wx:if="{{activeTab === 'submit'}}">
+      <view class="feedback-form">
+        <view class="form-item">
+          <textarea class="feedback-textarea" placeholder="请输入您的反馈或建议..." value="{{feedbackContent}}" bindinput="onContentInput" maxlength="500"></textarea>
+          <view class="word-count">{{contentLength}}/500</view>
+        </view>
+        
+        <view class="form-item">
+          <button class="submit-btn" bindtap="submitFeedback">提交反馈</button>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 我的反馈历史选项卡 -->
+    <view class="tab-content" wx:if="{{activeTab === 'my'}}">
+      <view class="history-section">
+        <view class="history-list" wx:if="{{feedbackHistory.length > 0}}">
+          <view class="history-item" wx:for="{{feedbackHistory}}" wx:key="index">
+            <view class="feedback-time">{{item.Time}}</view>
+            <view class="feedback-content">{{item.content}}</view>
+            <view class="admin-reply" wx:if="{{item.feedback}}">
+              <view class="reply-title">官方回复：</view>
+              <view class="reply-content">{{item.feedback}}</view>
+              <view class="reply-time">{{item.feedbackTime}}</view>
+            </view>
+          </view>
+        </view>
+        <view class="empty-tip" wx:else>
+          <text>您还没有提交过反馈</text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 所有用户反馈选项卡 -->
+    <view class="tab-content" wx:if="{{activeTab === 'all'}}">
+      <view class="history-section">
+        <view class="history-list" wx:if="{{allFeedbacks.length > 0}}">
+          <view class="history-item" wx:for="{{allFeedbacks}}" wx:key="index">
+            <view class="feedback-header">
+              <view class="feedback-time">{{item.Time}}</view>
+              <view class="feedback-user" wx:if="{{item.nickName}}">{{item.nickName}}</view>
+              <view class="feedback-user" wx:else>匿名用户</view>
+            </view>
+            <view class="feedback-content">{{item.content}}</view>
+            <view class="admin-reply" wx:if="{{item.feedback}}">
+              <view class="reply-title">官方回复：</view>
+              <view class="reply-content">{{item.feedback}}</view>
+              <view class="reply-time">{{item.feedbackTime}}</view>
+            </view>
+            <!-- 管理员回复按钮 -->
+            <view class="reply-btn-container" wx:if="{{isAdmin}}">
+              <button class="reply-btn" bindtap="showReplyModal" data-feedback="{{item}}">{{item.feedback ? '修改回复' : '回复'}}</button>
+            </view>
+          </view>
+        </view>
+        <view class="empty-tip" wx:else>
+          <text>暂无反馈记录</text>
+        </view>
+        
+        <!-- 加载更多按钮 -->
+        <view class="load-more" wx:if="{{allFeedbacks.length > 0 && hasMoreFeedbacks}}">
+          <button class="load-more-btn" bindtap="loadMoreFeedbacks">加载更多</button>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 回复模态框 -->
+<view class="reply-modal" wx:if="{{showReplyModal}}">
+  <view class="reply-modal-mask" bindtap="hideReplyModal"></view>
+  <view class="reply-modal-content">
+    <view class="reply-modal-header">
+      <text>{{currentFeedback.feedback ? '修改回复' : '回复反馈'}}</text>
+    </view>
+    <view class="reply-modal-body">
+      <view class="original-feedback">
+        <text class="original-label">原反馈：</text>
+        <text class="original-content">{{currentFeedback.content}}</text>
+      </view>
+      <textarea class="reply-textarea" placeholder="请输入回复内容..." value="{{replyContent}}" bindinput="onReplyInput" maxlength="500"></textarea>
+      <view class="reply-word-count">{{replyLength}}/500</view>
+    </view>
+    <view class="reply-modal-footer">
+      <button class="cancel-btn" bindtap="hideReplyModal">取消</button>
+      <button class="confirm-btn" bindtap="submitReply">提交回复</button>
+    </view>
+  </view>
+</view> 

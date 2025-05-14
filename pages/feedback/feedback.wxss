@@ -1,0 +1,399 @@
+/* pages/feedback/feedback.wxss */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+  position: relative;
+  padding: 30rpx;
+  box-sizing: border-box;
+  overflow: hidden;
+  width: 100%;
+}
+
+/* 背景图片样式 */
+.background-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  filter: brightness(0.6) grayscale(0.4);
+}
+
+/* 返回按钮样式 */
+.back-btn {
+  position: absolute;
+  top: 80rpx;
+  left: 30rpx;
+  width: 80rpx;
+  height: 80rpx;
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.back-arrow {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #f0e6d2;
+  line-height: 1;
+}
+
+.feedback-content {
+  width: 100%;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 60rpx;
+  box-sizing: border-box;
+  padding: 0 20rpx;
+}
+
+.page-title {
+  margin: 40rpx 0;
+  text-align: center;
+}
+
+.title-text {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #f0e6d2;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+/* 选项卡导航样式 */
+.tab-nav {
+  display: flex;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 12rpx;
+  margin-bottom: 30rpx;
+}
+
+.tab-item {
+  flex: 1;
+  text-align: center;
+  padding: 20rpx 0;
+  color: #f0e6d2;
+  font-size: 30rpx;
+  position: relative;
+  transition: all 0.3s;
+}
+
+.tab-item.active {
+  color: #fff;
+  font-weight: bold;
+}
+
+.tab-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 25%;
+  width: 50%;
+  height: 6rpx;
+  background-color: #9F8053;
+  border-radius: 3rpx;
+}
+
+/* 选项卡内容样式 */
+.tab-content {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.feedback-form {
+  width: 100%;
+  padding: 30rpx;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 16rpx;
+  margin-bottom: 40rpx;
+  box-sizing: border-box;
+}
+
+.form-item {
+  margin-bottom: 30rpx;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.feedback-textarea {
+  width: 100%;
+  height: 300rpx;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 12rpx;
+  padding: 20rpx;
+  box-sizing: border-box;
+  font-size: 28rpx;
+  color: #333;
+}
+
+.word-count {
+  text-align: right;
+  font-size: 24rpx;
+  color: #f0e6d2;
+  margin-top: 10rpx;
+}
+
+.submit-btn {
+  background-color: #9F8053;
+  color: #fff;
+  border: none;
+  border-radius: 12rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.submit-btn::after {
+  border: none;
+}
+
+.history-section {
+  width: 100%;
+}
+
+.section-title {
+  margin-bottom: 20rpx;
+}
+
+.section-text {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #f0e6d2;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.history-list {
+  width: 100%;
+}
+
+.history-item {
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+}
+
+.feedback-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10rpx;
+}
+
+.feedback-time {
+  font-size: 24rpx;
+  color: #f0e6d2;
+  margin-bottom: 10rpx;
+}
+
+.feedback-user {
+  font-size: 26rpx;
+  color: #d4af37;
+  font-weight: bold;
+}
+
+.feedback-content {
+  font-size: 28rpx;
+  color: #fff;
+  line-height: 1.6;
+  margin-bottom: 20rpx;
+  word-break: break-all;
+}
+
+.admin-reply {
+  margin-top: 20rpx;
+  padding: 20rpx;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 12rpx;
+}
+
+.reply-title {
+  font-size: 26rpx;
+  color: #f0e6d2;
+  font-weight: bold;
+  margin-bottom: 10rpx;
+}
+
+.reply-content {
+  font-size: 28rpx;
+  color: #f0e6d2;
+  line-height: 1.6;
+  word-break: break-all;
+}
+
+.reply-time {
+  font-size: 24rpx;
+  color: #ddd;
+  margin-top: 10rpx;
+  text-align: right;
+}
+
+/* 加载更多按钮样式 */
+.load-more {
+  display: flex;
+  justify-content: center;
+  margin: 20rpx 0 40rpx;
+}
+
+.load-more-btn {
+  background-color: rgba(0, 0, 0, 0.3);
+  color: #f0e6d2;
+  border: 1px solid #f0e6d2;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  padding: 10rpx 30rpx;
+}
+
+.load-more-btn::after {
+  border: none;
+}
+
+/* 空提示样式 */
+.empty-tip {
+  text-align: center;
+  color: #f0e6d2;
+  font-size: 28rpx;
+  padding: 40rpx 0;
+}
+
+.reply-btn-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20rpx;
+}
+
+.reply-btn {
+  background-color: #9F8053;
+  color: #fff;
+  font-size: 24rpx;
+  padding: 8rpx 20rpx;
+  border-radius: 8rpx;
+  line-height: 1.5;
+  width: auto;
+  min-width: 120rpx;
+}
+
+.reply-btn::after {
+  border: none;
+}
+
+/* 回复模态框样式 */
+.reply-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reply-modal-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.reply-modal-content {
+  position: relative;
+  width: 85%;
+  background-color: #222222;
+  border-radius: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.3);
+  z-index: 1001;
+}
+
+.reply-modal-header {
+  padding: 30rpx;
+  text-align: center;
+  border-bottom: 1px solid #333;
+}
+
+.reply-modal-header text {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #f0e6d2;
+}
+
+.reply-modal-body {
+  padding: 30rpx;
+}
+
+.original-feedback {
+  margin-bottom: 20rpx;
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 20rpx;
+  border-radius: 8rpx;
+}
+
+.original-label {
+  font-size: 26rpx;
+  color: #f0e6d2;
+  font-weight: bold;
+}
+
+.original-content {
+  font-size: 26rpx;
+  color: #ddd;
+  word-break: break-all;
+  display: block;
+  margin-top: 10rpx;
+}
+
+.reply-textarea {
+  width: 100%;
+  height: 240rpx;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 8rpx;
+  padding: 20rpx;
+  box-sizing: border-box;
+  font-size: 28rpx;
+  color: #fff;
+}
+
+.reply-word-count {
+  text-align: right;
+  font-size: 24rpx;
+  color: #ddd;
+  margin-top: 10rpx;
+}
+
+.reply-modal-footer {
+  display: flex;
+  padding: 20rpx 30rpx 30rpx;
+  border-top: 1px solid #333;
+}
+
+.cancel-btn, .confirm-btn {
+  flex: 1;
+  margin: 0 10rpx;
+  font-size: 28rpx;
+  border-radius: 8rpx;
+}
+
+.cancel-btn {
+  background-color: #333;
+  color: #ddd;
+}
+
+.confirm-btn {
+  background-color: #9F8053;
+  color: #fff;
+}
+
+.cancel-btn::after, .confirm-btn::after {
+  border: none;
+} 

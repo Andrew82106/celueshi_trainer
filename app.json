@@ -11,7 +11,8 @@
         "pages/introduction/introduction",
         "pages/muyu/muyu",
         "pages/songbo/songbo",
-        "pages/meditation-writing/meditation-writing"
+        "pages/meditation-writing/meditation-writing",
+        "pages/feedback/feedback"
     ],
     "subPackages": [
         {

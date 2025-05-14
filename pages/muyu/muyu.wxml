@@ -51,6 +51,11 @@
     <image src="/assets/picture/randombackground.png" mode="aspectFit" class="random-bg-icon"></image>
   </view>
   
+  <!-- 用户反馈入口 -->
+  <view class="feedback-entry" bindtap="goToFeedback">
+    <text class="feedback-text">反馈</text>
+  </view>
+  
   <!-- 设置模态框 -->
   <view class="modal" wx:if="{{showModal}}">
     <view class="modal-content">

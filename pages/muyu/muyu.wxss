@@ -264,4 +264,29 @@
   color: #d4af37; /* 棕金色 */
   font-weight: 500;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* 用户反馈入口样式 */
+.feedback-entry {
+  position: absolute;
+  left: 30rpx;
+  bottom: 30rpx;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.feedback-text {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #f0e6d2; /* 浅金色文字，与其他文字保持一致 */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6); /* 文字阴影效果 */
+  font-family: "华文行楷", "楷体", cursive; /* 艺术字体 */
+  letter-spacing: 2rpx; /* 字间距 */
+  transition: all 0.3s ease; /* 过渡效果 */
+}
+
+.feedback-text:hover {
+  transform: scale(1.1) rotate(-5deg); /* 悬停放大效果 */
 } 
