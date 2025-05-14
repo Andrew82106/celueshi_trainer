@@ -45,8 +45,8 @@ Page({
             today: today
         });
         
-        // 从数据库加载木鱼训练数据
-        this.loadTrainingDataFromDB();
+        // 直接调用刷新按钮绑定的函数获取今日记录
+        this.loadTodayRecordDirectly();
         
         // 获取当前在线用户数量
         this.getOnlineUserCount();
@@ -76,7 +76,6 @@ Page({
      * 从数据库加载训练数据
      */
     loadTrainingDataFromDB() {
-        // 获取openId，如果没有登录则使用本地缓存
         const openId = app.globalData.userInfo.openId;
         if (!openId) {
             console.log("未登录或openId不存在，使用本地缓存");
@@ -87,103 +86,80 @@ Page({
         const today = this.data.today;
         const db = app.globalData.db;
         
-        // 查询数据库获取所有训练记录
+        // 直接按日期查询今日记录
+        db.collection("trainlog").where({
+            openId: openId,
+            date: today
+        }).get().then(res => {
+            console.log("按日期直接查询今日记录结果:", res);
+            
+            let todayCount = 0;
+            
+            if (res.data && res.data.length > 0) {
+                const todayRecord = res.data[0];
+                todayCount = todayRecord.muyuCounts || 0;
+                console.log("今日木鱼记录:", todayCount);
+            } else {
+                console.log("没有找到今日记录，使用默认值0");
+            }
+            
+            // 更新页面今日计数
+            this.setData({
+                count: todayCount
+            });
+            
+            // 查询所有记录以计算总计数
+            this.calculateTotalCount();
+            
+        }).catch(err => {
+            console.error("获取今日训练记录失败:", err);
+            // 出错时使用本地缓存数据
+            this.loadFromLocalStorage();
+        });
+    },
+    
+    /**
+     * 计算总计数
+     */
+    calculateTotalCount() {
+        const openId = app.globalData.userInfo.openId;
+        const db = app.globalData.db;
+        
         db.collection("trainlog").where({
             openId: openId
         }).get().then(res => {
-            console.log("获取训练记录成功:", res);
+            let totalCount = 0;
             
             if (res.data && res.data.length > 0) {
-                // 计算总计数和今日计数
-                let totalCount = 0;
-                let todayCount = 0;
-                
                 // 遍历所有训练记录
                 res.data.forEach(record => {
                     // 累计总敲击次数
                     totalCount += record.muyuCounts || 0;
-                    
-                    // 如果是今天的记录，设置今日计数
-                    if (record.date === today) {
-                        todayCount = record.muyuCounts || 0;
-                        
-                        // 比较远端数据和本地缓存数据，取最大值
-                        const localRecords = wx.getStorageSync('muyuRecords') || {};
-                        const localTodayCount = localRecords[today] || 0;
-                        
-                        if (localTodayCount > todayCount) {
-                            // 本地数据大于远端数据，更新远端数据
-                            console.log("本地数据大于远端数据，更新远端数据");
-                            todayCount = localTodayCount;
-                            
-                            // 更新远端数据库
-                            db.collection("trainlog").where({
-                                openId: openId,
-                                date: today
-                            }).update({
-                                data: {
-                                    muyuCounts: todayCount
-                                }
-                            }).then(updateRes => {
-                                console.log("远端数据更新成功:", updateRes);
-                            }).catch(updateErr => {
-                                console.error("远端数据更新失败:", updateErr);
-                            });
-                        }
-                    }
                 });
-                
-                // 更新页面数据
-                this.setData({
-                    count: todayCount,
-                    totalCount: totalCount
-                });
-                
-                // 同时更新全局数据和本地缓存，保持一致
-                this.updateGlobalAndLocalData(todayCount, totalCount);
-            } else {
-                console.log("没有找到训练记录，使用默认值");
-                
-                // 检查本地是否有今日记录
-                const localRecords = wx.getStorageSync('muyuRecords') || {};
-                const localTodayCount = localRecords[today] || 0;
-                
-                if (localTodayCount > 0) {
-                    // 本地有今日记录，但远端没有，创建远端记录
-                    console.log("本地有今日记录，但远端没有，创建远端记录");
-                    db.collection("trainlog").add({
-                        data: {
-                            openId: openId,
-                            date: today,
-                            muyuCounts: localTodayCount,
-                            muyuSeconds: 0
-                        }
-                    }).then(addRes => {
-                        console.log("创建远端记录成功:", addRes);
-                    }).catch(addErr => {
-                        console.error("创建远端记录失败:", addErr);
-                    });
-                    
-                    // 设置页面显示
-                    this.setData({
-                        count: localTodayCount,
-                        totalCount: localTodayCount
-                    });
-                } else {
-                    // 本地和远端都没有记录
-                    this.setData({
-                        count: 0,
-                        totalCount: 0
-                    });
-                }
-                
-                // 同时更新全局数据和本地缓存，保持一致
-                this.updateGlobalAndLocalData(this.data.count, this.data.totalCount);
             }
+            
+            // 更新页面总计数
+            this.setData({
+                totalCount: totalCount
+            });
+            
+            // 更新全局数据和本地缓存
+            this.updateGlobalAndLocalData(this.data.count, totalCount);
+            
         }).catch(err => {
-            console.error("获取训练记录失败:", err);
-            // 出错时使用本地缓存数据
-            this.loadFromLocalStorage();
+            console.error("获取所有训练记录失败:", err);
+            // 尝试从本地缓存获取总计数
+            const muyuRecords = wx.getStorageSync('muyuRecords') || {};
+            let totalCount = 0;
+            for (const date in muyuRecords) {
+                totalCount += muyuRecords[date];
+            }
+            
+            this.setData({
+                totalCount: totalCount
+            });
+            
+            this.updateGlobalAndLocalData(this.data.count, totalCount);
         });
     },
     
@@ -387,36 +363,23 @@ Page({
             date: today
         }).get().then(res => {
             if (res.data.length > 0) {
-                // 有今日的训练记录，对比远端和本地数据，取最大值
-                console.log("in uploadTrainingData 有今日的训练记录，比较远端和本地数据");
-                const remoteCount = res.data[0].muyuCounts || 0;
+                // 有今日的训练记录，直接更新云端数据为本地数据
+                console.log("in uploadTrainingData 有今日的训练记录，直接更新云端数据");
                 const localCount = this.data.count;
-                
-                // 取本地和远端的最大值
-                const finalCount = Math.max(remoteCount, localCount);
-                
-                // 更新本地显示
-                if (finalCount > localCount) {
-                    this.setData({
-                        count: finalCount
-                    });
-                    // 同步更新本地存储
-                    this.saveCountToStorage(finalCount);
-                }
                 
                 app.globalData.db.collection("trainlog").where({
                     openId: app.globalData.userInfo.openId,
                     date: today
                 }).update({
                     data: {
-                        muyuCounts: finalCount,
+                        muyuCounts: localCount,
                         muyuSeconds: _.inc(seconds) // 累加训练秒数
                     }
                 }).then(res => {
                     console.log("更新训练记录成功:", res);
                     
                     // 更新userinfo表中的加速字段
-                    this.updateUserInfoAcceleratedFields(finalCount, seconds);
+                    this.updateUserInfoAcceleratedFields(localCount, seconds);
                     
                     // 更新后重新从数据库获取最新数据
                     this.loadTrainingDataFromDB();
@@ -493,7 +456,7 @@ Page({
         
         // 木鱼音效路径，后续需要添加实际的音效文件
         // TODO: 添加木鱼音效文件到 assets/vedio/muyu.mp3
-        innerAudioContext.src = '/packageZenAssets/packageZenAssets/packageZenAssets/assets/audio/muyu.wav';
+        innerAudioContext.src = '/packageZenAssets/assets/audio/muyu.wav';
         
         innerAudioContext.onError((res) => {
             console.log('音频播放失败：', res);
@@ -621,8 +584,8 @@ Page({
      * 生命周期函数--监听页面显示
      */
     onShow() {
-        // 每次显示页面时，从数据库重新加载最新数据
-        this.loadTrainingDataFromDB();
+        // 每次显示页面时，直接调用刷新按钮绑定的函数获取今日记录
+        this.loadTodayRecordDirectly();
         
         // 确保页面恢复时是初始状态（只有开始训练按钮）
         this.setData({
@@ -719,7 +682,18 @@ Page({
      * 页面相关事件处理函数--监听用户下拉动作
      */
     onPullDownRefresh() {
-
+        // 从云端重新获取最新数据
+        this.loadTrainingDataFromDB();
+        
+        // 显示加载提示
+        wx.showToast({
+            title: '刷新成功',
+            icon: 'success',
+            duration: 1000
+        });
+        
+        // 停止下拉刷新动画
+        wx.stopPullDownRefresh();
     },
 
     /**
@@ -922,6 +896,51 @@ Page({
             });
         }).catch(err => {
             console.error('[在线状态] 获取在线用户数量失败:', err);
+        });
+    },
+
+    /**
+     * 直接查询今日记录
+     */
+    loadTodayRecordDirectly() {
+        const openId = app.globalData.userInfo.openId;
+        if (!openId) {
+            console.log("未登录或openId不存在");
+            return;
+        }
+        
+        const today = this.data.today;
+        const db = app.globalData.db;
+        
+        // 直接按日期查询今日记录
+        db.collection("trainlog").where({
+            openId: openId,
+            date: today
+        }).get().then(res => {
+            console.log("按日期直接查询今日记录结果:", res);
+            
+            let todayCount = 0;
+            
+            if (res.data && res.data.length > 0) {
+                const todayRecord = res.data[0];
+                todayCount = todayRecord.muyuCounts || 0;
+                console.log("今日木鱼记录:", todayCount);
+            } else {
+                console.log("没有找到今日记录");
+            }
+            
+            // 更新页面数据
+            this.setData({
+                count: todayCount
+            });
+            
+            // 计算总计数
+            this.calculateTotalCount();
+            
+        }).catch(err => {
+            console.error("查询今日记录失败:", err);
+            // 使用本地缓存数据
+            this.loadFromLocalStorage();
         });
     }
 }) 

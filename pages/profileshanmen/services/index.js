@@ -1,5 +1,5 @@
 const app = getApp();
-const { calculateStreakDays, calculateUserLevel, getTodayDateString } = require('../utils/index');
+const { calculateStreakDays, calculateUserLevel, getTodayDateString, isUserOnline } = require('../utils/index');
 
 /**
  * 加载统计数据
@@ -590,17 +590,21 @@ function processUserRankingData(usersMap, todayTrainMap, currentUserOpenId, onli
         }
     }
     
-    // 按今日时长排序（降序），若今日时长相同则按总时长排序
+    // 添加排序前的调试日志
+    console.log('[排序调试] 排序前的排行榜数据:');
+    rankingData.forEach((item, index) => {
+        console.log(`[排序调试] 用户${index+1}: ${item.nickName}, 时长: ${item.todayMinutes}分钟`);
+    });
+    
+    // 只按今日时长排序（降序）
     rankingData.sort((a, b) => {
-        if (b.todayMinutes !== a.todayMinutes) {
-            return b.todayMinutes - a.todayMinutes;
-        }
-        // 如果今日时长相同，按今日敲击次数排序
-        if (b.todayCount !== a.todayCount) {
-            return b.todayCount - a.todayCount;
-        }
-        // 如果今日时长和敲击次数都相同，按总时长排序
-        return b.totalMinutes - a.totalMinutes;
+        return b.todayMinutes - a.todayMinutes;
+    });
+    
+    // 添加排序后的调试日志
+    console.log('[排序调试] 排序后的排行榜数据:');
+    rankingData.forEach((item, index) => {
+        console.log(`[排序调试] 第${index+1}名: ${item.nickName}, 时长: ${item.todayMinutes}分钟`);
     });
     
     return rankingData;
@@ -615,9 +619,15 @@ function getAllUserOnlineStatus(db) {
         const batchSize = 100;
         let lastId = null;
         let allData = [];
+        let fetchCount = 0;
+        
+        console.log("[在线状态] 开始获取所有用户在线状态数据");
         
         // 递归函数，用于分批获取数据
         function fetchBatch() {
+            fetchCount++;
+            console.log(`[在线状态] 正在获取第${fetchCount}批在线状态数据`);
+            
             let query = db.collection('userOnlineStatus').limit(batchSize);
             
             // 如果有上一批次的最后一个ID，则从该ID之后开始查询
@@ -631,6 +641,8 @@ function getAllUserOnlineStatus(db) {
                 const data = res.data;
                 
                 if (data && data.length > 0) {
+                    console.log(`[在线状态] 第${fetchCount}批获取到${data.length}条记录`);
+                    
                     // 合并数据
                     allData = allData.concat(data);
                     
@@ -638,18 +650,27 @@ function getAllUserOnlineStatus(db) {
                     if (data.length === batchSize) {
                         // 记录最后一个ID，继续获取下一批次
                         lastId = data[data.length - 1]._id;
+                        console.log(`[在线状态] 数据可能还有更多，将继续获取下一批，lastId=${lastId}`);
                         fetchBatch();
                     } else {
                         // 数据获取完毕
+                        console.log(`[在线状态] 所有在线状态数据获取完成，共${allData.length}条记录`);
                         resolve(allData);
                     }
                 } else {
-                    // 没有数据
+                    // 没有数据或者没有更多数据
+                    console.log(`[在线状态] 没有更多数据，在线状态获取完成，共${allData.length}条记录`);
                     resolve(allData);
                 }
             }).catch(err => {
-                console.error('获取用户在线状态数据失败:', err);
-                reject(err);
+                console.error(`[在线状态] 获取第${fetchCount}批用户在线状态数据失败:`, err);
+                // 即使出错，也返回已获取的数据，而不是完全失败
+                if (allData.length > 0) {
+                    console.log(`[在线状态] 虽然获取出错，但返回已获取的${allData.length}条记录`);
+                    resolve(allData);
+                } else {
+                    reject(err);
+                }
             });
         }
         
@@ -773,6 +794,9 @@ export async function loadRankingDataByDateRange(db, startDate, endDate) {
         console.log(`加载[${startDate}~${endDate}]排名数据 - 训练记录: 获取到${trainData.length}条记录`);
         console.log(`加载[${startDate}~${endDate}]排名数据 - 在线状态: 获取到${onlineStatusData.length}条记录`);
         
+        // 获取当前用户的openId
+        const currentUserOpenId = app.globalData.userInfo && app.globalData.userInfo.openId;
+        
         // 将用户数据转换为Map，以openId为键
         const usersMap = new Map();
         if (usersData && usersData.length > 0) {
@@ -788,39 +812,40 @@ export async function loadRankingDataByDateRange(db, startDate, endDate) {
         
         // 将在线状态数据转换为Map，以openId为键
         const onlineStatusMap = new Map();
+        const onlineUserIds = new Set(); // 存储所有在线用户的ID
+        
         if (onlineStatusData && onlineStatusData.length > 0) {
+            console.log(`[在线状态] 处理${onlineStatusData.length}个用户的在线状态数据`);
+            
             onlineStatusData.forEach(status => {
                 if (status.openId) {
-                    const now = Date.now();
-                    const lastActive = status.lastActiveTime;
-                    const timeDiff = now - lastActive;
-                    const timeout = app.globalData.offlineTimeout || 300000; // 默认5分钟超时
-                    let isActive = timeDiff < timeout;
+                    // 使用通用函数判断用户是否在线
+                    const isOnline = isUserOnline(status.openId, status.lastActiveTime, currentUserOpenId);
                     
-                    // 获取当前用户的openId
-                    const currentUserOpenId = app.globalData.userInfo && app.globalData.userInfo.openId;
-                    
-                    // 如果是当前用户，确保显示为在线
-                    if (currentUserOpenId && status.openId === currentUserOpenId) {
-                        console.log(`[在线状态调试] loadRankingDataByDateRange - 找到当前用户状态记录`);
-                        isActive = true;
+                    if (isOnline && status.openId === currentUserOpenId) {
+                        console.log(`[在线状态调试] loadRankingDataByDateRange - 当前用户在线`);
                     }
                     
-                    // 对于当前用户，强制设置在线状态为true
-                    const finalIsOnline = (currentUserOpenId && status.openId === currentUserOpenId) ? 
-                        true : (status.isOnline && isActive);
-                    
                     onlineStatusMap.set(status.openId, {
-                        isOnline: finalIsOnline,
+                        isOnline: isOnline,
                         lastActiveTime: status.lastActiveTime
                     });
+                    
+                    // 如果用户在线，将其ID添加到在线用户集合中
+                    if (isOnline) {
+                        onlineUserIds.add(status.openId);
+                    }
                 }
             });
+            
+            // 输出在线用户数量
+            console.log(`[在线状态] 检测到${onlineUserIds.size}个在线用户`);
         }
         
         // 生成排行榜数据
         const rankingData = [];
         
+        // 处理所有用户数据，确保包含所有在线用户
         usersMap.forEach((user, openId) => {
             // 获取用户累积数据
             const accumulateMuyu = user.accumulateMuyu || 0;
@@ -858,30 +883,72 @@ export async function loadRankingDataByDateRange(db, startDate, endDate) {
             const isCurrentUser = currentUserOpenId && openId === currentUserOpenId;
             const finalIsOnline = isCurrentUser ? true : onlineStatus.isOnline;
             
-            // 添加到排行榜
-            rankingData.push({
-                openId,
-                nickName: user.nickName || '禅修者',
-                avatarUrl: user.avatarUrl || '',
-                rangeMuyuCount: rangeData.muyuCounts,
-                rangeSongboCount: rangeData.songboCounts,
-                rangeMuyuMinutes: Math.ceil(rangeData.muyuSeconds / 60),
-                rangeSongboMinutes: Math.ceil(rangeData.songboSeconds / 60),
-                rangeCount,
-                rangeMinutes,
-                muyuTotalCount: accumulateMuyu,
-                songboTotalCount: accumulateSongbo,
-                totalCount: accumulateMuyu + accumulateSongbo,
-                totalMinutes,
-                userLevel,
-                isCurrentUser: isCurrentUser,
-                isOnline: finalIsOnline
-            });
+            // 添加到排行榜，如果用户有训练记录或者用户在线
+            if (rangeCount > 0 || rangeMinutes > 0 || finalIsOnline) {
+                rankingData.push({
+                    openId,
+                    nickName: user.nickName || '禅修者',
+                    avatarUrl: user.avatarUrl || '',
+                    rangeMuyuCount: rangeData.muyuCounts,
+                    rangeSongboCount: rangeData.songboCounts,
+                    rangeMuyuMinutes: Math.ceil(rangeData.muyuSeconds / 60),
+                    rangeSongboMinutes: Math.ceil(rangeData.songboSeconds / 60),
+                    rangeCount,
+                    rangeMinutes,
+                    muyuTotalCount: accumulateMuyu,
+                    songboTotalCount: accumulateSongbo,
+                    totalCount: accumulateMuyu + accumulateSongbo,
+                    totalMinutes,
+                    userLevel,
+                    isCurrentUser: isCurrentUser,
+                    isOnline: finalIsOnline
+                });
+            }
         });
         
-        // 按指定时间范围内的时长排序（降序）
+        // 查找在线但没有用户信息的用户（可能是新用户）
+        onlineUserIds.forEach(openId => {
+            if (!usersMap.has(openId)) {
+                // 这是一个在线但没有用户信息的用户
+                const onlineStatus = onlineStatusMap.get(openId) || { isOnline: true };
+                
+                // 添加到排行榜
+                rankingData.push({
+                    openId,
+                    nickName: '禅修者',
+                    avatarUrl: '',
+                    rangeMuyuCount: 0,
+                    rangeSongboCount: 0,
+                    rangeMuyuMinutes: 0,
+                    rangeSongboMinutes: 0,
+                    rangeCount: 0,
+                    rangeMinutes: 0,
+                    muyuTotalCount: 0,
+                    songboTotalCount: 0,
+                    totalCount: 0,
+                    totalMinutes: 0,
+                    userLevel: '初入山门',
+                    isCurrentUser: false,
+                    isOnline: true
+                });
+            }
+        });
+        
+        // 添加排序前的调试日志
+        console.log(`[排序调试] 日期范围[${startDate}~${endDate}]排序前的排行榜数据:`);
+        rankingData.forEach((item, index) => {
+            console.log(`[排序调试] 用户${index+1}: ${item.nickName}, 时长: ${item.rangeMinutes}分钟, 在线状态: ${item.isOnline ? '在线' : '离线'}`);
+        });
+        
+        // 只按今日时长排序（降序）
         rankingData.sort((a, b) => {
             return b.rangeMinutes - a.rangeMinutes;
+        });
+        
+        // 添加排序后的调试日志
+        console.log(`[排序调试] 日期范围[${startDate}~${endDate}]排序后的排行榜数据:`);
+        rankingData.forEach((item, index) => {
+            console.log(`[排序调试] 第${index+1}名: ${item.nickName}, 时长: ${item.rangeMinutes}分钟, 在线状态: ${item.isOnline ? '在线' : '离线'}`);
         });
         
         return rankingData;

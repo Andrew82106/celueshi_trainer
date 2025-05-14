@@ -269,9 +269,17 @@ Page({
         // 获取数据库实例
         const db = app.globalData.db;
         
-        // 只加载日榜数据
-        loadRankingDataByDateRange(db, todayDate, todayDate).then((dayData) => {
+        // 使用Promise.all同时获取日榜数据和在线用户数量
+        Promise.all([
+            // 日榜 - 今日数据
+            loadRankingDataByDateRange(db, todayDate, todayDate),
+            // 获取所有在线用户数量 - 使用与木鱼/颂钵页面相同的查询
+            db.collection('userOnlineStatus').where({
+                lastActiveTime: db.command.gt(Date.now() - 60000)
+            }).count()
+        ]).then(([dayData, onlineCountResult]) => {
             console.log(`[排序调试] 获取日榜数据成功: ${dayData.length}条`);
+            console.log(`[在线状态] 当前在线用户数量: ${onlineCountResult.total}`);
             
             // 转换日榜数据格式
             const dayRankingList = dayData.map(item => ({
@@ -280,37 +288,28 @@ Page({
                 todayCount: item.rangeCount
             }));
             
-            // 确保日榜按照今日时长降序排序
+            // 只按照今日时长降序排序
             dayRankingList.sort((a, b) => {
+                // 直接按训练时长排序
                 return b.todayMinutes - a.todayMinutes;
-            });
-            
-            // 过滤掉时长为0且不在线的用户
-            const filteredDayRankingList = dayRankingList.filter(user => {
-                return user.todayMinutes > 0 || user.isOnline;
-            });
-            
-            console.log(`[排序调试] 过滤后的日榜数据: ${filteredDayRankingList.length}条`);
-            
-            // 统计在线用户数量
-            let onlineCount = 0;
-            filteredDayRankingList.forEach(user => {
-                if (user.isOnline) {
-                    onlineCount++;
-                }
             });
             
             // 更新数据并设置加载状态为false
             this.setData({ 
-                dayRankingList: filteredDayRankingList,
+                dayRankingList: dayRankingList,
                 isRankingLoading: false,
-                onlineUserCount: onlineCount
+                onlineUserCount: onlineCountResult.total // 使用直接查询得到的在线用户数量
             });
         }).catch(err => {
             console.error("[排序调试] 获取排名数据失败:", err);
             // 出错时也要设置加载状态为false
             this.setData({ 
                 isRankingLoading: false 
+            });
+            
+            wx.showToast({
+                title: '加载排行榜失败',
+                icon: 'none'
             });
         });
     },
@@ -686,12 +685,36 @@ Page({
             app.updateUserOnlineStatus(app.globalData.userInfo.openId, true);
         }
         
-        // 刷新排行榜
-        this.loadRankingData();
+        // 获取数据库实例
+        const db = app.globalData.db;
         
-        wx.showToast({
-            title: '已刷新在线状态',
-            icon: 'success'
+        // 直接查询在线用户数量
+        db.collection('userOnlineStatus').where({
+            lastActiveTime: db.command.gt(Date.now() - 60000)
+        }).count().then(res => {
+            console.log('[在线状态] 当前在线用户数量:', res.total);
+            
+            this.setData({
+                onlineUserCount: res.total
+            });
+            
+            // 刷新排行榜数据
+            this.loadRankingData();
+            
+            wx.showToast({
+                title: '已刷新在线状态',
+                icon: 'success'
+            });
+        }).catch(err => {
+            console.error('[在线状态] 获取在线用户数量失败:', err);
+            
+            // 仍然刷新排行榜数据
+            this.loadRankingData();
+            
+            wx.showToast({
+                title: '已刷新在线状态',
+                icon: 'success'
+            });
         });
     },
 

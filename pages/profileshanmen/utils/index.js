@@ -135,4 +135,31 @@ export function updateUserLevel(openId, db) {
         console.error("查询用户信息失败:", err);
         throw err;
     });
+}
+
+/**
+ * 判断用户是否在线
+ * @param {string} userId - 用户ID
+ * @param {Date|number} lastActiveTime - 最后活跃时间
+ * @param {string} currentUserId - 当前登录用户ID
+ * @returns {boolean} 是否在线
+ */
+export function isUserOnline(userId, lastActiveTime, currentUserId) {
+    // 如果是当前用户，始终返回在线
+    if (userId === currentUserId) {
+        return true;
+    }
+    
+    // 如果没有最后活跃时间，返回离线
+    if (!lastActiveTime) {
+        return false;
+    }
+    
+    // 计算时间差（毫秒）
+    const now = Date.now();
+    const lastActive = typeof lastActiveTime === 'object' ? lastActiveTime.getTime() : lastActiveTime;
+    const timeDiff = now - lastActive;
+    
+    // 1分钟内活跃视为在线
+    return timeDiff < 60000;
 } 

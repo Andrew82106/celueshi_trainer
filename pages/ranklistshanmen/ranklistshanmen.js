@@ -92,7 +92,7 @@ Page({
         // 获取数据库实例
         const db = app.globalData.db;
         
-        // 使用Promise.all同时请求五种不同时间范围的数据
+        // 使用Promise.all同时请求五种不同时间范围的数据和在线用户数量
         Promise.all([
             // 日榜 - 今日数据
             loadRankingDataByDateRange(db, todayDate, todayDate),
@@ -103,9 +103,14 @@ Page({
             // 年榜 - 过去365天数据
             loadRankingDataByDateRange(db, yearStartDate, todayDate),
             // 总榜 - 使用2000年至今的所有数据
-            loadRankingDataByDateRange(db, veryEarlyDate, todayDate)
-        ]).then(([dayData, weekData, monthData, yearData, totalData]) => {
+            loadRankingDataByDateRange(db, veryEarlyDate, todayDate),
+            // 获取所有在线用户数量 - 使用与木鱼/颂钵页面相同的查询
+            db.collection('userOnlineStatus').where({
+                lastActiveTime: db.command.gt(Date.now() - 60000)
+            }).count()
+        ]).then(([dayData, weekData, monthData, yearData, totalData, onlineCountResult]) => {
             console.log(`[排序调试] 获取排名数据成功 - 日榜: ${dayData.length}条, 周榜: ${weekData.length}条, 月榜: ${monthData.length}条, 年榜: ${yearData.length}条, 总榜: ${totalData.length}条`);
+            console.log(`[在线状态] 当前在线用户数量: ${onlineCountResult.total}`);
             
             // 转换日榜数据格式
             const dayRankingList = dayData.map(item => ({
@@ -149,31 +154,34 @@ Page({
             switch(this.data.currentRankingType) {
                 case 'day':
                     currentList = [...dayRankingList];
+                    // 确保日榜按时长降序排序
+                    currentList.sort((a, b) => b.todayMinutes - a.todayMinutes);
                     break;
                 case 'week':
                     currentList = [...weekRankingList];
+                    // 确保周榜按时长降序排序
+                    currentList.sort((a, b) => b.weekMinutes - a.weekMinutes);
                     break;
                 case 'month':
                     currentList = [...monthRankingList];
+                    // 确保月榜按时长降序排序
+                    currentList.sort((a, b) => b.monthMinutes - a.monthMinutes);
                     break;
                 case 'year':
                     currentList = [...yearRankingList];
+                    // 确保年榜按时长降序排序
+                    currentList.sort((a, b) => b.yearMinutes - a.yearMinutes);
                     break;
                 case 'total':
                     currentList = [...totalRankingList];
+                    // 确保总榜按时长降序排序
+                    currentList.sort((a, b) => b.totalMinutes - a.totalMinutes);
                     break;
                 default:
                     currentList = [...dayRankingList];
+                    // 确保默认日榜按时长降序排序
+                    currentList.sort((a, b) => b.todayMinutes - a.todayMinutes);
             }
-            
-            // 统计在线用户数量
-            let onlineCount = 0;
-            currentList.forEach(user => {
-                if (user.isOnline) {
-                    onlineCount++;
-                }
-            });
-            console.log(`[排序调试] 排行榜中有 ${onlineCount} 个在线用户`);
             
             // 更新数据并设置加载状态为false
             this.setData({ 
@@ -184,8 +192,22 @@ Page({
                 yearRankingList,
                 totalRankingList,
                 isRankingLoading: false,
-                onlineUserCount: onlineCount  // 更新在线用户数量
+                onlineUserCount: onlineCountResult.total  // 使用直接查询得到的在线用户数量
             });
+
+            // 添加调试日志，检查在线用户状态
+            console.log(`[在线状态调试] 排行榜显示${currentList.length}个用户，在线人数统计为${onlineCountResult.total}`);
+            let actualOnlineCount = 0;
+            currentList.forEach(user => {
+                if (user.isOnline) {
+                    actualOnlineCount++;
+                    console.log(`[在线状态调试] 在线用户: ${user.nickName || '禅修者'} (${user.openId})`);
+                }
+            });
+            console.log(`[在线状态调试] 排行榜中实际标记为在线的用户数: ${actualOnlineCount}`);
+            if (actualOnlineCount !== onlineCountResult.total) {
+                console.log(`[在线状态调试] 警告：在线人数统计(${onlineCountResult.total})与实际显示的在线用户数(${actualOnlineCount})不一致!`);
+            }
         }).catch(err => {
             console.error("[排序调试] 获取排名数据失败:", err);
             // 出错时也要设置加载状态为false
@@ -223,18 +245,28 @@ Page({
         switch(type) {
             case 'day':
                 rankingList = [...this.data.dayRankingList];
+                // 确保日榜按时长降序排序
+                rankingList.sort((a, b) => b.todayMinutes - a.todayMinutes);
                 break;
             case 'week':
-                rankingList = this.data.weekRankingList;
+                rankingList = [...this.data.weekRankingList];
+                // 确保周榜按时长降序排序
+                rankingList.sort((a, b) => b.weekMinutes - a.weekMinutes);
                 break;
             case 'month':
-                rankingList = this.data.monthRankingList;
+                rankingList = [...this.data.monthRankingList];
+                // 确保月榜按时长降序排序
+                rankingList.sort((a, b) => b.monthMinutes - a.monthMinutes);
                 break;
             case 'year':
-                rankingList = this.data.yearRankingList;
+                rankingList = [...this.data.yearRankingList];
+                // 确保年榜按时长降序排序
+                rankingList.sort((a, b) => b.yearMinutes - a.yearMinutes);
                 break;
             case 'total':
-                rankingList = this.data.totalRankingList;
+                rankingList = [...this.data.totalRankingList];
+                // 确保总榜按时长降序排序
+                rankingList.sort((a, b) => b.totalMinutes - a.totalMinutes);
                 break;
         }
         
@@ -256,12 +288,36 @@ Page({
             app.updateUserOnlineStatus(app.globalData.userInfo.openId, true);
         }
         
-        // 刷新排行榜
-        this.loadRankingData();
+        // 获取数据库实例
+        const db = app.globalData.db;
         
-        wx.showToast({
-            title: '已刷新在线状态',
-            icon: 'success'
+        // 直接查询在线用户数量
+        db.collection('userOnlineStatus').where({
+            lastActiveTime: db.command.gt(Date.now() - 60000)
+        }).count().then(res => {
+            console.log('[在线状态] 当前在线用户数量:', res.total);
+            
+            this.setData({
+                onlineUserCount: res.total
+            });
+            
+            // 刷新排行榜数据
+            this.loadRankingData();
+            
+            wx.showToast({
+                title: '已刷新在线状态',
+                icon: 'success'
+            });
+        }).catch(err => {
+            console.error('[在线状态] 获取在线用户数量失败:', err);
+            
+            // 仍然刷新排行榜数据
+            this.loadRankingData();
+            
+            wx.showToast({
+                title: '已刷新在线状态',
+                icon: 'success'
+            });
         });
     },
 

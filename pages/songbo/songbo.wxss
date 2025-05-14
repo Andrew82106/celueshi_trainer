@@ -40,12 +40,22 @@
   margin-right: 40rpx;  /* 按钮之间的间距 */
   padding: 10rpx 20rpx;
   /* 移除背景色 */
+  min-width: 110rpx; /* 设置最小宽度 */
 }
 
 .settings-btn text {
   color: #e9d8f4; /* 浅紫色文字 */
   font-weight: bold;
   text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.8); /* 增强文字阴影 */
+}
+
+.btn-text {
+  white-space: nowrap; /* 防止文字换行 */
+  overflow: hidden; /* 超出部分隐藏 */
+  text-overflow: ellipsis; /* 文字超出显示省略号 */
+  font-size: 26rpx; /* 适当调整字体大小 */
+  text-align: center;
+  width: 100%; /* 确保文本占满整个空间 */
 }
 
 .settings-icon {

@@ -7,24 +7,24 @@
   <view class="settings-container">
     <view class="settings-btn" bindtap="toggleTraining">
       <image src="/assets/picture/songbo.png" mode="aspectFit" class="settings-icon"></image>
-      <text>{{isTraining ? '结束训练' : '开始训练'}}</text>
+      <text class="btn-text">{{isTraining ? '结束训练' : '开始训练'}}</text>
     </view>
 
     <view class="settings-btn" bindtap="{{isAutoTapping ? 'stopAutoTap' : 'showSettingsModal'}}" wx:if="{{isTraining}}">
       <image src="/assets/picture/auto.png" mode="aspectFit" class="settings-icon"></image>
-      <text>{{isAutoTapping ? '停止自动' : '自动敲击'}}</text>
+      <text class="btn-text">{{isAutoTapping ? '停止自动' : '自动敲击'}}</text>
     </view>
     
     <!-- 静音按钮 -->
     <view class="settings-btn" bindtap="toggleMute">
       <image src="/assets/picture/voice.png" mode="aspectFit" class="settings-icon {{isMuted ? 'muted-icon' : ''}}"></image>
-      <text>{{isMuted ? '已静音' : '声音'}}</text>
+      <text class="btn-text">{{isMuted ? '已静音' : '声音'}}</text>
     </view>
     
     <!-- 上传离线训练按钮 -->
     <view class="settings-btn" bindtap="showUploadModal">
       <image src="/assets/picture/upload.png" mode="aspectFit" class="settings-icon"></image>
-      <text>上传记录</text>
+      <text class="btn-text">上传记录</text>
     </view>
   </view>
   
