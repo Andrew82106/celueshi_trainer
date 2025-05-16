@@ -28,8 +28,7 @@
                 "pages/admin/user-management/user-management",
                 "pages/admin/user-training/user-training",
                 "pages/admin/training-records/training-records"
-            ],
-            "entry": "index.js"
+            ]
         },
         {
             "root": "packageRecords",
@@ -39,8 +38,7 @@
                 "pages/audio-records/audio-records",
                 "pages/translate-records/translate-records",
                 "pages/translate-train-records/translate-train-records"
-            ],
-            "entry": "index.js"
+            ]
         },
         {
             "root": "packageZen",
@@ -48,23 +46,19 @@
                 "pages/meditation-writing/edit/edit",
                 "pages/meditation-writing/records/records",
                 "pages/meditation-writing/community/community"
-            ],
-            "entry": "index.js"
+            ]
         },
         {
             "root": "packageZenAssets",
-            "pages": [],
-            "entry": "index.js"
+            "pages": []
         },
         {
             "root": "packageTrainAssets",
-            "pages": [],
-            "entry": "index.js"
+            "pages": []
         },
         {
             "root": "packageRecordsAssets",
-            "pages": [],
-            "entry": "index.js"
+            "pages": []
         }
     ],
     "window": {

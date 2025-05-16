@@ -1,0 +1,64 @@
+<!--pages/meditation-writing/meditation-writing.wxml-->
+<view class="container">
+  <!-- 背景图片 -->
+  <image class="background-image" src="/assets/picture/trainingBackground.jpeg" mode="aspectFill"></image>
+  
+  <!-- 顶部导航区 -->
+  <view class="header">
+    <view class="page-title">
+      <text>内观写作</text>
+    </view>
+  </view>
+  
+  <!-- 功能区：最近写作和累计字数 -->
+  <view class="stats-area">
+    <!-- 最近一次写作 -->
+    <view class="recent-writing">
+      <view class="section-title">
+        <text>最近写作</text>
+      </view>
+      <view class="recent-writing-content" wx:if="{{lastWritingDate}}">
+        <view class="writing-meta">
+          <text class="writing-date">{{lastWritingDate}}</text>
+          <view class="writing-counts">
+            <text class="writing-count">内观写作: {{lastWritingCount}} 字</text>
+            <text class="writing-insight-count" wx:if="{{lastWritingInsightCount}}">感想: {{lastWritingInsightCount}} 字</text>
+          </view>
+        </view>
+        <view class="writing-preview">
+          <text space="nbsp">{{lastWritingContentPreview}}</text>
+        </view>
+      </view>
+      <view class="no-writing" wx:else>
+        <text>暂无写作记录</text>
+      </view>
+    </view>
+    
+    <!-- 累计统计 -->
+    <view class="statistics">
+      <view class="stat-item">
+        <view class="stat-value">{{totalWritingTimes}}</view>
+        <view class="stat-label">累计次数</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-value">{{totalWordCount}}</view>
+        <view class="stat-label">累计字数</view>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 操作区：按钮 -->
+  <view class="actions-area">
+    <view class="action-button primary" bindtap="startWriting">
+      <text>开始写作</text>
+    </view>
+    <view class="action-buttons-row">
+      <view class="action-button secondary" bindtap="viewMyRecords">
+        <text>我的记录</text>
+      </view>
+      <view class="action-button secondary" bindtap="viewCommunity">
+        <text>社区感想</text>
+      </view>
+    </view>
+  </view>
+</view> 

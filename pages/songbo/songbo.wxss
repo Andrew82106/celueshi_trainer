@@ -226,6 +226,27 @@
   /* 可以添加更多样式来表示静音状态 */
 }
 
+/* 屏幕常亮按钮样式 */
+.screen-on-btn {
+  padding: 6rpx 15rpx;
+  margin-right: 0;
+}
+
+.screen-on-text {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #e9d8f4; /* 浅紫色文字，与颂钵页面主题色相符 */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6); /* 增强文字阴影效果 */
+  font-family: "华文行楷", "楷体", cursive; /* 艺术字体 */
+  letter-spacing: 0rpx; /* 减小字间距 */
+}
+
+/* 激活状态样式 */
+.active-text {
+  color: #b19cd9; /* 更亮的紫色 */
+  text-shadow: 0 0 10px #b19cd9, 0 0 20px #b19cd9; /* 发光效果 */
+}
+
 /* 输入框样式 */
 .input-field {
   width: 100%;

@@ -1,0 +1,97 @@
+<!--pages/songbo/songbo.wxml-->
+<view class="container">
+  <!-- 背景图片 -->
+  <image class="background-image" src="{{currentBackground}}" mode="aspectFill"></image>
+  
+  <!-- 设置按钮组 -->
+  <view class="settings-container">
+    <view class="settings-btn" bindtap="toggleTraining">
+      <image src="/assets/picture/songbo.png" mode="aspectFit" class="settings-icon"></image>
+      <text class="btn-text">{{isTraining ? '结束训练' : '开始训练'}}</text>
+    </view>
+
+    <view class="settings-btn" bindtap="{{isAutoTapping ? 'stopAutoTap' : 'showSettingsModal'}}" wx:if="{{isTraining}}">
+      <image src="/assets/picture/auto.png" mode="aspectFit" class="settings-icon"></image>
+      <text class="btn-text">{{isAutoTapping ? '停止自动' : '自动敲击'}}</text>
+    </view>
+    
+    <!-- 静音按钮 -->
+    <view class="settings-btn" bindtap="toggleMute">
+      <image src="/assets/picture/voice.png" mode="aspectFit" class="settings-icon {{isMuted ? 'muted-icon' : ''}}"></image>
+      <text class="btn-text">{{isMuted ? '已静音' : '声音'}}</text>
+    </view>
+    
+    <!-- 上传离线训练按钮 -->
+    <view class="settings-btn" bindtap="showUploadModal">
+      <image src="/assets/picture/upload.png" mode="aspectFit" class="settings-icon"></image>
+      <text class="btn-text">上传记录</text>
+    </view>
+  </view>
+  
+  <!-- 在线用户数量 -->
+  <view class="online-users-count">
+    <text class="online-count-text">当前在线: {{onlineUserCount}}人</text>
+  </view>
+  
+  <!-- 敲击计数 -->
+  <view class="counter">
+    <text class="count-text">{{count}}</text>
+    <text class="merit-text">今日次数</text>
+    <!--<text class="total-count">总计：{{totalCount}}</text>-->
+    <text class="training-time" wx:if="{{isTraining}}">训练时长: {{trainingSeconds}}秒</text>
+  </view>
+  
+  <!-- 颂钵图片 -->
+  <view class="songbo-container" bindtap="tapSongbo">
+    <image src="cloud://shanmen-2g47tf5h9b090d06.7368-shanmen-2g47tf5h9b090d06-1349502341/songbo.png" mode="aspectFit" class="songbo-image {{isAnimating ? 'tap-animation' : ''}} {{isTraining ? '' : 'disabled-songbo'}}"></image>
+  </view>
+  
+  <!-- 随机背景按钮 -->
+  <view class="random-bg-btn" bindtap="changeRandomBackground">
+    <image src="/assets/picture/randombackground.png" mode="aspectFit" class="random-bg-icon"></image>
+  </view>
+  
+  <!-- 用户反馈入口 -->
+  <view class="feedback-entry" bindtap="goToFeedback">
+    <text class="feedback-text">反馈</text>
+  </view>
+  
+  <!-- 设置模态框 -->
+  <view class="modal" wx:if="{{showModal}}">
+    <view class="modal-content">
+      <view class="modal-header">
+        <text class="modal-title">自动敲击设置</text>
+      </view>
+      <view class="modal-body">
+        <text>每次敲击间隔时间（秒）：{{interval}}秒</text>
+        <slider min="2" max="10" step="1" value="{{interval}}" show-value="{{false}}" block-size="28" activeColor="#7D6B91" backgroundColor="#D9D9D9" bindchange="sliderChange"/>
+        <text>自动敲击时长（分钟）：{{autoTapDuration}}分钟</text>
+        <slider min="1" max="120" step="1" value="{{autoTapDuration}}" show-value="{{false}}" block-size="28" activeColor="#7D6B91" backgroundColor="#D9D9D9" bindchange="durationChange"/>
+      </view>
+      <view class="modal-footer">
+        <button class="btn cancel" bindtap="hideSettingsModal">取消</button>
+        <button class="btn confirm" bindtap="startAutoTap">确定</button>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 上传离线训练模态框 -->
+  <view class="modal" wx:if="{{showUploadModal}}">
+    <view class="modal-content">
+      <view class="modal-header">
+        <text class="modal-title">上传离线训练</text>
+      </view>
+      <view class="modal-body">
+        <text>训练时长（分钟）：</text>
+        <input type="number" class="input-field" placeholder="请输入训练时长" value="{{offlineTrainingMinutes}}" bindinput="minutesInput"/>
+        <text>单次敲击长度（秒）：</text>
+        <input type="digit" class="input-field" placeholder="请输入单次敲击长度" value="{{offlineTapDuration}}" bindinput="tapDurationInput"/>
+        <text wx:if="{{offlineTrainingMinutes > 0 && offlineTapDuration > 0}}">预计敲击次数：{{calculatedTapCount}}</text>
+      </view>
+      <view class="modal-footer">
+        <button class="btn cancel" bindtap="hideUploadModal">取消</button>
+        <button class="btn confirm" bindtap="uploadOfflineTraining">上传</button>
+      </view>
+    </view>
+  </view>
+</view> 

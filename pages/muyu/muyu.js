@@ -31,7 +31,14 @@ Page({
         
         // 在线用户数量
         onlineUserCount: 0,           // 当前在线用户数量
-        onlineCountTimer: null        // 在线用户数量刷新定时器
+        onlineCountTimer: null,       // 在线用户数量刷新定时器
+        
+        // 音频临时文件路径
+        muyuAudioPath: null,          // 木鱼音频临时文件路径
+        isAudioLoaded: false,         // 音频是否已加载完成
+        
+        // 屏幕常亮状态
+        keepScreenOn: false           // 是否保持屏幕常亮
     },
 
     /**
@@ -59,6 +66,9 @@ Page({
         this.setData({
             onlineCountTimer: onlineCountTimer
         });
+        
+        // 预加载音频文件
+        this.preloadAudio();
     },
     
     /**
@@ -208,8 +218,11 @@ Page({
      * 敲击木鱼
      */
     tapMuyu() {
+        console.log('======= 木鱼敲击函数 tapMuyu 开始执行 =======');
+        
         // 如果没有开始训练，则不允许敲击
         if (!this.data.isTraining) {
+            console.log('未开始训练，无法敲击木鱼');
             wx.showToast({
                 title: '请先点击开始训练',
                 icon: 'none',
@@ -217,6 +230,8 @@ Page({
             });
             return;
         }
+        
+        console.log('木鱼敲击有效，准备更新计数');
         
         // 更新今日计数
         const newCount = this.data.count + 1;
@@ -228,18 +243,25 @@ Page({
             isAnimating: true
         });
         
+        console.log('木鱼计数已更新 - 今日:', newCount, '总计:', newTotalCount);
+        
         // 保存计数到缓存
         this.saveCountToStorage(newCount);
         
+        console.log('准备播放木鱼音效...');
         // 播放音效
         this.playSound();
+        console.log('木鱼音效播放函数已调用');
         
         // 动画效果
         setTimeout(() => {
             this.setData({
                 isAnimating: false
             });
+            console.log('木鱼动画效果已结束');
         }, 100);
+        
+        console.log('======= 木鱼敲击函数执行结束 =======');
     },
     
     /**
@@ -448,20 +470,60 @@ Page({
      * 播放木鱼敲击音效
      */
     playSound() {
+        console.log('======= 木鱼音频函数开始执行(pages/muyu) =======');
+        
         // 如果静音，则不播放音效
-        if (this.data.isMuted) return;
+        if (this.data.isMuted) {
+            console.log('木鱼音效未播放：静音模式已开启');
+            return;
+        }
         
-        const innerAudioContext = wx.createInnerAudioContext();
-        innerAudioContext.autoplay = true;
+        try {
+            // 检查是否已加载音频
+            if (!this.data.isAudioLoaded || !this.data.muyuAudioPath) {
+                console.log('木鱼音频尚未加载完成，尝试重新加载...');
+                this.preloadAudio(); // 尝试重新加载
+                return;
+            }
+            
+            // 使用已下载的临时文件播放
+            console.log('使用预加载的音频文件:', this.data.muyuAudioPath);
+            
+            // 创建音频上下文
+            console.log('创建木鱼音频上下文...');
+            const innerAudioContext = wx.createInnerAudioContext({useWebAudioImplement: false});
+            console.log('木鱼音频上下文创建成功');
+            
+            // 设置音频源为已下载的临时文件路径
+            innerAudioContext.src = this.data.muyuAudioPath;
+            innerAudioContext.autoplay = true;
+            
+            // 添加事件监听器
+            innerAudioContext.onCanplay(() => {
+                console.log('木鱼音频已准备好播放 onCanplay');
+            });
+            
+            innerAudioContext.onPlay(() => {
+                console.log('木鱼音频开始播放 onPlay');
+            });
+            
+            innerAudioContext.onError((err) => {
+                console.error('木鱼音频播放错误:', err.errMsg);
+                console.error('木鱼音频错误码:', err.errCode);
+                
+                // 如果播放失败，尝试重新加载音频
+                this.preloadAudio();
+            });
+            
+            // 尝试播放
+            console.log('尝试播放木鱼音频...');
+            innerAudioContext.play();
+            console.log('木鱼音频 play() 方法调用完成');
+        } catch (e) {
+            console.error('木鱼音频处理出现异常:', e);
+        }
         
-        // 木鱼音效路径，后续需要添加实际的音效文件
-        // TODO: 添加木鱼音效文件到 assets/vedio/muyu.mp3
-        innerAudioContext.src = '/packageZenAssets/assets/audio/muyu.wav';
-        
-        innerAudioContext.onError((res) => {
-            console.log('音频播放失败：', res);
-            // 当音频无法播放时，不阻止其他功能正常运行
-        });
+        console.log('======= 木鱼音频函数执行结束 =======');
     },
     
     /**
@@ -675,6 +737,13 @@ Page({
         // 清除在线用户数量刷新定时器
         if (this.data.onlineCountTimer) {
             clearInterval(this.data.onlineCountTimer);
+        }
+        
+        // 关闭屏幕常亮
+        if (this.data.keepScreenOn) {
+            wx.setKeepScreenOn({
+                keepScreenOn: false
+            });
         }
     },
 
@@ -950,6 +1019,81 @@ Page({
     goToFeedback: function() {
         wx.navigateTo({
             url: `/pages/feedback/feedback?background=${encodeURIComponent(this.data.currentBackground)}`
+        });
+    },
+
+    /**
+     * 预加载音频文件
+     */
+    preloadAudio() {
+        console.log('开始预加载木鱼音频...');
+        wx.cloud.downloadFile({
+            fileID: 'cloud://shanmen-2g47tf5h9b090d06.7368-shanmen-2g47tf5h9b090d06-1349502341/audio/muyu.wav',
+            success: res => {
+                // 下载成功，保存临时文件路径
+                const tempFilePath = res.tempFilePath;
+                console.log('木鱼音频预加载成功，临时文件路径:', tempFilePath);
+                
+                this.setData({
+                    muyuAudioPath: tempFilePath,
+                    isAudioLoaded: true
+                });
+                
+                // 预创建音频上下文以备用
+                this.preCreateAudioContext();
+            },
+            fail: err => {
+                console.error('木鱼音频预加载失败:', err);
+                wx.showToast({
+                    title: '音频加载失败',
+                    icon: 'none',
+                    duration: 1500
+                });
+            }
+        });
+    },
+    
+    /**
+     * 预创建音频上下文
+     */
+    preCreateAudioContext() {
+        try {
+            console.log('预创建木鱼音频上下文...');
+            // 可以在这里预创建音频上下文，但不播放
+            // 当前微信小程序的音频API可能不支持持久化的音频上下文，所以这里暂时留空
+        } catch (e) {
+            console.error('预创建木鱼音频上下文失败:', e);
+        }
+    },
+
+    /**
+     * 切换屏幕常亮状态
+     */
+    toggleKeepScreenOn() {
+        const newState = !this.data.keepScreenOn;
+        
+        // 设置屏幕常亮状态
+        wx.setKeepScreenOn({
+            keepScreenOn: newState,
+            success: () => {
+                this.setData({
+                    keepScreenOn: newState
+                });
+                
+                wx.showToast({
+                    title: newState ? '屏幕常亮已开启' : '屏幕常亮已关闭',
+                    icon: 'none',
+                    duration: 1500
+                });
+            },
+            fail: (err) => {
+                console.error('设置屏幕常亮状态失败:', err);
+                wx.showToast({
+                    title: '设置失败，请重试',
+                    icon: 'none',
+                    duration: 1500
+                });
+            }
         });
     }
 }) 

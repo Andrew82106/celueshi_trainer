@@ -54,7 +54,13 @@
     <text class="section-title">开发记录</text>
 
     <view class="feature-item">
-    <text class="feature-title">版本0.3.6(当前)</text>
+    <text class="feature-title">版本0.3.7(当前)</text>
+      <text class="feature-desc">按照用户反馈，解决了没有音频的bug，同时增加了常亮功能，修改了用户反馈页面，修改了管理员回复功能</text>
+      <text class="feature-desc">>>Andrew 在 2025年5月16日下午15点40分 提交上传</text>
+    </view>
+
+    <view class="feature-item">
+    <text class="feature-title">版本0.3.6</text>
       <text class="feature-desc">修改了木鱼和颂钵页面次数显示的bug，同时新增了用户反馈页面</text>
       <text class="feature-desc">>>Andrew 在 2025年5月14日上午11点25分 提交上传</text>
     </view>

@@ -26,6 +26,11 @@
       <image src="/assets/picture/upload.png" mode="aspectFit" class="settings-icon"></image>
       <text class="btn-text">上传记录</text>
     </view>
+    
+    <!-- 屏幕常亮按钮 -->
+    <view class="settings-btn screen-on-btn" bindtap="toggleKeepScreenOn">
+      <text class="screen-on-text {{keepScreenOn ? 'active-text' : ''}}">{{keepScreenOn ? '常亮开' : '常亮关'}}</text>
+    </view>
   </view>
   
   <!-- 在线用户数量 -->

@@ -95,6 +95,10 @@ App({
               // 更新全局数据
               this.globalData.userInfo.nickName = nickname;
               this.globalData.userInfo.avatarUrl = avatarUrl;
+              // 保存管理员状态
+              this.globalData.userInfo.admin = userInfo.admin === true;
+              
+              console.log("in app.js debug: 从数据库读取管理员状态:", this.globalData.userInfo.admin);
               
               // 检查是否需要更新数据库中的信息
               if (!userInfo.nickName || !userInfo.avatarUrl) {
@@ -173,6 +177,13 @@ App({
     
     // 监听小程序切后台事件
     wx.onAppHide(this.onAppHide.bind(this));
+    
+    // 打印全局用户信息，用于调试
+    console.log('========== App onLaunch 完成 ==========');
+    console.log('全局用户信息:', this.globalData.userInfo);
+    if (this.globalData.userInfo) {
+      console.log('用户管理员状态:', this.globalData.userInfo.admin || false);
+    }
   },
 
   // 小程序切到前台时

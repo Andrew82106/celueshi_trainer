@@ -232,8 +232,11 @@ Page({
      * 敲击木鱼
      */
     tapMuyu() {
+        console.log('======= 木鱼敲击函数 tapMuyu 开始执行 =======');
+        
         // 如果没有开始训练，则不允许敲击
         if (!this.data.isTraining) {
+            console.log('未开始训练，无法敲击木鱼');
             wx.showToast({
                 title: '请先点击开始训练',
                 icon: 'none',
@@ -241,6 +244,8 @@ Page({
             });
             return;
         }
+        
+        console.log('木鱼敲击有效，准备更新计数');
         
         // 更新今日计数
         const newCount = this.data.count + 1;
@@ -252,18 +257,25 @@ Page({
             isAnimating: true
         });
         
+        console.log('木鱼计数已更新 - 今日:', newCount, '总计:', newTotalCount);
+        
         // 保存计数到缓存
         this.saveCountToStorage(newCount);
         
+        console.log('准备播放木鱼音效...');
         // 播放音效
         this.playSound();
+        console.log('木鱼音效播放函数已调用');
         
         // 动画效果
         setTimeout(() => {
             this.setData({
                 isAnimating: false
             });
+            console.log('木鱼动画效果已结束');
         }, 100);
+        
+        console.log('======= 木鱼敲击函数执行结束 =======');
     },
     
     /**
@@ -485,20 +497,70 @@ Page({
      * 播放木鱼敲击音效
      */
     playSound() {
+        console.log('======= 木鱼音频函数开始执行 =======');
+        
         // 如果静音，则不播放音效
-        if (this.data.isMuted) return;
+        if (this.data.isMuted) {
+            console.log('木鱼音效未播放：静音模式已开启');
+            return;
+        }
         
-        const innerAudioContext = wx.createInnerAudioContext();
-        innerAudioContext.autoplay = true;
+        try {
+            console.log('创建木鱼音频上下文...');
+            const innerAudioContext = wx.createInnerAudioContext({useWebAudioImplement: false});
+            console.log('木鱼音频上下文创建成功');
+            
+            // 设置音频路径
+            const audioPath = '/packageZenAssets/packageZenAssets/assets/audio/muyu.wav';
+            console.log('设置木鱼音频路径:', audioPath);
+            innerAudioContext.src = audioPath;
+            
+            // 设置自动播放
+            console.log('设置木鱼音频自动播放');
+            innerAudioContext.autoplay = true;
+            
+            // 添加事件监听器
+            innerAudioContext.onCanplay(() => {
+                console.log('木鱼音频已准备好播放 onCanplay');
+            });
+            
+            innerAudioContext.onPlay(() => {
+                console.log('木鱼音频开始播放 onPlay');
+            });
+            
+            innerAudioContext.onError((err) => {
+                console.error('木鱼音频播放错误:', err.errMsg);
+                console.error('木鱼音频错误码:', err.errCode);
+                
+                // 尝试备用方案
+                console.log('尝试备用路径播放木鱼音频');
+                try {
+                    const backupAudio = wx.createInnerAudioContext({useWebAudioImplement: false});
+                    backupAudio.src = '/packageZenAssets/assets/audio/muyu.wav';
+                    backupAudio.autoplay = true;
+                    
+                    backupAudio.onPlay(() => {
+                        console.log('木鱼备用音频开始播放');
+                    });
+                    
+                    backupAudio.onError((backupErr) => {
+                        console.error('木鱼备用音频播放失败:', backupErr.errMsg);
+                    });
+                } catch (backupError) {
+                    console.error('创建木鱼备用音频失败:', backupError);
+                }
+            });
+            
+            // 尝试播放
+            console.log('尝试播放木鱼音频...');
+            innerAudioContext.play();
+            console.log('木鱼音频 play() 方法调用完成');
+            
+        } catch (e) {
+            console.error('木鱼音频处理出现异常:', e);
+        }
         
-        // 木鱼音效路径，后续需要添加实际的音效文件
-        // TODO: 添加木鱼音效文件到 assets/vedio/muyu.mp3
-        innerAudioContext.src = '/packageZenAssets/packageZenAssets/assets/audio/muyu.wav';
-        
-        innerAudioContext.onError((res) => {
-            console.log('音频播放失败：', res);
-            // 当音频无法播放时，不阻止其他功能正常运行
-        });
+        console.log('======= 木鱼音频函数执行结束 =======');
     },
     
     /**

@@ -1,0 +1,103 @@
+<!--pages/meditation-writing/community/community.wxml-->
+<view class="container">
+  <!-- 背景图片 -->
+  <image class="background-image" src="/assets/picture/trainingBackground.jpeg" mode="aspectFill"></image>
+  
+  <!-- 顶部导航区 -->
+  <view class="header">
+    <view class="back-button" bindtap="goBack">
+      <text class="back-arrow">←</text>
+      <text class="back-text">返回</text>
+    </view>
+    <view class="page-title">
+      <text>社区感想</text>
+    </view>
+    <view class="placeholder"></view>
+  </view>
+  
+  <!-- 标签栏 -->
+  <view class="tab-bar">
+    <view 
+      class="tab-item {{currentTab === index ? 'active' : ''}}" 
+      wx:for="{{tabs}}" 
+      wx:key="index"
+      bindtap="switchTab"
+      data-index="{{index}}"
+    >
+      <text>{{item}}</text>
+    </view>
+  </view>
+  
+  <!-- 感想列表容器 -->
+  <view class="scroll-container">
+    <scroll-view class="records-container" scroll-y="true" enhanced="true" show-scrollbar="false" bindscrolltolower="loadMoreRecords">
+      <block wx:if="{{communityRecords.length > 0}}">
+        <view class="record-list">
+          <view class="record-item" wx:for="{{communityRecords}}" wx:key="index" bindtap="viewRecordDetail" data-index="{{index}}">
+            <view class="record-header">
+              <view class="record-user-info">
+                <text>{{item.nickName || '禅修者'}}</text>
+                <text class="user-level">{{item.userLevel || '初入山门'}}</text>
+                <text class="user-char-count">累积写作{{item.charCount}}</text>
+              </view>
+              <view class="record-meta">
+                <text class="record-date">{{item.date}}</text>
+                <text class="record-count">{{item.count}}</text>
+              </view>
+            </view>
+            <view class="record-content">
+              <text space="nbsp">{{item.preview}}</text>
+            </view>
+            <view class="record-actions">
+              <view class="like-button {{item.liked ? 'liked' : ''}}" catchtap="likeRecord" data-index="{{index}}">
+                <text class="like-icon">❤</text>
+                <text class="like-count">{{item.likes || 0}}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+        
+        <!-- 加载更多 -->
+        <view class="load-more" wx:if="{{hasMoreRecords}}">
+          <text>加载更多</text>
+        </view>
+        
+        <!-- 底部安全区域 -->
+        <view class="safe-area-bottom"></view>
+      </block>
+      
+      <!-- 空记录提示 -->
+      <view class="empty-records" wx:else>
+        <text>暂无社区感想</text>
+      </view>
+    </scroll-view>
+  </view>
+  
+  <!-- 记录详情弹窗 -->
+  <view class="record-detail-modal" wx:if="{{showDetailModal}}">
+    <view class="modal-mask" bindtap="closeDetailModal"></view>
+    <view class="modal-content">
+      <view class="modal-header">
+        <view class="modal-user-info">
+          <text>{{currentRecord.nickName || '禅修者'}}</text>
+          <text class="user-level">{{currentRecord.userLevel || '初入山门'}}</text>
+          <text class="user-char-count">{{currentRecord.charCount}}</text>
+        </view>
+        <view class="modal-meta">
+          <text class="modal-date">{{currentRecord.date}}</text>
+          <text class="modal-count">{{currentRecord.count}} 字</text>
+        </view>
+      </view>
+      <scroll-view class="modal-body" scroll-y="true" enhanced="true" show-scrollbar="true">
+        <text space="nbsp">{{currentRecord.content}}</text>
+      </scroll-view>
+      <view class="modal-footer">
+        <view class="modal-like-button {{currentRecord.liked ? 'liked' : ''}}" catchtap="likeRecord" data-index="{{currentRecordIndex}}">
+          <text class="like-icon">❤</text>
+          <text class="like-count">{{currentRecord.likes || 0}}</text>
+        </view>
+        <view class="modal-btn" bindtap="closeDetailModal">关闭</view>
+      </view>
+    </view>
+  </view>
+</view> 

@@ -13,6 +13,11 @@
       <text class="title-text">用户反馈</text>
     </view>
     
+    <!-- 管理员状态指示器 -->
+    <view class="admin-indicator" wx:if="{{isAdmin}}" style="position: absolute; top: 10px; right: 10px; background-color: rgba(0, 0, 0, 0.7); padding: 5px 10px; border-radius: 4px;">
+      <text style="color: #ff9900; font-size: 14px;">管理员模式</text>
+    </view>
+    
     <!-- 选项卡导航 -->
     <view class="tab-nav">
       <view class="tab-item {{activeTab === 'submit' ? 'active' : ''}}" bindtap="switchTab" data-tab="submit">
@@ -48,7 +53,7 @@
             <view class="feedback-time">{{item.Time}}</view>
             <view class="feedback-content">{{item.content}}</view>
             <view class="admin-reply" wx:if="{{item.feedback}}">
-              <view class="reply-title">官方回复：</view>
+              <view class="reply-title">后台回复：</view>
               <view class="reply-content">{{item.feedback}}</view>
               <view class="reply-time">{{item.feedbackTime}}</view>
             </view>
@@ -72,7 +77,7 @@
             </view>
             <view class="feedback-content">{{item.content}}</view>
             <view class="admin-reply" wx:if="{{item.feedback}}">
-              <view class="reply-title">官方回复：</view>
+              <view class="reply-title">后台回复：</view>
               <view class="reply-content">{{item.feedback}}</view>
               <view class="reply-time">{{item.feedbackTime}}</view>
             </view>
