@@ -96,11 +96,20 @@ Page({
         return new Promise((resolve, reject) => {
             const today = new Date();
             const calendarDays = [];
-            const twoWeeksAgo = new Date(today);
-            twoWeeksAgo.setDate(today.getDate() - 13);
-            const startDate = `${twoWeeksAgo.getFullYear()}-${String(twoWeeksAgo.getMonth() + 1).padStart(2, '0')}-${String(twoWeeksAgo.getDate()).padStart(2, '0')}`;
+            
+            // 计算当前周的开始日期（周日）
+            const currentWeekStart = new Date(today);
+            currentWeekStart.setDate(today.getDate() - today.getDay());
+            
+            // 计算上一周的开始日期
+            const lastWeekStart = new Date(currentWeekStart);
+            lastWeekStart.setDate(currentWeekStart.getDate() - 7);
+            
+            // 计算查询范围
+            const startDate = `${lastWeekStart.getFullYear()}-${String(lastWeekStart.getMonth() + 1).padStart(2, '0')}-${String(lastWeekStart.getDate()).padStart(2, '0')}`;
             const endDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
             const openId = app.globalData.userInfo.openId;
+            
             app.globalData.db.collection("trainlog")
                 .where({ openId: openId, date: { $gte: startDate, $lte: endDate } })
                 .get()
@@ -114,32 +123,73 @@ Page({
                             songboMinutes: Math.ceil((record.songboSeconds || 0) / 60)
                         };
                     });
-                    for (let i = 13; i >= 0; i--) {
-                        const currentDate = new Date(today);
-                        currentDate.setDate(today.getDate() - i);
-                        const dateStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
-                        calendarDays.push({
-                            date: currentDate,
-                            dateStr: dateStr,
-                            day: currentDate.getDate(),
-                            isToday: i === 0,
-                            trainData: trainRecords[dateStr] || null
-                        });
+                    
+                    // 生成两周的日历数据，按照正确的星期几位置排列
+                    for (let week = 0; week < 2; week++) {
+                        for (let day = 0; day < 7; day++) {
+                            const currentDate = new Date(lastWeekStart);
+                            currentDate.setDate(lastWeekStart.getDate() + week * 7 + day);
+                            
+                            // 只显示到今天为止的日期
+                            if (currentDate > today) {
+                                calendarDays.push({
+                                    date: null,
+                                    dateStr: '',
+                                    day: '',
+                                    isToday: false,
+                                    trainData: null,
+                                    isEmpty: true
+                                });
+                                continue;
+                            }
+                            
+                            const dateStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
+                            const isToday = dateStr === `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+                            
+                            calendarDays.push({
+                                date: currentDate,
+                                dateStr: dateStr,
+                                day: currentDate.getDate(),
+                                isToday: isToday,
+                                trainData: trainRecords[dateStr] || null,
+                                isEmpty: false
+                            });
+                        }
                     }
+                    
                     this.setData({ calendarDays }, resolve);
                 })
                 .catch(err => {
-                    for (let i = 13; i >= 0; i--) {
-                        const currentDate = new Date(today);
-                        currentDate.setDate(today.getDate() - i);
-                        const dateStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
-                        calendarDays.push({
-                            date: currentDate,
-                            dateStr: dateStr,
-                            day: currentDate.getDate(),
-                            isToday: i === 0,
-                            trainData: null
-                        });
+                    // 错误处理：生成空的日历数据
+                    for (let week = 0; week < 2; week++) {
+                        for (let day = 0; day < 7; day++) {
+                            const currentDate = new Date(lastWeekStart);
+                            currentDate.setDate(lastWeekStart.getDate() + week * 7 + day);
+                            
+                            if (currentDate > today) {
+                                calendarDays.push({
+                                    date: null,
+                                    dateStr: '',
+                                    day: '',
+                                    isToday: false,
+                                    trainData: null,
+                                    isEmpty: true
+                                });
+                                continue;
+                            }
+                            
+                            const dateStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
+                            const isToday = dateStr === `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+                            
+                            calendarDays.push({
+                                date: currentDate,
+                                dateStr: dateStr,
+                                day: currentDate.getDate(),
+                                isToday: isToday,
+                                trainData: null,
+                                isEmpty: false
+                            });
+                        }
                     }
                     this.setData({ calendarDays }, resolve);
                 });
@@ -678,24 +728,79 @@ Page({
      * 刷新在线状态
      */
     refreshOnlineStatus() {
-        console.log("[在线状态] 手动刷新在线状态");
+        console.log("🔄 [用户页面-刷新在线状态] 手动刷新在线状态");
         
         // 确保自己处于在线状态
         if (app.globalData.userInfo && app.globalData.userInfo.openId) {
+            console.log(`👤 [用户页面-刷新在线状态] 当前用户: ${app.globalData.userInfo.openId}`);
             app.updateUserOnlineStatus(app.globalData.userInfo.openId, true);
+        } else {
+            console.log("⚠️ [用户页面-刷新在线状态] 无法获取当前用户信息");
         }
         
         // 获取数据库实例
         const db = app.globalData.db;
+        const currentTime = Date.now();
+        const oneMinuteAgo = currentTime - 60000;
+        
+        console.log(`⏰ [用户页面-刷新在线状态] 当前时间: ${new Date(currentTime).toLocaleString()}`);
+        console.log(`⏰ [用户页面-刷新在线状态] 一分钟前: ${new Date(oneMinuteAgo).toLocaleString()}`);
         
         // 直接查询在线用户数量
         db.collection('userOnlineStatus').where({
-            lastActiveTime: db.command.gt(Date.now() - 60000)
+            lastActiveTime: db.command.gt(oneMinuteAgo)
         }).count().then(res => {
-            console.log('[在线状态] 当前在线用户数量:', res.total);
+            console.log(`📊 [用户页面-刷新在线状态] 查询结果 - 在线用户数量: ${res.total}`);
             
             this.setData({
                 onlineUserCount: res.total
+            });
+            
+            // 获取详细的在线用户信息用于调试
+            db.collection('userOnlineStatus').where({
+                lastActiveTime: db.command.gt(oneMinuteAgo)
+            }).get().then(detailRes => {
+                console.log(`📋 [用户页面-刷新在线状态] 在线用户详细信息 (${detailRes.data.length}个):`);
+                detailRes.data.forEach((user, index) => {
+                    const timeDiff = currentTime - user.lastActiveTime;
+                    console.log(`   ${index + 1}. 用户ID: ${user.openId}, 最后活跃: ${Math.floor(timeDiff/1000)}秒前, 状态: ${user.isOnline ? '在线' : '离线'}`);
+                });
+                
+                // 检查是否有状态不一致的情况
+                const inconsistentUsers = detailRes.data.filter(user => !user.isOnline);
+                if (inconsistentUsers.length > 0) {
+                    console.log(`⚠️ [用户页面-刷新在线状态] 发现${inconsistentUsers.length}个用户状态不一致（活跃时间在1分钟内但状态标记为离线）`);
+                }
+                
+                // 检查重复记录
+                console.log('🔍 [用户页面-刷新在线状态] 检查重复记录...');
+                db.collection('userOnlineStatus').get().then(allRes => {
+                    const userGroups = {};
+                    allRes.data.forEach(record => {
+                        if (!userGroups[record.openId]) {
+                            userGroups[record.openId] = [];
+                        }
+                        userGroups[record.openId].push(record);
+                    });
+                    
+                    const duplicateUsers = [];
+                    Object.keys(userGroups).forEach(openId => {
+                        if (userGroups[openId].length > 1) {
+                            duplicateUsers.push(openId);
+                        }
+                    });
+                    
+                    console.log(`📋 [用户页面-刷新在线状态] 数据库总记录数: ${allRes.data.length}`);
+                    console.log(`👥 [用户页面-刷新在线状态] 唯一用户数: ${Object.keys(userGroups).length}`);
+                    console.log(`🔄 [用户页面-刷新在线状态] 有重复记录的用户数: ${duplicateUsers.length}`);
+                    
+                    if (duplicateUsers.length > 0) {
+                        console.log(`⚠️ [用户页面-刷新在线状态] 发现重复记录的用户:`, duplicateUsers);
+                    }
+                });
+                
+            }).catch(err => {
+                console.error('❌ [用户页面-刷新在线状态] 获取详细信息失败:', err);
             });
             
             // 刷新排行榜数据
@@ -706,7 +811,7 @@ Page({
                 icon: 'success'
             });
         }).catch(err => {
-            console.error('[在线状态] 获取在线用户数量失败:', err);
+            console.error('❌ [用户页面-刷新在线状态] 获取在线用户数量失败:', err);
             
             // 仍然刷新排行榜数据
             this.loadRankingData();

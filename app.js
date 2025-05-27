@@ -266,24 +266,58 @@ App({
     
     const db = this.globalData.db;
     const currentTime = Date.now();
-    console.log(`[在线状态] 更新用户${openId}的在线状态为: ${isOnline ? '在线' : '离线'}, 时间戳: ${currentTime}`);
+    console.log(`🔄 [在线状态更新] 开始更新用户${openId}的在线状态为: ${isOnline ? '在线' : '离线'}, 时间戳: ${currentTime}`);
+    console.log(`🔄 [在线状态更新] 当前时间: ${new Date(currentTime).toLocaleString()}`);
     
     // 检查集合是否存在，如果不存在则先创建记录
     db.collection('userOnlineStatus').where({
       openId: openId
     }).get().then(res => {
+      console.log(`🔍 [在线状态更新] 查询用户${openId}的现有记录，找到${res.data.length}条记录`);
+      
       if (res.data && res.data.length > 0) {
-        // 已有记录，直接更新
-        return db.collection('userOnlineStatus').where({
-          openId: openId
-        }).update({
-          data: {
-            isOnline: isOnline,
-            lastActiveTime: currentTime
+        // 如果有多条记录，先删除多余的记录
+        if (res.data.length > 1) {
+          console.log(`⚠️ [在线状态更新] 发现用户${openId}有${res.data.length}条重复记录，正在清理...`);
+          
+          // 显示所有重复记录的详细信息
+          res.data.forEach((record, index) => {
+            console.log(`   📝 记录${index + 1}: ID=${record._id}, 状态=${record.isOnline ? '在线' : '离线'}, 时间=${new Date(record.lastActiveTime).toLocaleString()}`);
+          });
+          
+          // 保留第一条记录，删除其他记录
+          const promises = [];
+          for (let i = 1; i < res.data.length; i++) {
+            console.log(`🗑️ [在线状态更新] 删除重复记录: ${res.data[i]._id}`);
+            promises.push(
+              db.collection('userOnlineStatus').doc(res.data[i]._id).remove()
+            );
           }
-        });
+          
+          return Promise.all(promises).then(() => {
+            console.log(`✅ [在线状态更新] 已清理用户${openId}的重复记录`);
+            // 更新第一条记录
+            console.log(`🔄 [在线状态更新] 更新保留的记录: ${res.data[0]._id}`);
+            return db.collection('userOnlineStatus').doc(res.data[0]._id).update({
+              data: {
+                isOnline: isOnline,
+                lastActiveTime: currentTime
+              }
+            });
+          });
+        } else {
+          // 只有一条记录，直接更新
+          console.log(`🔄 [在线状态更新] 更新唯一记录: ${res.data[0]._id}`);
+          return db.collection('userOnlineStatus').doc(res.data[0]._id).update({
+            data: {
+              isOnline: isOnline,
+              lastActiveTime: currentTime
+            }
+          });
+        }
       } else {
         // 无记录，创建新记录
+        console.log(`➕ [在线状态更新] 为用户${openId}创建新的在线状态记录`);
         return db.collection('userOnlineStatus').add({
           data: {
             openId: openId,
@@ -292,11 +326,187 @@ App({
           }
         });
       }
-    }).then(() => {
+    }).then((result) => {
       this.globalData.isOnline = isOnline;
-      console.log(`[在线状态] 用户${openId}的在线状态已更新为: ${isOnline ? '在线' : '离线'}`);
+      console.log(`✅ [在线状态更新] 用户${openId}的在线状态已更新为: ${isOnline ? '在线' : '离线'}`);
+      console.log(`📊 [在线状态更新] 更新操作结果:`, result);
+      
+      // 验证更新结果
+      setTimeout(() => {
+        this.verifyOnlineStatusUpdate(openId, isOnline);
+      }, 1000);
     }).catch(err => {
-      console.error('[在线状态] 更新用户在线状态失败:', err);
+      console.error('❌ [在线状态更新] 更新用户在线状态失败:', err);
+    });
+  },
+
+  // 验证在线状态更新结果
+  verifyOnlineStatusUpdate(openId, expectedStatus) {
+    console.log(`🔍 [验证更新] 验证用户${openId}的在线状态更新结果...`);
+    
+    const db = this.globalData.db;
+    db.collection('userOnlineStatus').where({
+      openId: openId
+    }).get().then(res => {
+      console.log(`📋 [验证更新] 用户${openId}当前有${res.data.length}条记录`);
+      
+      if (res.data.length > 0) {
+        res.data.forEach((record, index) => {
+          const timeDiff = Date.now() - record.lastActiveTime;
+          console.log(`   📝 记录${index + 1}:`);
+          console.log(`      ID: ${record._id}`);
+          console.log(`      状态: ${record.isOnline ? '在线' : '离线'} (期望: ${expectedStatus ? '在线' : '离线'})`);
+          console.log(`      最后活跃: ${Math.floor(timeDiff/1000)}秒前`);
+          console.log(`      时间戳: ${record.lastActiveTime}`);
+        });
+        
+        // 检查是否有重复记录
+        if (res.data.length > 1) {
+          console.log(`⚠️ [验证更新] 警告：用户${openId}仍有${res.data.length}条重复记录！`);
+        } else {
+          console.log(`✅ [验证更新] 用户${openId}记录正常，无重复`);
+        }
+      } else {
+        console.log(`❌ [验证更新] 错误：用户${openId}没有找到任何记录！`);
+      }
+      
+      // 统计当前在线用户总数
+      db.collection('userOnlineStatus').where({
+        lastActiveTime: db.command.gt(Date.now() - 60000)
+      }).count().then(countRes => {
+        console.log(`📊 [验证更新] 当前在线用户总数: ${countRes.total}`);
+      });
+    }).catch(err => {
+      console.error('❌ [验证更新] 验证失败:', err);
+    });
+  },
+
+  // 清理重复的在线状态记录
+  cleanupDuplicateOnlineStatus() {
+    const db = this.globalData.db;
+    console.log('🧹 [清理重复记录] 开始清理重复的在线状态记录');
+    
+    // 获取所有在线状态记录
+    db.collection('userOnlineStatus').get().then(res => {
+      console.log(`📋 [清理重复记录] 数据库中共有${res.data.length}条在线状态记录`);
+      
+      if (!res.data || res.data.length === 0) {
+        console.log('📋 [清理重复记录] 没有在线状态记录需要清理');
+        return;
+      }
+      
+      // 按openId分组
+      const userGroups = {};
+      res.data.forEach(record => {
+        if (!userGroups[record.openId]) {
+          userGroups[record.openId] = [];
+        }
+        userGroups[record.openId].push(record);
+      });
+      
+      console.log(`👥 [清理重复记录] 共有${Object.keys(userGroups).length}个唯一用户`);
+      
+      // 查找有重复记录的用户
+      const duplicateUsers = [];
+      Object.keys(userGroups).forEach(openId => {
+        if (userGroups[openId].length > 1) {
+          duplicateUsers.push({
+            openId: openId,
+            records: userGroups[openId]
+          });
+        }
+      });
+      
+      if (duplicateUsers.length === 0) {
+        console.log('✅ [清理重复记录] 没有发现重复记录');
+        return;
+      }
+      
+      console.log(`⚠️ [清理重复记录] 发现${duplicateUsers.length}个用户有重复记录`);
+      
+      // 清理重复记录
+      const cleanupPromises = [];
+      duplicateUsers.forEach(user => {
+        console.log(`🔍 [清理重复记录] 用户${user.openId}有${user.records.length}条重复记录:`);
+        
+        // 显示所有记录的详细信息
+        user.records.forEach((record, index) => {
+          const timeDiff = Date.now() - record.lastActiveTime;
+          console.log(`   📝 记录${index + 1}: ID=${record._id}, 状态=${record.isOnline ? '在线' : '离线'}, ${Math.floor(timeDiff/1000)}秒前活跃`);
+        });
+        
+        // 保留最新的记录（按lastActiveTime排序）
+        user.records.sort((a, b) => (b.lastActiveTime || 0) - (a.lastActiveTime || 0));
+        console.log(`✅ [清理重复记录] 保留用户${user.openId}的最新记录: ${user.records[0]._id}`);
+        
+        // 删除除第一条外的所有记录
+        for (let i = 1; i < user.records.length; i++) {
+          console.log(`🗑️ [清理重复记录] 删除用户${user.openId}的旧记录: ${user.records[i]._id}`);
+          cleanupPromises.push(
+            db.collection('userOnlineStatus').doc(user.records[i]._id).remove()
+          );
+        }
+      });
+      
+      console.log(`🗑️ [清理重复记录] 准备删除${cleanupPromises.length}条重复记录...`);
+      
+      return Promise.all(cleanupPromises);
+    }).then((results) => {
+      if (results && results.length > 0) {
+        console.log(`✅ [清理重复记录] 成功清理了${results.length}条重复记录`);
+        
+        // 验证清理结果
+        setTimeout(() => {
+          this.verifyCleanupResult();
+        }, 1000);
+      } else {
+        console.log('📋 [清理重复记录] 没有记录需要清理');
+      }
+    }).catch(err => {
+      console.error('❌ [清理重复记录] 清理重复记录失败:', err);
+    });
+  },
+
+  // 验证清理结果
+  verifyCleanupResult() {
+    console.log('🔍 [验证清理] 验证清理结果...');
+    
+    const db = this.globalData.db;
+    db.collection('userOnlineStatus').get().then(res => {
+      console.log(`📋 [验证清理] 清理后数据库中共有${res.data.length}条记录`);
+      
+      // 重新检查是否还有重复记录
+      const userGroups = {};
+      res.data.forEach(record => {
+        if (!userGroups[record.openId]) {
+          userGroups[record.openId] = [];
+        }
+        userGroups[record.openId].push(record);
+      });
+      
+      const stillDuplicateUsers = [];
+      Object.keys(userGroups).forEach(openId => {
+        if (userGroups[openId].length > 1) {
+          stillDuplicateUsers.push(openId);
+        }
+      });
+      
+      if (stillDuplicateUsers.length > 0) {
+        console.log(`⚠️ [验证清理] 警告：仍有${stillDuplicateUsers.length}个用户有重复记录:`, stillDuplicateUsers);
+      } else {
+        console.log('✅ [验证清理] 清理成功，没有重复记录');
+      }
+      
+      console.log(`👥 [验证清理] 唯一用户数: ${Object.keys(userGroups).length}`);
+      
+      // 统计当前在线用户数
+      db.collection('userOnlineStatus').where({
+        lastActiveTime: db.command.gt(Date.now() - 60000)
+      }).count().then(countRes => {
+        console.log(`📊 [验证清理] 当前在线用户数: ${countRes.total}`);
+      });
+    }).catch(err => {
+      console.error('❌ [验证清理] 验证清理结果失败:', err);
     });
   },
 

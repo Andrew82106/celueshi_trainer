@@ -907,8 +907,16 @@ export async function loadRankingDataByDateRange(db, startDate, endDate) {
         });
         
         // 查找在线但没有用户信息的用户（可能是新用户）
+        console.log(`[在线状态调试] 开始检查在线但没有用户信息的用户...`);
+        console.log(`[在线状态调试] 在线用户ID集合大小: ${onlineUserIds.size}`);
+        console.log(`[在线状态调试] 用户信息Map大小: ${usersMap.size}`);
+        
+        const onlineButNoUserInfo = [];
         onlineUserIds.forEach(openId => {
             if (!usersMap.has(openId)) {
+                onlineButNoUserInfo.push(openId);
+                console.log(`[在线状态调试] 发现在线但没有用户信息的用户: ${openId}`);
+                
                 // 这是一个在线但没有用户信息的用户
                 const onlineStatus = onlineStatusMap.get(openId) || { isOnline: true };
                 
@@ -932,6 +940,18 @@ export async function loadRankingDataByDateRange(db, startDate, endDate) {
                     isOnline: true
                 });
             }
+        });
+        
+        console.log(`[在线状态调试] 在线但没有用户信息的用户数量: ${onlineButNoUserInfo.length}`);
+        if (onlineButNoUserInfo.length > 0) {
+            console.log(`[在线状态调试] 这些用户ID: ${JSON.stringify(onlineButNoUserInfo)}`);
+        }
+        
+        // 统计最终排行榜中的在线用户
+        const finalOnlineUsers = rankingData.filter(user => user.isOnline);
+        console.log(`[在线状态调试] 最终排行榜中在线用户数量: ${finalOnlineUsers.length}`);
+        finalOnlineUsers.forEach((user, index) => {
+            console.log(`[在线状态调试] 在线用户${index + 1}: ${user.nickName} (${user.openId})`);
         });
         
         // 添加排序前的调试日志

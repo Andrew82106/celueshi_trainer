@@ -35,7 +35,7 @@
   
   <!-- 在线用户数量 -->
   <view class="online-users-count">
-    <text class="online-count-text">当前在线: {{onlineUserCount}}人</text>
+    <text class="online-count-text">近期在线: {{onlineUserCount}}人</text>
   </view>
   
   <!-- 敲击计数 -->

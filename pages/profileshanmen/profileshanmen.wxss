@@ -265,6 +265,11 @@
   background-color: #f0e6d2;
 }
 
+.calendar-day.empty {
+  background-color: transparent;
+  min-height: 0;
+}
+
 .day-number {
   font-size: 28rpx;
   color: #333;

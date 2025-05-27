@@ -953,18 +953,44 @@ Page({
      */
     getOnlineUserCount() {
         const db = app.globalData.db;
+        const currentTime = Date.now();
+        const oneMinuteAgo = currentTime - 60000;
+        
+        console.log('🔍 [木鱼页面-在线统计] 开始获取在线用户数量...');
+        console.log(`⏰ [木鱼页面-在线统计] 当前时间: ${new Date(currentTime).toLocaleString()}`);
+        console.log(`⏰ [木鱼页面-在线统计] 一分钟前: ${new Date(oneMinuteAgo).toLocaleString()}`);
         
         // 查询 userOnlineStatus 集合中在线的用户
         db.collection('userOnlineStatus').where({
-            lastActiveTime: db.command.gt(Date.now() - 60000)
+            lastActiveTime: db.command.gt(oneMinuteAgo)
         }).count().then(res => {
-            console.log('[在线状态] 当前在线用户数量:', res.total);
+            console.log(`📊 [木鱼页面-在线统计] 查询结果 - 在线用户数量: ${res.total}`);
             
             this.setData({
                 onlineUserCount: res.total
             });
+            
+            // 获取详细的在线用户信息用于调试
+            db.collection('userOnlineStatus').where({
+                lastActiveTime: db.command.gt(oneMinuteAgo)
+            }).get().then(detailRes => {
+                console.log(`📋 [木鱼页面-在线统计] 在线用户详细信息 (${detailRes.data.length}个):`);
+                detailRes.data.forEach((user, index) => {
+                    const timeDiff = currentTime - user.lastActiveTime;
+                    console.log(`   ${index + 1}. 用户ID: ${user.openId}, 最后活跃: ${Math.floor(timeDiff/1000)}秒前, 状态: ${user.isOnline ? '在线' : '离线'}`);
+                });
+                
+                // 检查是否有状态不一致的情况
+                const inconsistentUsers = detailRes.data.filter(user => !user.isOnline);
+                if (inconsistentUsers.length > 0) {
+                    console.log(`⚠️ [木鱼页面-在线统计] 发现${inconsistentUsers.length}个用户状态不一致（活跃时间在1分钟内但状态标记为离线）`);
+                }
+            }).catch(err => {
+                console.error('❌ [木鱼页面-在线统计] 获取详细信息失败:', err);
+            });
+            
         }).catch(err => {
-            console.error('[在线状态] 获取在线用户数量失败:', err);
+            console.error('❌ [木鱼页面-在线统计] 获取在线用户数量失败:', err);
         });
     },
 

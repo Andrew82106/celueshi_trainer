@@ -33,7 +33,7 @@
     <view class="online-info">
       <text class="online-status-tip">金色名字表示用户当前在线(1分钟内活跃)</text>
       <view class="online-status-container">
-        <text class="online-count">在线: {{onlineUserCount}}人</text>
+        <text class="online-count">近期在线: {{onlineUserCount}}人</text>
         <view class="refresh-online-button" bindtap="refreshOnlineStatus">
           <text>刷新在线状态</text>
         </view>
