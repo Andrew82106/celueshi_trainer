@@ -105,13 +105,22 @@ Page({
             console.log("按日期直接查询今日记录结果:", res);
             
             let todayCount = 0;
+            let todaySeconds = 0;
             
             if (res.data && res.data.length > 0) {
                 const todayRecord = res.data[0];
                 todayCount = todayRecord.songboCounts || 0;
-                console.log("今日颂钵记录:", todayCount);
+                todaySeconds = todayRecord.songboSeconds || 0;
+                console.log("今日颂钵记录:", todayCount, "次,", todaySeconds, "秒");
+                
+                // 更新全局变量中的今日训练时长
+                const todayMinutes = Math.ceil(todaySeconds / 60);
+                app.globalData.songboTodayMinutes = todayMinutes;
+                console.log(`[颂钵数据加载] 设置全局变量今日训练时长: ${todayMinutes}分钟`);
             } else {
                 console.log("没有找到今日记录，使用默认值0");
+                // 重置全局变量
+                app.globalData.songboTodayMinutes = 0;
             }
             
             // 更新页面今日计数
@@ -354,6 +363,18 @@ Page({
 
         // 保存最终训练时长
         const finalSeconds = this.data.trainingSeconds;
+        const finalMinutes = Math.ceil(finalSeconds / 60);
+
+        // 更新全局变量中的今日训练时长
+        console.log(`[颂钵训练结束] 本次训练时长: ${finalSeconds}秒 (${finalMinutes}分钟)`);
+        
+        // 从全局变量获取之前的今日时长，如果没有则为0
+        const previousTodayMinutes = app.globalData.songboTodayMinutes || 0;
+        const newTodayMinutes = previousTodayMinutes + finalMinutes;
+        
+        // 更新全局变量
+        app.globalData.songboTodayMinutes = newTodayMinutes;
+        console.log(`[颂钵训练结束] 今日累计训练时长: ${previousTodayMinutes} + ${finalMinutes} = ${newTodayMinutes}分钟`);
 
         // 重置训练状态
         this.setData({

@@ -10,7 +10,6 @@ export const USER_LEVELS = {
     IMMORTAL_MASTER: '三段',
     IMMORTAL_GRANDMASTER: '二段',
     IMMORTAL_IMMORTAL: '一段'
-    
 };
 
 

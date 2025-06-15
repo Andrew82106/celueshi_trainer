@@ -73,6 +73,21 @@ Page({
         this.loadStatisticsData();
         this.generateCalendarData();
         // 不再自动加载排行榜数据
+        
+        // 【新增】自动统计累积时长并更新用户等级
+        console.log("===== [页面加载] 开始自动统计累积时长并更新用户等级 =====");
+        if (app.globalData.userInfo && app.globalData.userInfo.openId) {
+            console.log(`[页面加载] 当前用户: ${app.globalData.userInfo.openId}`);
+            this.updateUserAccumulateData().then(() => {
+                console.log("[页面加载] 累积时长统计和等级更新完成");
+                // 重新加载统计数据以反映最新的用户等级
+                this.loadStatisticsData();
+            }).catch(err => {
+                console.error("[页面加载] 累积时长统计和等级更新失败:", err);
+            });
+        } else {
+            console.warn("[页面加载] 用户未登录，跳过累积时长统计和等级更新");
+        }
     },
     
     /**
@@ -82,8 +97,13 @@ Page({
         return new Promise((resolve, reject) => {
             const result = require('./services/index').loadStatisticsData();
             result.then(stats => {
-                this.setData(stats, resolve);
+                console.log("[页面数据更新] 准备设置页面数据:", stats);
+                this.setData(stats, () => {
+                    console.log("[页面数据更新] 页面数据设置完成");
+                    resolve();
+                });
             }).catch(err => {
+                console.error("[页面数据更新] 加载统计数据失败:", err);
                 reject(err);
             });
         });
@@ -210,12 +230,49 @@ Page({
         // 页面显示
         // 更新加速字段和用户训练字段信息
         this.updateAcceleratedFields();
-        // 加载统计数据
-        this.loadStatisticsData();
-        // 生成日历数据（近期记录）
-        this.generateCalendarData();
-        // 刷新时长排名
-        this.loadRankingData();
+        
+        // 【新增】自动统计累积时长并更新用户等级
+        console.log("===== [页面显示] 开始自动统计累积时长并更新用户等级 =====");
+        if (app.globalData.userInfo && app.globalData.userInfo.openId) {
+            console.log(`[页面显示] 当前用户: ${app.globalData.userInfo.openId}`);
+            this.updateUserAccumulateData().then(() => {
+                console.log("[页面显示] 累积时长统计和等级更新完成");
+                
+                // 延迟加载数据，确保updateAcceleratedFields和updateUserAccumulateData完成后再加载统计数据
+                setTimeout(() => {
+                    // 加载统计数据
+                    this.loadStatisticsData();
+                    // 生成日历数据（近期记录）
+                    this.generateCalendarData();
+                    // 刷新时长排名
+                    this.loadRankingData();
+                }, 500);
+            }).catch(err => {
+                console.error("[页面显示] 累积时长统计和等级更新失败:", err);
+                
+                // 即使出错也要加载其他数据
+                setTimeout(() => {
+                    // 加载统计数据
+                    this.loadStatisticsData();
+                    // 生成日历数据（近期记录）
+                    this.generateCalendarData();
+                    // 刷新时长排名
+                    this.loadRankingData();
+                }, 500);
+            });
+        } else {
+            console.warn("[页面显示] 用户未登录，跳过累积时长统计和等级更新");
+            
+            // 延迟加载数据，确保updateAcceleratedFields完成后再加载统计数据
+            setTimeout(() => {
+                // 加载统计数据
+                this.loadStatisticsData();
+                // 生成日历数据（近期记录）
+                this.generateCalendarData();
+                // 刷新时长排名  
+                this.loadRankingData();
+            }, 500);
+        }
     },
 
     /**
@@ -616,11 +673,10 @@ Page({
                 const userId = userInfo._id;
                 console.log(`[更新加速字段] 找到用户信息, userId: ${userId}`);
                 
-                // 获取用户的所有训练记录
-                db.collection("trainlog").where({
-                    openId: openId
-                }).get().then(recordsRes => {
-                    console.log(`[更新加速字段] 获取到${recordsRes.data.length}条训练记录`);
+                // 【修改】使用分页获取所有训练记录
+                console.log("[更新加速字段] 开始使用分页方式获取所有训练记录");
+                this.getAllTrainingRecords(db, { openId: openId }).then(records => {
+                    console.log(`[更新加速字段] 通过分页获取到${records.length}条训练记录`);
                     
                     // 完全重新计算累积数据
                     let totalMuyuCount = 0;
@@ -628,9 +684,9 @@ Page({
                     let totalMuyuSeconds = 0;
                     let totalSongboSeconds = 0;
                     
-                    if (recordsRes.data && recordsRes.data.length > 0) {
+                    if (records && records.length > 0) {
                         console.log(`[更新加速字段] 开始计算用户${openId}的累积数据`);
-                        recordsRes.data.forEach((record, index) => {
+                        records.forEach((record, index) => {
                             const muyuCounts = record.muyuCounts || 0;
                             const songboCounts = record.songboCounts || 0;
                             const muyuSeconds = record.muyuSeconds || 0;
@@ -645,8 +701,8 @@ Page({
                             if (index < 5) {
                                 console.log(`[更新加速字段] 记录[${index}]: 木鱼=${muyuCounts}次/${muyuSeconds}秒, 颂钵=${songboCounts}次/${songboSeconds}秒`);
                             }
-                            if (index === 5 && recordsRes.data.length > 10) {
-                                console.log(`[更新加速字段] ...省略${recordsRes.data.length - 10}条记录...`);
+                            if (index === 5 && records.length > 10) {
+                                console.log(`[更新加速字段] ...省略${records.length - 10}条记录...`);
                             }
                         });
                         
@@ -664,18 +720,27 @@ Page({
                     const totalSeconds = totalMuyuSeconds + totalSongboSeconds;
                     const totalMinutes = Math.ceil(totalSeconds / 60);
                     
-                    // 调试输出段位计算相关信息
+                    // 调试输出
                     const { calculateUserLevel } = require('./utils/index');
                     const { USER_LEVELS, LEVEL_REQUIREMENTS } = require('./constants/index');
-                    console.log('[更新加速字段] 段位计算相关信息:', {
-                        USER_LEVELS,
-                        LEVEL_REQUIREMENTS,
-                        totalMinutes
+                    console.log('===== [调试信息] 用户等级计算详细信息 =====');
+                    console.log('[调试] USER_LEVELS:', USER_LEVELS);
+                    console.log('[调试] LEVEL_REQUIREMENTS:', LEVEL_REQUIREMENTS);
+                    console.log(`[调试] 用户总训练时长: ${totalMinutes} 分钟 (${totalSeconds} 秒)`);
+                    console.log(`[调试] 木鱼时长贡献: ${Math.ceil(totalMuyuSeconds / 60)} 分钟 (${totalMuyuSeconds} 秒)`);
+                    console.log(`[调试] 颂钵时长贡献: ${Math.ceil(totalSongboSeconds / 60)} 分钟 (${totalSongboSeconds} 秒)`);
+                    console.log('[调试] 等级要求详情:');
+                    Object.keys(USER_LEVELS).forEach(key => {
+                        const name = USER_LEVELS[key];
+                        const min = LEVEL_REQUIREMENTS[name];
+                        const status = totalMinutes >= min ? '✓ 已达标' : '✗ 未达标';
+                        console.log(`[调试]   ${name}: ${min} 分钟 ${status}`);
                     });
                     
                     // 计算段位
                     const userLevel = calculateUserLevel(totalMinutes);
-                    console.log(`[更新加速字段] 计算出的段位: ${userLevel}`);
+                    console.log(`[调试] 最终计算出的段位: ${userLevel}`);
+                    console.log('===== [调试信息] 用户等级计算详细信息结束 =====');
                     
                     // 更新用户数据
                     const now = new Date();
@@ -714,7 +779,7 @@ Page({
                         console.error('[更新加速字段] 更新用户累积数据失败:', err);
                     });
                 }).catch(err => {
-                    console.error('[更新加速字段] 获取用户训练记录失败:', err);
+                    console.error('[更新加速字段] 使用分页方式获取用户训练记录失败:', err);
                 });
             } else {
                 console.error('[更新加速字段] 未找到用户信息');
@@ -972,18 +1037,24 @@ Page({
                         // 调试输出
                         const { calculateUserLevel } = require('./utils/index');
                         const { USER_LEVELS, LEVEL_REQUIREMENTS } = require('./constants/index');
+                        console.log('===== [调试信息] 用户等级计算详细信息 =====');
                         console.log('[调试] USER_LEVELS:', USER_LEVELS);
                         console.log('[调试] LEVEL_REQUIREMENTS:', LEVEL_REQUIREMENTS);
-                        console.log(`[调试] totalMinutes: ${totalMinutes}`);
+                        console.log(`[调试] 用户总训练时长: ${totalMinutes} 分钟 (${totalSeconds} 秒)`);
+                        console.log(`[调试] 木鱼时长贡献: ${Math.ceil(totalMuyuSeconds / 60)} 分钟 (${totalMuyuSeconds} 秒)`);
+                        console.log(`[调试] 颂钵时长贡献: ${Math.ceil(totalSongboSeconds / 60)} 分钟 (${totalSongboSeconds} 秒)`);
+                        console.log('[调试] 等级要求详情:');
                         Object.keys(USER_LEVELS).forEach(key => {
                             const name = USER_LEVELS[key];
                             const min = LEVEL_REQUIREMENTS[name];
-                            console.log(`[调试] ${name} 段位要求: ${min} 分钟`);
+                            const status = totalMinutes >= min ? '✓ 已达标' : '✗ 未达标';
+                            console.log(`[调试]   ${name}: ${min} 分钟 ${status}`);
                         });
                         
                         // 计算段位
                         const userLevel = calculateUserLevel(totalMinutes);
-                        console.log(`[调试] 计算出的段位: ${userLevel}`);
+                        console.log(`[调试] 最终计算出的段位: ${userLevel}`);
+                        console.log('===== [调试信息] 用户等级计算详细信息结束 =====');
                         
                         // 更新用户数据
                         const now = new Date();

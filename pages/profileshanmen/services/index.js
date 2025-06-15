@@ -78,6 +78,43 @@ function processTrainingRecords(records, today) {
         }
     });
     
+    // 获取本地存储的最新今日数据
+    const localMuyuRecords = wx.getStorageSync('muyuRecords') || {};
+    const localSongboRecords = wx.getStorageSync('songboRecords') || {};
+    const localMuyuTodayCount = localMuyuRecords[today] || 0;
+    const localSongboTodayCount = localSongboRecords[today] || 0;
+    
+    // 从全局变量中获取今日训练时长（分钟）
+    const globalMuyuTodayMinutes = app.globalData.muyuTodayMinutes || 0;
+    const globalSongboTodayMinutes = app.globalData.songboTodayMinutes || 0;
+    const globalMuyuTodaySeconds = globalMuyuTodayMinutes > 0 ? globalMuyuTodayMinutes * 60 : 0;
+    const globalSongboTodaySeconds = globalSongboTodayMinutes > 0 ? globalSongboTodayMinutes * 60 : 0;
+    
+    console.log(`[数据统计更新] 数据库今日记录 - 木鱼:${muyuTodayCount}次/${muyuTodaySeconds}秒, 颂钵:${songboTodayCount}次/${songboTodaySeconds}秒`);
+    console.log(`[数据统计更新] 本地存储今日记录 - 木鱼:${localMuyuTodayCount}次, 颂钵:${localSongboTodayCount}次`);
+    console.log(`[数据统计更新] 全局变量今日时长 - 木鱼:${globalMuyuTodayMinutes}分钟, 颂钵:${globalSongboTodayMinutes}分钟`);
+    
+    // 取本地存储和数据库中的最大值作为今日数据
+    if (localMuyuTodayCount > muyuTodayCount) {
+        muyuTodayCount = localMuyuTodayCount;
+        console.log(`[数据统计更新] 使用本地木鱼次数: ${localMuyuTodayCount}`);
+    }
+    
+    if (localSongboTodayCount > songboTodayCount) {
+        songboTodayCount = localSongboTodayCount;
+        console.log(`[数据统计更新] 使用本地颂钵次数: ${localSongboTodayCount}`);
+    }
+    
+    if (globalMuyuTodaySeconds > muyuTodaySeconds) {
+        muyuTodaySeconds = globalMuyuTodaySeconds;
+        console.log(`[数据统计更新] 使用全局变量木鱼时长: ${globalMuyuTodaySeconds}秒`);
+    }
+    
+    if (globalSongboTodaySeconds > songboTodaySeconds) {
+        songboTodaySeconds = globalSongboTodaySeconds;
+        console.log(`[数据统计更新] 使用全局变量颂钵时长: ${globalSongboTodaySeconds}秒`);
+    }
+    
     const muyuStreakDays = calculateStreakDays(muyuRecords);
     const songboStreakDays = calculateStreakDays(songboRecords);
     
@@ -85,6 +122,8 @@ function processTrainingRecords(records, today) {
     const songboTodayMinutes = Math.ceil(songboTodaySeconds / 60);
     const muyuTotalMinutes = Math.ceil(muyuTotalSeconds / 60);
     const songboTotalMinutes = Math.ceil(songboTotalSeconds / 60);
+    
+    console.log(`[数据统计更新] 最终今日数据 - 木鱼:${muyuTodayCount}次/${muyuTodayMinutes}分钟, 颂钵:${songboTodayCount}次/${songboTodayMinutes}分钟`);
     
     // 从用户信息中获取段位，不再计算
     const userLevel = app.globalData.userInfo.level || '初入山门';

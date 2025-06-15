@@ -34,26 +34,13 @@
         </view>
         
         <view class="card-content">
-          <!--
           <view class="stat-item">
-            <text class="stat-label">今日</text>
+            <text class="stat-label">今日次数</text>
             <text class="stat-value">{{muyuTodayCount}}</text>
-          </view>-->
-          <view class="stat-item">
-            <text class="stat-label">累计</text>
-            <text class="stat-value">{{muyuTotalCount}}</text>
           </view>
           <view class="stat-item">
-            <text class="stat-label">连续天数</text>
-            <text class="stat-value">{{muyuStreakDays}}</text>
-          </view>
-          <!--<view class="stat-item">
             <text class="stat-label">今日时长</text>
             <text class="stat-value">{{muyuTodayMinutes}}min</text>
-          </view>-->
-          <view class="stat-item">
-            <text class="stat-label">累计时长</text>
-            <text class="stat-value">{{muyuTotalMinutes}}min</text>
           </view>
         </view>
       </view>
@@ -66,25 +53,13 @@
         </view>
         
         <view class="card-content">
-          <!--<view class="stat-item">
-            <text class="stat-label">今日</text>
+          <view class="stat-item">
+            <text class="stat-label">今日次数</text>
             <text class="stat-value">{{songboTodayCount}}</text>
-          </view>-->
-          <view class="stat-item">
-            <text class="stat-label">累计</text>
-            <text class="stat-value">{{songboTotalCount}}</text>
           </view>
           <view class="stat-item">
-            <text class="stat-label">连续天数</text>
-            <text class="stat-value">{{songboStreakDays}}</text>
-          </view>
-          <!--<view class="stat-item">
             <text class="stat-label">今日时长</text>
             <text class="stat-value">{{songboTodayMinutes}}min</text>
-          </view>-->
-          <view class="stat-item">
-            <text class="stat-label">累计时长</text>
-            <text class="stat-value">{{songboTotalMinutes}}min</text>
           </view>
         </view>
       </view>

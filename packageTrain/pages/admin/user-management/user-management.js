@@ -1,5 +1,5 @@
 const app = getApp();
-const { calculateUserLevel } = require('../../profileshanmen/utils/index');
+const { calculateUserLevel } = require('../../../../pages/profileshanmen/utils/index');
 
 Page({
   data: {

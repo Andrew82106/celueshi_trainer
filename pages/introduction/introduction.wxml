@@ -54,7 +54,13 @@
     <text class="section-title">开发记录</text>
 
     <view class="feature-item">
-    <text class="feature-title">版本0.3.8(当前)</text>
+    <text class="feature-title">版本0.3.9(当前)</text>
+      <text class="feature-desc">修改累积信息bug，修改了段位bug</text>
+      <text class="feature-desc">>>Andrew 在 2025年6月15日下午12点50分 提交上传</text>
+    </view>
+
+    <view class="feature-item">
+    <text class="feature-title">版本0.3.8</text>
       <text class="feature-desc">修改日期错位bug，修改了部分UI</text>
       <text class="feature-desc">>>Andrew 在 2025年5月27日下午21点18分 提交上传</text>
     </view>

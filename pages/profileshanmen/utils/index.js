@@ -1,7 +1,7 @@
 /**
  * 获取今天的日期字符串（YYYY-MM-DD格式）
  */
-export function getTodayDateString() {
+function getTodayDateString() {
     const today = new Date();
     const year = today.getFullYear();
     const month = String(today.getMonth() + 1).padStart(2, '0');
@@ -12,7 +12,7 @@ export function getTodayDateString() {
 /**
  * 计算连续打卡天数
  */
-export function calculateStreakDays(records) {
+function calculateStreakDays(records) {
     if (!records || typeof records !== 'object' || Object.keys(records).length === 0) {
         console.log("无记录或记录为空，连续天数为0");
         return 0;
@@ -68,29 +68,40 @@ export function calculateStreakDays(records) {
 /**
  * 计算用户等级
  */
-export function calculateUserLevel(totalMinutes) {
+function calculateUserLevel(totalMinutes) {
     const { USER_LEVELS, LEVEL_REQUIREMENTS } = require('../constants/index');
+    console.log(`[计算用户等级] 输入的总分钟数: ${totalMinutes}`);
     
     // 从低到高检查每个等级要求
     if (totalMinutes < LEVEL_REQUIREMENTS[USER_LEVELS.BEGINNER]) {
+        console.log(`[计算用户等级] 结果: ${USER_LEVELS.INITIAL}`);
         return USER_LEVELS.INITIAL;
     } else if (totalMinutes < LEVEL_REQUIREMENTS[USER_LEVELS.INTERMEDIATE]) {
+        console.log(`[计算用户等级] 结果: ${USER_LEVELS.BEGINNER}`);
         return USER_LEVELS.BEGINNER;
     } else if (totalMinutes < LEVEL_REQUIREMENTS[USER_LEVELS.ADVANCED]) {
+        console.log(`[计算用户等级] 结果: ${USER_LEVELS.INTERMEDIATE}`);
         return USER_LEVELS.INTERMEDIATE;
     } else if (totalMinutes < LEVEL_REQUIREMENTS[USER_LEVELS.MASTER]) {
+        console.log(`[计算用户等级] 结果: ${USER_LEVELS.ADVANCED}`);
         return USER_LEVELS.ADVANCED;
     } else if (totalMinutes < LEVEL_REQUIREMENTS[USER_LEVELS.GRANDMASTER]) {
+        console.log(`[计算用户等级] 结果: ${USER_LEVELS.MASTER}`);
         return USER_LEVELS.MASTER;
     } else if (totalMinutes < LEVEL_REQUIREMENTS[USER_LEVELS.IMMORTAL]) {
+        console.log(`[计算用户等级] 结果: ${USER_LEVELS.GRANDMASTER}`);
         return USER_LEVELS.GRANDMASTER;
     } else if (totalMinutes < LEVEL_REQUIREMENTS[USER_LEVELS.IMMORTAL_MASTER]) {
+        console.log(`[计算用户等级] 结果: ${USER_LEVELS.IMMORTAL}`);
         return USER_LEVELS.IMMORTAL;
     } else if (totalMinutes < LEVEL_REQUIREMENTS[USER_LEVELS.IMMORTAL_GRANDMASTER]) {
+        console.log(`[计算用户等级] 结果: ${USER_LEVELS.IMMORTAL_MASTER}`);
         return USER_LEVELS.IMMORTAL_MASTER;
     } else if (totalMinutes < LEVEL_REQUIREMENTS[USER_LEVELS.IMMORTAL_IMMORTAL]) {
+        console.log(`[计算用户等级] 结果: ${USER_LEVELS.IMMORTAL_GRANDMASTER}`);
         return USER_LEVELS.IMMORTAL_GRANDMASTER;
     } else {
+        console.log(`[计算用户等级] 结果: ${USER_LEVELS.IMMORTAL_IMMORTAL}`);
         return USER_LEVELS.IMMORTAL_IMMORTAL;
     }
 }
@@ -100,7 +111,8 @@ export function calculateUserLevel(totalMinutes) {
  * @param {string} openId - 用户openId
  * @param {Object} db - 数据库实例
  */
-export function updateUserLevel(openId, db) {
+function updateUserLevel(openId, db) {
+    console.log(`[更新用户等级] 开始更新用户 ${openId} 的等级`);
     // 查询用户累计训练时间
     return db.collection("userinfo").where({
         openId: openId
@@ -113,6 +125,8 @@ export function updateUserLevel(openId, db) {
             const totalSeconds = accumulateMuyuTime + accumulateSongboTime;
             const totalMinutes = Math.ceil(totalSeconds / 60);
             
+            console.log(`[更新用户等级] 用户训练数据: 木鱼${accumulateMuyuTime}秒, 颂钵${accumulateSongboTime}秒, 总共${totalMinutes}分钟`);
+            
             // 计算用户段位
             const userLevel = calculateUserLevel(totalMinutes);
             
@@ -124,15 +138,17 @@ export function updateUserLevel(openId, db) {
                     level: userLevel
                 }
             }).then(updateRes => {
-                console.log("更新用户段位成功:", updateRes);
+                console.log(`[更新用户等级] 更新用户段位成功: ${userLevel}`, updateRes);
                 return updateRes;
             }).catch(err => {
-                console.error("更新用户段位失败:", err);
+                console.error("[更新用户等级] 更新用户段位失败:", err);
                 throw err;
             });
+        } else {
+            console.warn(`[更新用户等级] 未找到用户信息: ${openId}`);
         }
     }).catch(err => {
-        console.error("查询用户信息失败:", err);
+        console.error("[更新用户等级] 查询用户信息失败:", err);
         throw err;
     });
 }
@@ -144,7 +160,7 @@ export function updateUserLevel(openId, db) {
  * @param {string} currentUserId - 当前登录用户ID
  * @returns {boolean} 是否在线
  */
-export function isUserOnline(userId, lastActiveTime, currentUserId) {
+function isUserOnline(userId, lastActiveTime, currentUserId) {
     // 如果是当前用户，始终返回在线
     if (userId === currentUserId) {
         return true;
@@ -162,4 +178,13 @@ export function isUserOnline(userId, lastActiveTime, currentUserId) {
     
     // 1分钟内活跃视为在线
     return timeDiff < 60000;
-} 
+}
+
+// 导出所有函数
+module.exports = {
+    getTodayDateString,
+    calculateStreakDays,
+    calculateUserLevel,
+    updateUserLevel,
+    isUserOnline
+}; 
